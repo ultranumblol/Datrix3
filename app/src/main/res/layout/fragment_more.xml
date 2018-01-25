@@ -90,34 +90,36 @@
                 ></com.jude.easyrecyclerview.EasyRecyclerView>
 
         </LinearLayout>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:background="@color/line"
-            />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:background="@color/line"-->
+            <!--/>-->
 
-        <TextView
-            android:layout_marginTop="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:background="@color/line"
-            />
+        <!--<TextView-->
+            <!--android:layout_marginTop="20dp"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:background="@color/line"-->
+            <!--/>-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center_vertical"
             android:paddingLeft="24dp"
             android:text="设置"
+            android:background="@drawable/ripple_item_white_bg"
+            android:layout_marginTop="20dp"
             android:textColor="#2C2C2C"
-            android:background="@color/white"
+            android:id="@+id/more_setting"
             android:drawableRight="@drawable/ic_keyboard_arrow_right_grey_600_36dp"
             android:textSize="18dp"
             />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:background="@color/line"
-            />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:background="@color/line"-->
+            <!--/>-->
 
         <TextView
             android:layout_width="match_parent"
@@ -125,40 +127,42 @@
             android:gravity="center_vertical"
             android:paddingLeft="24dp"
             android:text="反馈"
+            android:id="@+id/more_fankui"
+            android:layout_marginTop="1sp"
             android:textColor="#2C2C2C"
-            android:background="@color/white"
+            android:background="@drawable/ripple_item_white_bg"
             android:drawableRight="@drawable/ic_keyboard_arrow_right_grey_600_36dp"
             android:textSize="18dp"
             />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:background="@color/line"
-            />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:background="@color/line"-->
+            <!--/>-->
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:layout_marginTop="16dp"
-            android:background="@color/line"
-            />
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:layout_marginTop="16dp"-->
+            <!--android:background="@color/line"-->
+            <!--/>-->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:gravity="center"
-
+            android:layout_marginTop="16dp"
             android:text="退出登录"
             android:background="@color/white"
             android:textColor="#FD898C"
             android:textSize="18dp"
 
             />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1sp"
-            android:background="@color/line"
+        <!--<TextView-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="1sp"-->
+            <!--android:background="@color/line"-->
 
-            />
+            <!--/>-->
 
 
     </LinearLayout>

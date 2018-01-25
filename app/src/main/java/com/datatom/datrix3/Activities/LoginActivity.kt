@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Button
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.R
 import com.githang.statusbar.StatusBarCompat
@@ -13,6 +14,7 @@ import com.jakewharton.rxbinding2.view.RxView
 
 
 import kotlinx.android.synthetic.main.activity_login.*
+import org.jetbrains.anko.find
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
@@ -22,6 +24,8 @@ import java.util.concurrent.TimeUnit
  */
 class LoginActivity : AppCompatActivity() {
 
+    var mbutton : Button? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -29,8 +33,10 @@ class LoginActivity : AppCompatActivity() {
 
         StatusBarCompat.setStatusBarColor(this,resources.getColor(R.color.login_bg))
 
+        mbutton = find(R.id.button_get_started)
+
         addUsernameAutoComplete()
-        RxView.clicks(button_get_started).throttleFirst(100, TimeUnit.MILLISECONDS)
+        RxView.clicks(mbutton!!).throttleFirst(100, TimeUnit.MILLISECONDS)
                 .subscribe{
                     dologin();
                 }

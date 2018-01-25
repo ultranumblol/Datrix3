@@ -3,13 +3,18 @@ package com.datatom.datrix3.fragments
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
+import android.widget.TextView
 import com.datatom.datrix3.Adapter.MoreFragmentadapter
 import com.datatom.datrix3.Base.BaseFragment
 import com.datatom.datrix3.Bean.MoreItems
 import com.datatom.datrix3.R
+import com.datatom.datrix3.helpers.I
+
 import com.jude.easyrecyclerview.EasyRecyclerView
 import kotlinx.android.synthetic.main.fragment_more.*
 import org.jetbrains.anko.find
+import org.jetbrains.anko.support.v4.find
+import org.jetbrains.anko.support.v4.toast
 
 /**
  * Created by wgz on 2018/1/23.
@@ -20,6 +25,10 @@ class MoreFragment : BaseFragment(){
     var rvadapter : MoreFragmentadapter? = null
 
     var rv : EasyRecyclerView? = null
+
+    var tvsetting  : TextView? = null
+
+    var tvfankui  : TextView? = null
 
     companion object {
 
@@ -49,6 +58,10 @@ class MoreFragment : BaseFragment(){
 
         rv = view.find(R.id.more_rv)
 
+        tvfankui = view.find(R.id.more_fankui)
+
+        tvsetting =view. find(I.more_setting)
+
         rvadapter = MoreFragmentadapter(activity!!)
         rv!!.apply {
             setLayoutManager(GridLayoutManager(activity,4))
@@ -58,7 +71,29 @@ class MoreFragment : BaseFragment(){
 
         rvadapter!!.apply {
            addAll(items)
+            setOnItemClickListener {
+                toast(" "+(it+1))
+            }
+
         }
+
+
+        tvsetting!!.apply {
+            setOnClickListener{
+                toast("click!")
+
+            }
+
+        }
+        tvfankui!!.apply {
+            setOnClickListener{
+                toast("click!")
+
+            }
+
+        }
+
+
 
 
 

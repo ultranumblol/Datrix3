@@ -3,7 +3,9 @@ package com.datatom.datrix3.Adapter;
 import android.content.Context
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import com.datatom.datrix3.Bean.MoreItems
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
@@ -29,10 +31,14 @@ class MoreFragmentadapter(context: Context) : RecyclerArrayAdapter<MoreItems>(co
 
         private val text : TextView
 
+        private val root : RelativeLayout
+
         init {
             img = `$`<ImageView>(R.id.item_img)
 
             text = `$`<TextView>(R.id.item_text)
+
+            root = `$`<RelativeLayout>(R.id.rl_root)
         }
 
         override fun setData(data: MoreItems?) {
@@ -40,6 +46,11 @@ class MoreFragmentadapter(context: Context) : RecyclerArrayAdapter<MoreItems>(co
 
             text.text = data.name
 
+
+//            root.onClick {
+//                Toast.makeText(context,"123",Toast.LENGTH_LONG).show()
+//
+//            }
 
         }
 

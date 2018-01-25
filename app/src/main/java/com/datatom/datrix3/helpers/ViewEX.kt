@@ -28,15 +28,6 @@ fun View.inVisible() {
 }
 
 
-fun View.onClick(function: () -> Unit) {
-
-    setOnClickListener {
-        function
-    }
-
-
-}
-
 fun ViewGroup.inflate(layoutId: Int): View {
     return LayoutInflater.from(context).inflate(layoutId, this, false)
 }

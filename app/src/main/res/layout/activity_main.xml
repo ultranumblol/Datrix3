@@ -29,6 +29,15 @@
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="18dp"
+                    android:id="@+id/toolbar_qiehuan"
+                    android:textColor="@color/white"
+                    android:text="切换"
+                    />
+
                 <LinearLayout
                     android:id="@+id/bugview"
 
@@ -81,8 +90,9 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="title"
+                        android:textStyle="bold"
                         android:textColor="@color/white"
-                        android:textSize="18dp"
+                        android:textSize="20dp"
                          />
                 </LinearLayout>
 

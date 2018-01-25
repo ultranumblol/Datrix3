@@ -11,3 +11,4 @@ typealias S = R.string
 typealias C = R.color
 typealias D = R.drawable
 typealias L = R.layout
+typealias I = R.id
