@@ -9,6 +9,7 @@ import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
 import android.util.SparseBooleanArray
 import android.widget.CompoundButton
+import android.widget.LinearLayout
 import com.datatom.datrix3.helpers.RxBus
 
 
@@ -26,6 +27,25 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<Any>(context) {
 
     }
 
+    fun setCheckBoxAllSelect() {
+
+        for (i in 0 until count){
+            mCheckStates.put(i,true)
+
+        }
+
+
+    }
+
+    fun setCheckBoxNoneSelect() {
+
+        for (i in 0 until count){
+            mCheckStates.delete(i)
+
+        }
+
+    }
+
 
     override fun OnCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return SpaceAdapterViewholder(parent)
@@ -35,20 +55,27 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<Any>(context) {
     private inner class SpaceAdapterViewholder(itemView: ViewGroup) : BaseViewHolder<Any>(itemView, R.layout.item_sapceadapter) {
         private var checkbox: CheckBox? = null
 
+        private var root: LinearLayout? = null
 
         init {
 
 
-            checkbox = `$`<CheckBox>(R.id.item_collect_cb)
+            checkbox = `$`(R.id.item_collect_cb)
 
-            // text = `$`<TextView>(R.id.item_text)
+            root = `$`(R.id.ll_root)
+            // text = `$`<TextView>(R.id.item_text) ll_root
         }
 
         override fun setData(data: Any?) {
 
 
+            root!!.setOnClickListener{
+
+
+            }
+
             checkbox!!.setOnCheckedChangeListener { _, isChecked ->
-                Log.d("wgz", "adapter : " + adapterPosition)
+               // Log.d("wgz", "adapter : " + adapterPosition)
                 if (isChecked) {
                     mCheckStates.put(adapterPosition, true)
 

@@ -1,6 +1,5 @@
 package com.datatom.datrix3.Activities
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
@@ -9,6 +8,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.datatom.datrix3.Adapter.MyFragmentPagerAdapter
+import com.datatom.datrix3.Bean.SpaceType
 
 import com.datatom.datrix3.R
 import com.datatom.datrix3.fragments.CollectionFragment
@@ -16,7 +16,12 @@ import com.datatom.datrix3.fragments.MoreFragment
 import com.datatom.datrix3.fragments.ShareFragment
 import com.datatom.datrix3.fragments.SpaceFragment
 import com.datatom.datrix3.helpers.I
+import com.datatom.datrix3.helpers.RxBus
+import com.datatom.datrix3.helpers.Show
+import com.datatom.datrix3.helpers.hide
 import com.githang.statusbar.StatusBarCompat
+import io.github.tonnyl.whatsnew.item.item
+import io.github.tonnyl.whatsnew.item.whatsNew
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.ArrayList
 
@@ -24,6 +29,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     companion object {
+        val titles = arrayListOf("空间","分享","收藏","更多")
 
     }
 
@@ -56,6 +62,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         if (id == R.id.action_allselect) {
 
+            RxBus.get().post("selectall")
+
 
         }
 
@@ -67,20 +75,20 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         when (main_vp.currentItem) {
             0 -> {
                 menu!!.apply {
-                    findItem(R.id.action_allselect).setVisible(true)
-                    findItem(I.action_paixu).setVisible(true)
+                    findItem(R.id.action_allselect).isVisible = true
+                    findItem(I.action_paixu).isVisible = true
                 }
             }
             1 -> {
                 menu!!.apply {
-                    findItem(R.id.action_allselect).setVisible(false)
-                    findItem(I.action_paixu).setVisible(false)
+                    findItem(R.id.action_allselect).isVisible = false
+                    findItem(I.action_paixu).isVisible = false
                 }
             }
             2 -> {
                 menu!!.apply {
-                    findItem(R.id.action_allselect).setVisible(true)
-                    findItem(I.action_paixu).setVisible(false)
+                    findItem(R.id.action_allselect).isVisible = true
+                    findItem(I.action_paixu).isVisible = false
                 }
             }
 
@@ -96,11 +104,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     fun initView() {
 
         val mFragmentList = ArrayList<Fragment>()
-        val titles = ArrayList<String>()
-        titles.add("空间")
-        titles.add("分享")
-        titles.add("收藏")
-        titles.add("更多")
+
 
         mFragmentList.add(SpaceFragment())
         mFragmentList.add(ShareFragment())
@@ -126,34 +130,37 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
 
             override fun onPageSelected(position: Int) {
+
+
+
                 when (position) {
                     0 -> {
                         main_title.text = "个人空间"
-                        app_bar.visibility = View.VISIBLE
+                        app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
                         toolbar_qiehuan.text = "切换"
-                        toolbar_qiehuan.visibility = View.VISIBLE
+                        toolbar_qiehuan.Show()
 
 
                     }
                     1 -> {
                         main_title.text = "我的分享"
-                        app_bar.visibility = View.VISIBLE
+                        app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
-                        toolbar_qiehuan.visibility = View.GONE
+                        toolbar_qiehuan.hide()
                     }
                     2 -> {
                         main_title.text = "我的收藏"
-                        app_bar.visibility = View.VISIBLE
+                        app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
                         toolbar_qiehuan.text = "全部"
-                        toolbar_qiehuan.visibility = View.VISIBLE
+                        toolbar_qiehuan.Show()
 
 
                     }
                     3 -> {
                         main_title.text = ""
-                        app_bar.visibility = View.GONE
+                        app_bar.hide()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
 
 
@@ -166,13 +173,43 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         })
 
         main_vp.currentItem = 0
-
-
+        main_bar.Show()
+        main_bar_line.Show()
+        zhezhao.hide()
 
         rv_space.setOnClickListener(this)
         rv_share.setOnClickListener(this)
         rv_collect.setOnClickListener(this)
         rv_more.setOnClickListener(this)
+        toolbar_qiehuan.setOnClickListener(this)
+        zhezhao.setOnClickListener(this)
+
+        RxBus.get().toFlowable(String::class.java).subscribe {
+
+            when(it){
+                "hidemainbar" ->{
+                    main_bar.hide()
+                    main_bar_line.hide()
+                }
+                "showmainbar" ->{
+                    main_bar.Show()
+                    main_bar_line.Show()
+                }
+                "hidezhezhao" -> {
+                    zhezhao.hide()
+
+                }
+                "showzhezhao" ->{
+                    zhezhao.Show()
+                }
+
+          }
+
+        }
+
+        RxBus.get().toFlowable(SpaceType::class.java).subscribe{
+            main_title.text = it.spacename
+        }
 
 
     }
@@ -229,6 +266,30 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 main_vp.currentItem = 3
 
             }
+            I.toolbar_qiehuan ->{
+                RxBus.get().post("changespace")
+//                val whatsnew = whatsNew {
+//                    item {
+//                        title = "Nice Icons"
+//                        content = "Completely customize colors, texts and icons."
+//                        imageRes = R.drawable.ic_gaojisousuo
+//                    }
+//                    item {
+//                        title = "Such Easy"
+//                        content = "Setting this up only takes 2 lines of code, impressive you say?"
+//                        imageRes = R.drawable.ic_gaojisousuo
+//                    }
+//                }
+//                whatsnew.presentAutomatically(this)
+            }
+
+            I.zhezhao ->{
+                zhezhao.hide()
+                RxBus.get().post("hidecardview")
+
+
+            }
+
 
 
         }
