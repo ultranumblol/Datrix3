@@ -21,6 +21,7 @@
 #-renamesourcefileattribute SourceFile
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
+-dontwarn com.squareup.picasso.**
 -keep public enum com.bumptech.glide.load.resource.bitmap.ImageHeaderParser$** {
   **[] $VALUES;
   public *;

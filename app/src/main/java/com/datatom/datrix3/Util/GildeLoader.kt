@@ -3,7 +3,7 @@ package com.datatom.datrix3.Util
 import android.graphics.Bitmap
 import android.support.v7.graphics.Palette
 import android.widget.ImageView
-import com.bumptech.glide.Glide
+
 import com.bumptech.glide.Priority
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.transition.Transition

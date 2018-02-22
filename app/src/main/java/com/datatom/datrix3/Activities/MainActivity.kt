@@ -1,8 +1,10 @@
 package com.datatom.datrix3.Activities
 
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
@@ -62,7 +64,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         if (id == R.id.action_allselect) {
 
-            RxBus.get().post("selectall")
+            when(main_vp.currentItem){
+                0 ->
+                {
+                    RxBus.get().post("spaceselectall")
+                }
+                2 ->{
+                    RxBus.get().post("collectselectall")
+                }
+            }
+
 
 
         }
@@ -210,6 +221,14 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         RxBus.get().toFlowable(SpaceType::class.java).subscribe{
             main_title.text = it.spacename
         }
+
+
+    }
+
+
+    fun showAlertdialog(context : Context){
+
+
 
 
     }

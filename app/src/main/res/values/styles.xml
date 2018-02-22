@@ -3,7 +3,16 @@
 
     <style name="AppTheme" parent="MyTheme" />
 
+    
+    <style name="myCharles" parent="Charles">
 
+        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimary</item>-->
+        <!--<item name="colorAccent">@color/colorPrimary</item>-->
+
+
+    </style>
+    
     <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
         <!--选中状态icon的颜色和字体颜色-->
@@ -13,8 +22,15 @@
         <item name="windowActionBarOverlay">true</item>
        <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay.v14.Material</item>
+        <!--自定义AlertDialog-->
+        <!--<item name="alertDialogTheme">@style/Theme.AppCompat.Light.Dialog.Alert.Self</item>-->
         <!--正常状态下字体颜色和icon颜色-->
         <!--<item name="android:textColorPrimary">@color/colorTheme</item>-->
+    </style>
+    <style name="Theme.AppCompat.Light.Dialog.Alert.Self"
+        parent="@style/Theme.AppCompat.Light.Dialog.Alert">
+        <!--修改AlertDialog按钮的颜色-->
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
 
     <!--查看大图页面，全屏显示-->

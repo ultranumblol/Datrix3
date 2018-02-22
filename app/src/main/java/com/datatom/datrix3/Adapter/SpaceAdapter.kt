@@ -79,10 +79,10 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<Any>(context) {
                 if (isChecked) {
                     mCheckStates.put(adapterPosition, true)
 
-                    RxBus.get().post("updatecheckbox")
+                    RxBus.get().post("updatespacecheckbox")
                 } else {
                     mCheckStates.delete(adapterPosition)
-                    RxBus.get().post("updatecheckbox")
+                    RxBus.get().post("updatespacecheckbox")
                 }
             }
 
