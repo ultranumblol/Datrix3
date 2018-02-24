@@ -1,45 +1,82 @@
 package com.datatom.datrix3.Activities
 
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
-import android.view.View
+import android.text.TextUtils
+
 import android.widget.ArrayAdapter
 import android.widget.Button
-import com.datatom.datrix3.BaseActivity
+import com.datatom.datrix3.Bean.LoginInfo
+
 import com.datatom.datrix3.R
+
+import com.datatom.datrix3.Util.HttpUtil
+import com.datatom.datrix3.Util.SPBuild
+import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.base.AppConstant
+import com.datatom.datrix3.helpers.*
+
 import com.githang.statusbar.StatusBarCompat
 import com.jakewharton.rxbinding2.view.RxView
 
 
 import kotlinx.android.synthetic.main.activity_login.*
+
 import org.jetbrains.anko.find
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
+
 
 /**
  * 登录页面
  */
 class LoginActivity : AppCompatActivity() {
 
-    var mbutton : Button? = null
+    var mbutton: Button? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
 
-        StatusBarCompat.setStatusBarColor(this,resources.getColor(R.color.login_bg))
+        StatusBarCompat.setStatusBarColor(this, resources.getColor(R.color.login_bg))
 
         mbutton = find(R.id.button_get_started)
 
-        addUsernameAutoComplete()
+
+
+
+        //addUsernameAutoComplete()
         RxView.clicks(mbutton!!).throttleFirst(100, TimeUnit.MILLISECONDS)
-                .subscribe{
+                .subscribe {
                     dologin();
                 }
+
+        initData()
+    }
+
+    private fun initData() {
+
+        if (Someutil.getAutologin()){
+
+            cb_auto_login.isChecked = true
+            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+            this@LoginActivity.finish()
+
+        }
+        if (Someutil.getrememberuser()){
+
+            cb_rem_user.isChecked = true
+            actv_ip.setText(Someutil.getloginIP())
+            actv_username.setText(Someutil.getloginname())
+            edit_password.setText(Someutil.getloginpwd())
+
+        }
 
 
 
@@ -62,6 +99,116 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun dologin() {
+
+
+
+
+
+        if (actv_ip.text.toString().isEmpty()){
+
+            login_rootview.ShowSnackbarshort("请输入ip")
+            return
+        }
+
+        var name = actv_username.text.toString()
+
+        if (TextUtils.isEmpty(name)){
+            login_rootview.ShowSnackbarshort("请输入用户名")
+            return
+
+        }
+
+        var pwd = if (actv_username.text.toString().contains("\\")) edit_password.text.toString().AES()
+        else edit_password.text.toString().MD5()
+
+        if (TextUtils.isEmpty(pwd)){
+            login_rootview.ShowSnackbarshort("请输入密码")
+            return
+
+        }
+
+        login_wait.Show()
+
+        HttpUtil.instance.apiService().login(name, pwd, "uname", "android")
+                .compose(RxSchedulers.compose())
+                .subscribe({
+                    ("login result :" + it.toString()).LogD()
+
+                    when (it.code) {
+
+                        200 -> {
+
+
+                            Saveinfo(it)
+
+                            login_wait.hide()
+                            login_rootview.ShowSnackbarshort("登录成功！")
+                                    .addCallback(object : Snackbar.Callback() {
+                                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                                            this@LoginActivity.startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                                            this@LoginActivity.finish()
+                                        }
+                                    })
+
+                        }
+                        else -> {
+                            login_wait.hide()
+                            login_rootview.ShowSnackbarshort("登录失败，请重试")
+
+                        }
+                    }
+
+
+                }, {
+                    ("error : " + it.toString()).LogD()
+                    login_wait.hide()
+                    login_rootview.ShowSnackbarshort("登录失败，请重试")
+
+
+                })
+
+    }
+
+    /**
+     * 保存用户信息只在登录成功时候保存
+     */
+    private fun Saveinfo(info: LoginInfo?) {
+            //保存checkbox 勾选状态
+            SPBuild(applicationContext)
+                    .addData(AppConstant.AUTO_LOGIN,cb_auto_login.isChecked)
+                    .addData(AppConstant.REMEMBER_NAME_CODE,cb_rem_user.isChecked)
+                    .build()
+
+            if (cb_rem_user.isChecked) {
+                //保存登录密码用户名ip
+                SPBuild(applicationContext)
+                        .addData(AppConstant.USER_LOGINIP,actv_ip.text.toString())
+                        .addData(AppConstant.USER_LOGINNAME,actv_username.text.toString())
+                        .addData(AppConstant.USER_LOGINPASSWORD,edit_password.text.toString())
+                        .build()
+
+            }else{
+                SPBuild(applicationContext)
+                        .addData(AppConstant.USER_LOGINIP,"")
+                        .addData(AppConstant.USER_LOGINNAME,"")
+                        .addData(AppConstant.USER_LOGINPASSWORD,"")
+                        .build()
+
+
+            }
+
+
+        info!!.let {
+                //保存返回的用户id token
+
+                SPBuild(applicationContext).addData(AppConstant.USER_ID,it.reuslt.info.userid)
+                        .addData(AppConstant.USER_NICKNAME,it.reuslt.info.usernickname)
+                        .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+                        .build()
+
+            }
+
+
 
 
     }

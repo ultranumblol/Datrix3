@@ -1,19 +1,17 @@
 package com.datatom.datrix3.fragments
 
 
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import com.datatom.datrix3.Adapter.SpaceAdapter
 import com.datatom.datrix3.Adapter.searchhisadapter
-import com.datatom.datrix3.Base.BaseFragment
+import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.Bean.SearchHis
 import com.datatom.datrix3.Bean.SpaceType
 import com.datatom.datrix3.R
@@ -79,6 +77,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
     private var searchadapter: searchhisadapter? = null
     private var searchrv: RecyclerView? = null
     private var clear_his: TextView? = null
+    private var zhezhao : FrameLayout? = null
 
 
     override fun initview(view: View) {
@@ -100,6 +99,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         copy = view.find(I.edit_rv_copy)
         move = view.find(I.edit_rv_move)
         detil = view.find(I.edit_rv_detil)
+        zhezhao = view.find(I.space_zhezhao)
 
         mCardViewSearch = view.find(I.cardView_search)
         ivSearchBack = view.find(I.iv_search_back)
@@ -131,6 +131,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         copy!!.setOnClickListener(this)
         move!!.setOnClickListener(this)
         detil!!.setOnClickListener(this)
+        zhezhao!!.setOnClickListener(this)
 
         personspace!!.setOnClickListener(this)
         publicspace!!.setOnClickListener(this)
@@ -199,8 +200,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
             when (it) {
                 "spaceselectall" -> {
 
-                    Log.d("wgz", "getcheckboxArrary :" + rvadapter!!.getcheckboxArrary().size())
-                    Log.d("wgz", "adaptersize :" + rvadapter!!.count)
+                   // Log.d("wgz", "getcheckboxArrary :" + rvadapter!!.getcheckboxArrary().size())
+                    //Log.d("wgz", "adaptersize :" + rvadapter!!.count)
 
                     rvadapter!!.apply {
                         if (rvadapter!!.getcheckboxArrary().size() > 0 && rvadapter!!.getcheckboxArrary().size() == rvadapter!!.count) {
@@ -235,13 +236,15 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
                     if (cardview!!.visibility == View.GONE) {
                         RxBus.get().post("hidezhezhao")
+                        zhezhao!!.hide()
                     } else {
                         RxBus.get().post("showzhezhao")
+                        zhezhao!!.Show()
                     }
 
                 }
                 "hidecardview" -> {
-                    cardview!!.hide()
+                    hideCradview()
 
                 }
 
@@ -272,6 +275,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
     override fun onClick(v: View?) {
 
         when (v!!.id) {
+
+            I.space_zhezhao ->{
+                hideCradview()
+
+
+
+
+            }
 
             I.edit_rv_rename -> {
 
@@ -412,18 +423,18 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
             }
             I.change_space_person -> {
-                RxBus.get().post("hidezhezhao")
-                cardview!!.hide()
+
+                hideCradview()
                 RxBus.get().post(SpaceType("个人空间"))
             }
             I.change_space_public -> {
-                RxBus.get().post("hidezhezhao")
-                cardview!!.hide()
+
+                hideCradview()
                 RxBus.get().post(SpaceType("公共空间"))
             }
             I.change_space_team -> {
-                RxBus.get().post("hidezhezhao")
-                cardview!!.hide()
+
+                hideCradview()
                 RxBus.get().post(SpaceType("讨论组"))
 
 
@@ -471,14 +482,13 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
             I.space_newfile ->{
 
 
-
             }
             I.space_upload ->{
                 Charles.from(this)
                         .choose()
                         .maxSelectable(9)
                         .progressRate(true)
-                        .theme(R.style.myCharles)
+                        .theme(R.style.Charles)
                         .imageEngine(GlideEngine())
                         .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
                         .forResult(101)
@@ -491,6 +501,18 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
         }
 
+
+    }
+    fun hideCradview(){
+        RxBus.get().post("hidezhezhao")
+        cardview!!.hide()
+        zhezhao!!.hide()
+
+    }
+    fun showCradview(){
+
+        cardview!!.Show()
+        zhezhao!!.Show()
 
     }
 

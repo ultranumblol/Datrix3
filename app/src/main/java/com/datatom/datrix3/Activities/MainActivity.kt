@@ -30,6 +30,8 @@ import java.util.ArrayList
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
+    var collection_choseStr : String = "全部"
+
     companion object {
         val titles = arrayListOf("空间","分享","收藏","更多")
 
@@ -164,7 +166,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         main_title.text = "我的收藏"
                         app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
-                        toolbar_qiehuan.text = "全部"
+                        toolbar_qiehuan.text = collection_choseStr
                         toolbar_qiehuan.Show()
 
 
@@ -286,7 +288,23 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             }
             I.toolbar_qiehuan ->{
-                RxBus.get().post("changespace")
+
+                when(main_vp.currentItem){
+                    0 ->{
+                        RxBus.get().post("changespace")
+
+                    }
+
+                    2 ->{
+
+                        RxBus.get().post("collect_chose")
+
+                    }
+
+
+
+                }
+
 //                val whatsnew = whatsNew {
 //                    item {
 //                        title = "Nice Icons"
@@ -300,6 +318,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 //                    }
 //                }
 //                whatsnew.presentAutomatically(this)
+
+
             }
 
             I.zhezhao ->{

@@ -5,11 +5,10 @@ import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.view.View
 import com.datatom.datrix3.Adapter.MyFragmentPagerAdapter
-import com.datatom.datrix3.Base.BaseFragment
+import com.datatom.datrix3.base.BaseFragment
 
 import com.datatom.datrix3.R
 import org.jetbrains.anko.find
-import org.jetbrains.anko.support.v4.find
 
 
 /**

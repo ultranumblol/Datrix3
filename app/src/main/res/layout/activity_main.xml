@@ -110,13 +110,13 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.datatom.datrix3.Base.NoScrollViewPager
+                <com.datatom.datrix3.base.NoScrollViewPager
                     android:id="@+id/main_vp"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:background="@color/colorWhite"
-                    android:descendantFocusability="blocksDescendants"></com.datatom.datrix3.Base.NoScrollViewPager>
+                    android:descendantFocusability="blocksDescendants"></com.datatom.datrix3.base.NoScrollViewPager>
 
                 <TextView
                     android:id="@+id/main_bar_line"
@@ -250,9 +250,10 @@
             <FrameLayout
                 android:id="@+id/zhezhao"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="91dp"
+                android:layout_height="63dp"
+
                 android:background="#40808080"
+                android:layout_alignParentBottom="true"
                 android:clickable="true"></FrameLayout>
 
 

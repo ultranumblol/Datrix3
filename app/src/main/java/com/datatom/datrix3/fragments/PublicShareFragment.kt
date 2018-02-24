@@ -1,7 +1,7 @@
 package com.datatom.datrix3.fragments
 
 import android.view.View
-import com.datatom.datrix3.Base.BaseFragment
+import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.R
 
 /**

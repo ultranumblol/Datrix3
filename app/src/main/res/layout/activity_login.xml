@@ -1,103 +1,109 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:id="@+id/login_rootview"
+    tools:context="com.datatom.datrix3.Activities.LoginActivity">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     android:background="@color/login_bg"
     android:orientation="vertical"
-    android:fitsSystemWindows="true"
-    tools:context="com.datatom.datrix3.Activities.LoginActivity">
+    >
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="17"
+        android:layout_weight="16"
         android:paddingLeft="44dp"
         android:paddingRight="44dp">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="100dp"
-                android:src="@drawable/logo"
-                />
-
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_gravity="bottom"
-
-    android:layout_marginBottom="44dp"
-    >
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColorHint="@color/grey"
-        >
-
-        <AutoCompleteTextView
-            android:id="@+id/actv_ip"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-
-            android:gravity="center"
-            android:backgroundTint="@color/white"
-            android:maxLines="1"
-            android:drawableLeft="@drawable/ip"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="33dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="100dp"
+            android:src="@drawable/logo"
             />
 
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColorHint="@color/grey"
-        >
-
-        <AutoCompleteTextView
-            android:id="@+id/actv_username"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="bottom"
 
-            android:backgroundTint="@color/white"
-            android:maxLines="1"
-            android:gravity="center"
-            android:textColor="@color/white"
-            android:drawableLeft="@drawable/account"
-            android:textColorHint="@color/white"
-            />
+            android:layout_marginBottom="44dp"
+            >
 
-    </android.support.design.widget.TextInputLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/grey"
+                >
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColorHint="@color/grey"
-        >
+                <AutoCompleteTextView
+                    android:id="@+id/actv_ip"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
 
-        <EditText
-            android:id="@+id/edit_password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:imeActionLabel="sign in"
-            android:imeOptions="actionDone"
-            android:inputType="textPassword"
-            android:maxLines="1"
-            android:gravity="center"
-            android:backgroundTint="@color/white"
-            android:drawableLeft="@drawable/pwd"
-            android:textColor="@color/white"
-            android:textColorHint="@color/white"
-            />
+                    android:gravity="center"
+                    android:backgroundTint="@color/white"
+                    android:maxLines="1"
+                    android:drawableLeft="@drawable/ip"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    />
 
-    </android.support.design.widget.TextInputLayout>
+            </android.support.design.widget.TextInputLayout>
 
-</LinearLayout>
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/grey"
+                >
+
+                <AutoCompleteTextView
+                    android:id="@+id/actv_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:backgroundTint="@color/white"
+                    android:maxLines="1"
+                    android:gravity="center"
+                    android:textColor="@color/white"
+                    android:drawableLeft="@drawable/account"
+                    android:textColorHint="@color/white"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColorHint="@color/grey"
+                android:layout_marginBottom="4dp"
+                >
+
+                <EditText
+                    android:id="@+id/edit_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:imeActionLabel="sign in"
+                    android:imeOptions="actionDone"
+                    android:inputType="textPassword"
+                    android:maxLines="1"
+                    android:gravity="center"
+                    android:backgroundTint="@color/white"
+                    android:drawableLeft="@drawable/pwd"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/white"
+                    />
+
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
 
 
         <CheckBox
@@ -107,7 +113,7 @@
             android:text="记住账号密码"
             android:id="@+id/cb_rem_user"
             android:buttonTint="@color/white"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/white" />
         <CheckBox
             android:layout_width="wrap_content"
@@ -116,7 +122,7 @@
             android:text="自动登录"
             android:id="@+id/cb_auto_login"
             android:buttonTint="@color/white"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="10dp"
             android:textColor="@color/white" />
     </FrameLayout>
 
@@ -152,6 +158,38 @@
 
             />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|bottom"
+            android:text="Copyright©2017 ShangHai DATATOM Corp.,Ltd"
+            android:textColor="@color/white"
+            android:textSize="11sp"
+            android:layout_marginBottom="24dp"
+
+            />
+
 
     </FrameLayout>
+
 </LinearLayout>
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#50000000"
+    android:id="@+id/login_wait"
+    android:visibility="gone"
+    android:clickable="true"
+    >
+
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+
+        />
+
+</FrameLayout>
+
+
+</RelativeLayout>

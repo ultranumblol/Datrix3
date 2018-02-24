@@ -4,14 +4,7 @@
     <style name="AppTheme" parent="MyTheme" />
 
     
-    <style name="myCharles" parent="Charles">
 
-        <!--<item name="colorPrimary">@color/colorPrimary</item>-->
-        <!--<item name="colorPrimaryDark">@color/colorPrimary</item>-->
-        <!--<item name="colorAccent">@color/colorPrimary</item>-->
-
-
-    </style>
     
     <style name="MyTheme" parent="Theme.AppCompat.Light.NoActionBar">
 

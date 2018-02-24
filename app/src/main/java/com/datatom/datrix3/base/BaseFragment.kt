@@ -1,4 +1,4 @@
-package com.datatom.datrix3.Base
+package com.datatom.datrix3.base
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import org.reactivestreams.Subscription
 
 /**
  * Created by wgz on 2018/1/23.

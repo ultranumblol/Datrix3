@@ -8,4 +8,283 @@
        android:layout_height="match_parent"
        android:id="@+id/rv_collect"
        ></com.jude.easyrecyclerview.EasyRecyclerView>
+   <FrameLayout
+       android:id="@+id/collect_zhezhao"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent"
+      android:visibility="gone"
+       android:background="#40808080"
+       android:layout_alignParentBottom="true"
+       android:clickable="true"></FrameLayout>
+
+
+   <android.support.v7.widget.CardView
+       android:id="@+id/collection_chose_cardview"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginLeft="2dp"
+       android:layout_marginRight="2dp"
+         android:visibility="gone"
+      >
+      <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="match_parent"
+          android:orientation="vertical"
+          >
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="90dp"
+             android:background="@color/white"
+             android:orientation="horizontal">
+
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_all"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_all" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:layout_marginBottom="4dp"
+                   android:text="全部"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_doc"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_doc" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="文档"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_video"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_video" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="视频"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_pic"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_pic" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="图片"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+
+         </LinearLayout>
+         <LinearLayout
+             android:layout_width="match_parent"
+             android:layout_height="90dp"
+             android:background="@color/white"
+             android:orientation="horizontal">
+
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_mic"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_mic" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:layout_marginBottom="4dp"
+                   android:text="音乐"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+            <RelativeLayout
+
+                android:id="@+id/collect_chose_other"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_more" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="其他"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+            <RelativeLayout
+            android:visibility="invisible"
+
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_video" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="视频"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+
+               android:visibility="invisible"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:background="@drawable/ripple_item_white_bg"
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp">
+
+               <ImageView
+
+                   android:layout_width="40dp"
+                   android:layout_height="40dp"
+                   android:layout_centerHorizontal="true"
+                   android:src="@drawable/ic_shoucang_pic" />
+
+               <TextView
+
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_alignParentBottom="true"
+                   android:layout_centerHorizontal="true"
+                   android:text="图片"
+                   android:layout_marginBottom="4dp"
+                   android:textColor="@color/black" />
+
+            </RelativeLayout>
+
+         </LinearLayout>
+
+      </LinearLayout>
+
+   </android.support.v7.widget.CardView>
+
+
 </RelativeLayout>

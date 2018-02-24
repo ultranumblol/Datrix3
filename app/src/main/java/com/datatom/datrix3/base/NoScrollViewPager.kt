@@ -1,4 +1,4 @@
-package com.datatom.datrix3.Base
+package com.datatom.datrix3.base
 
 import android.content.Context
 import android.support.v4.view.ViewPager

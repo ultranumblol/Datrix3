@@ -10,6 +10,9 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+
+
+
         <android.support.v7.widget.CardView
             android:id="@+id/cardView_search"
             android:layout_width="match_parent"
@@ -91,6 +94,109 @@
             </RelativeLayout>
         </android.support.v7.widget.CardView>
 
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@color/white"
+                android:orientation="horizontal"
+                android:paddingBottom="6dp"
+
+                android:paddingTop="6dp">
+
+                <ImageView
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+                    android:id="@+id/space_newfile"
+
+                    android:padding="12dp"
+                    android:src="@drawable/ic_toolbar_newfile" />
+
+                <ImageView
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+
+                    android:id="@+id/space_pailie"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_toolbar_pailie" />
+
+                <ImageView
+                    android:layout_width="47dp"
+                    android:layout_height="47dp"
+                    android:layout_gravity="center_vertical"
+
+                    android:id="@+id/space_upload"
+                    android:padding="12dp"
+                    android:src="@drawable/ic_toolbar_upload" />
+
+                <LinearLayout
+                    android:id="@+id/search_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginTop="4dp"
+                    android:background="@drawable/bg_search"
+
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginLeft="4dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:padding="6dp"
+
+                        android:src="@drawable/ic_toolbar_search" />
+
+                    <!--<EditText-->
+                    <!--android:clickable="false"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="1"-->
+                    <!--android:background="@null"-->
+                    <!--android:gravity="center_vertical"-->
+                    <!--android:hint=""-->
+                    <!--android:imeOptions="actionSearch"-->
+                    <!--android:inputType="textCapWords"-->
+                    <!--android:paddingLeft="12dp"-->
+                    <!--android:paddingRight="8dp"-->
+                    <!--android:singleLine="true" />-->
+
+
+                </LinearLayout>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1sp"
+                android:background="@color/line" />
+
+            <com.jude.easyrecyclerview.EasyRecyclerView
+                android:id="@+id/space_rv"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"></com.jude.easyrecyclerview.EasyRecyclerView>
+        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/space_zhezhao"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:background="#40808080"
+            android:layout_alignParentBottom="true"
+            android:clickable="true"></FrameLayout>
         <android.support.v7.widget.CardView
             android:id="@+id/change_space_cardview"
             android:layout_width="match_parent"
@@ -194,102 +300,6 @@
 
             </LinearLayout>
         </android.support.v7.widget.CardView>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:paddingBottom="6dp"
-
-                android:paddingTop="6dp">
-
-                <ImageView
-                    android:layout_width="47dp"
-                    android:layout_height="47dp"
-                    android:layout_gravity="center_vertical"
-                    android:id="@+id/space_newfile"
-
-                    android:padding="12dp"
-                    android:src="@drawable/ic_toolbar_newfile" />
-
-                <ImageView
-                    android:layout_width="47dp"
-                    android:layout_height="47dp"
-                    android:layout_gravity="center_vertical"
-
-                    android:id="@+id/space_pailie"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_toolbar_pailie" />
-
-                <ImageView
-                    android:layout_width="47dp"
-                    android:layout_height="47dp"
-                    android:layout_gravity="center_vertical"
-
-                    android:id="@+id/space_upload"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_toolbar_upload" />
-
-                <LinearLayout
-                    android:id="@+id/search_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginBottom="4dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="14dp"
-                    android:layout_marginTop="4dp"
-                    android:background="@drawable/bg_search"
-
-                    android:gravity="center_vertical">
-
-                    <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
-                        android:layout_marginLeft="4dp"
-                        android:background="?android:attr/selectableItemBackground"
-                        android:clickable="true"
-                        android:padding="6dp"
-
-                        android:src="@drawable/ic_toolbar_search" />
-
-                    <!--<EditText-->
-                    <!--android:clickable="false"-->
-                    <!--android:layout_width="0dp"-->
-                    <!--android:layout_height="match_parent"-->
-                    <!--android:layout_weight="1"-->
-                    <!--android:background="@null"-->
-                    <!--android:gravity="center_vertical"-->
-                    <!--android:hint=""-->
-                    <!--android:imeOptions="actionSearch"-->
-                    <!--android:inputType="textCapWords"-->
-                    <!--android:paddingLeft="12dp"-->
-                    <!--android:paddingRight="8dp"-->
-                    <!--android:singleLine="true" />-->
-
-
-                </LinearLayout>
-            </LinearLayout>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="1sp"
-                android:background="@color/line" />
-
-            <com.jude.easyrecyclerview.EasyRecyclerView
-                android:id="@+id/space_rv"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></com.jude.easyrecyclerview.EasyRecyclerView>
-        </LinearLayout>
-
-
     </RelativeLayout>
 
 

@@ -32,7 +32,27 @@ fun ViewGroup.inflate(layoutId: Int): View {
     return LayoutInflater.from(context).inflate(layoutId, this, false)
 }
 
-fun Snackbar.showLong(string: String,root :View){
-    Snackbar.make(root,string,Snackbar.LENGTH_LONG).show()
+fun View.ShowSnackbarLong(str: String): Snackbar {
+
+    val snackbar = Snackbar.make(this, str, Snackbar.LENGTH_LONG)
+
+    snackbar.show()
+
+    return snackbar
+
+}
+
+fun View.ShowSnackbarshort(str: String): Snackbar {
+
+    val snackbar = Snackbar.make(this, str, Snackbar.LENGTH_SHORT)
+
+    snackbar.show()
+
+    return snackbar
+
+}
+
+fun Snackbar.showLong(string: String, root: View) {
+    Snackbar.make(root, string, Snackbar.LENGTH_LONG).show()
 
 }

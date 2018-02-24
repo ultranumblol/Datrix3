@@ -1,19 +1,16 @@
 package com.datatom.datrix3.fragments
 
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.widget.TextView
 import com.datatom.datrix3.Adapter.MoreFragmentadapter
-import com.datatom.datrix3.Base.BaseFragment
+import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.Bean.MoreItems
 import com.datatom.datrix3.R
 import com.datatom.datrix3.helpers.I
 
 import com.jude.easyrecyclerview.EasyRecyclerView
-import kotlinx.android.synthetic.main.fragment_more.*
 import org.jetbrains.anko.find
-import org.jetbrains.anko.support.v4.find
 import org.jetbrains.anko.support.v4.toast
 
 /**

@@ -62,7 +62,8 @@ class HttpUtil {
 
     companion object {
         private var sHttpUtils: HttpUtil? = null
-        var BASE_URL = "http://211.144.114.26:780/"
+
+       var BASE_URL = "http://192.168.3.217/api/sw/"
 
         val instance: HttpUtil
             get() {
