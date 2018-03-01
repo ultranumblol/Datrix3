@@ -2,8 +2,8 @@
 <resources>
     <color name="colorPrimary">#1FB4FE</color>
     <color name="colorPrimaryDark">#1FB4FE</color>
-    <color name="colorAccent">#ffffff</color>
-
+    <color name="colorAccent">#fc6557</color>
+    <!--<color name="colorAccent">#ffffff</color>-->
     <color name="login_bg">#2063AD</color>
     <color name="calendar_bg_end">#735757</color>
     <color name="calendar_text_color">#000000</color>

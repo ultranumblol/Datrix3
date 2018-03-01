@@ -1,6 +1,7 @@
 package com.datatom.datrix3.Activities
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
@@ -17,10 +18,7 @@ import com.datatom.datrix3.fragments.CollectionFragment
 import com.datatom.datrix3.fragments.MoreFragment
 import com.datatom.datrix3.fragments.ShareFragment
 import com.datatom.datrix3.fragments.SpaceFragment
-import com.datatom.datrix3.helpers.I
-import com.datatom.datrix3.helpers.RxBus
-import com.datatom.datrix3.helpers.Show
-import com.datatom.datrix3.helpers.hide
+import com.datatom.datrix3.helpers.*
 import com.githang.statusbar.StatusBarCompat
 import io.github.tonnyl.whatsnew.item.item
 import io.github.tonnyl.whatsnew.item.whatsNew
@@ -31,6 +29,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     var collection_choseStr : String = "全部"
+
+    var titlename : String = ""
 
     companion object {
         val titles = arrayListOf("空间","分享","收藏","更多")
@@ -79,6 +79,13 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
         }
+        if (id == R.id.action_paixu){
+
+            this.startActivity(Intent(this,TaskListActivity::class.java))
+
+
+        }
+
 
         return super.onOptionsItemSelected(item)
     }
@@ -130,7 +137,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
         main_vp.offscreenPageLimit = 4
 
-        main_title.text = "个人空间"
+        titlename = "个人空间"
+        main_title.text = titlename
+
 
         main_vp.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
@@ -148,7 +157,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                 when (position) {
                     0 -> {
-                        main_title.text = "个人空间"
+                      //  main_title.text = "个人空间"
+                        main_title.text = titlename
                         app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
                         toolbar_qiehuan.text = "切换"
@@ -216,11 +226,16 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     zhezhao.Show()
                 }
 
+
+
+
           }
 
         }
 
         RxBus.get().toFlowable(SpaceType::class.java).subscribe{
+
+            titlename = it.spacename
             main_title.text = it.spacename
         }
 
@@ -289,21 +304,45 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             }
             I.toolbar_qiehuan ->{
 
-                when(main_vp.currentItem){
-                    0 ->{
-                        RxBus.get().post("changespace")
+
+                // code=3e0141a14b2c9540781d67c95b99e2d1,6,5,9&key=d8d5f823f3c625feeed6c3641bc7653f
+//                var code  = "3e0141a14b2c9540781d67c95b99e2d1,6,5,9"
+//
+//                code.run {
+//
+//                    var strs = this.split(",")
+//
+//                    strs.toString().LogD(" str[] : ")
+//
+//                    var index =  strs[1].toInt() + strs[3].toInt()
+//                    var length = strs[2].toInt()
+//
+//
+//
+//                    this.substring(index ,(index + length)).LogD("  ")
+//
+//
+//                }
+
+                if (main_bar.visibility != View.GONE){
+                    when(main_vp.currentItem){
+                        0 ->{
+                            RxBus.get().post("changespace")
+
+                        }
+
+                        2 ->{
+
+                            RxBus.get().post("collect_chose")
+
+                        }
+
+
 
                     }
-
-                    2 ->{
-
-                        RxBus.get().post("collect_chose")
-
-                    }
-
-
-
                 }
+
+
 
 //                val whatsnew = whatsNew {
 //                    item {

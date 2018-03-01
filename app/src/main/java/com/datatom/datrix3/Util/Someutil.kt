@@ -2,6 +2,10 @@ package com.datatom.datrix3.Util
 
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.AppConstant
+import com.datatom.datrix3.helpers.AES
+import com.datatom.datrix3.helpers.MD5
+import io.reactivex.schedulers.Schedulers
+import kotlin.concurrent.thread
 
 /**
  * Created by wgz on 2018/2/24.
@@ -55,5 +59,43 @@ object Someutil {
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINPASSWORD, "000") as String;
 
     }
+
+    fun getlastLogintime() : Long{
+
+        return SPUtils.get(app.mapp.applicationContext, AppConstant.LOGIN_TIME, 0L)  as Long
+
+    }
+
+    interface updateTokenCallback {
+        fun afterupdateCallback()
+
+
+    }
+
+
+    fun updateToken(){
+
+
+
+
+        HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe({
+                    SPBuild(app.mapp.applicationContext)
+                            .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+                            .build()
+
+
+                },{
+                    Thread.sleep(2000)
+                    updateToken()
+
+
+                })
+
+
+    }
+
 }
 

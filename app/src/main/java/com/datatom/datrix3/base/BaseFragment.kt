@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.datatom.datrix3.Util.Someutil
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 
@@ -37,6 +38,15 @@ abstract class BaseFragment : Fragment(){
         super.onDestroyView()
         if (this.msubscription != null && msubscription!!.isDisposed) {
             this.msubscription!!.dispose()
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (System.currentTimeMillis() - Someutil.getlastLogintime() > AppConstant.TOKEN_LASTTIME){
+            Someutil.updateToken()
+
         }
 
     }

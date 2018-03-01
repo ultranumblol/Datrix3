@@ -7,11 +7,13 @@ import com.datatom.datrix3.Adapter.MoreFragmentadapter
 import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.Bean.MoreItems
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.I
 
 import com.jude.easyrecyclerview.EasyRecyclerView
 import org.jetbrains.anko.find
 import org.jetbrains.anko.support.v4.toast
+
 
 /**
  * Created by wgz on 2018/1/23.
@@ -26,6 +28,8 @@ class MoreFragment : BaseFragment(){
     var tvsetting  : TextView? = null
 
     var tvfankui  : TextView? = null
+
+    private var nickname : TextView? = null
 
     companion object {
 
@@ -58,6 +62,10 @@ class MoreFragment : BaseFragment(){
         tvfankui = view.find(R.id.more_fankui)
 
         tvsetting =view. find(I.more_setting)
+
+        nickname = view.find(I.more_nicename)
+
+        nickname!!.text = Someutil.getUserNickname()
 
         rvadapter = MoreFragmentadapter(activity!!)
         rv!!.apply {

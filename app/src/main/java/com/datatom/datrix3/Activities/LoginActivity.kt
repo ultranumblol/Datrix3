@@ -17,16 +17,20 @@ import com.datatom.datrix3.R
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.SPBuild
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.Util.Someutil.updateToken
+import com.datatom.datrix3.app
 import com.datatom.datrix3.base.AppConstant
 import com.datatom.datrix3.helpers.*
 
 import com.githang.statusbar.StatusBarCompat
 import com.jakewharton.rxbinding2.view.RxView
+import io.reactivex.schedulers.Schedulers
 
 
 import kotlinx.android.synthetic.main.activity_login.*
 
 import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
@@ -65,8 +69,35 @@ class LoginActivity : AppCompatActivity() {
         if (Someutil.getAutologin()){
 
             cb_auto_login.isChecked = true
-            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-            this@LoginActivity.finish()
+
+            if (System.currentTimeMillis() - Someutil.getlastLogintime() > AppConstant.TOKEN_LASTTIME){
+
+                HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.io())
+                        .subscribe({
+                            SPBuild(app.mapp.applicationContext)
+                                    .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+                                    .build()
+
+                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                            this@LoginActivity.finish()
+                        },{
+                            Someutil.updateToken()
+
+                        })
+
+
+
+            }
+            else{
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                this@LoginActivity.finish()
+            }
+
+
+
+
 
         }
         if (Someutil.getrememberuser()){
@@ -201,9 +232,11 @@ class LoginActivity : AppCompatActivity() {
         info!!.let {
                 //保存返回的用户id token
 
-                SPBuild(applicationContext).addData(AppConstant.USER_ID,it.reuslt.info.userid)
+                SPBuild(applicationContext)
+                        .addData(AppConstant.USER_ID,it.reuslt.info.userid)
                         .addData(AppConstant.USER_NICKNAME,it.reuslt.info.usernickname)
                         .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+                        .addData(AppConstant.LOGIN_TIME,System.currentTimeMillis())
                         .build()
 
             }

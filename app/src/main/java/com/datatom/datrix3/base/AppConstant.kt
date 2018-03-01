@@ -26,6 +26,11 @@ class AppConstant private constructor() {
 
         val REMEMBER_NAME_CODE = "remembercode"
 
+        val LOGIN_TIME ="logintime"
+
+        val TOKEN_LASTTIME = 1000*60*120   //俩小时
+
+
 
     }
 

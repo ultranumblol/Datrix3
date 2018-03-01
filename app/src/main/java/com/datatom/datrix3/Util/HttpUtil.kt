@@ -30,7 +30,7 @@ class HttpUtil {
         val cacheSize = 10 * 1024 * 1024
         val cache = Cache(cacheFile, cacheSize.toLong())
         val okBuilder = OkHttpClient.Builder()
-        okBuilder.cache(cache)
+        //okBuilder.cache(cache)
         okBuilder.readTimeout(20, TimeUnit.SECONDS)
         okBuilder.connectTimeout(10, TimeUnit.SECONDS)
         okBuilder.writeTimeout(20, TimeUnit.SECONDS)
@@ -64,6 +64,8 @@ class HttpUtil {
         private var sHttpUtils: HttpUtil? = null
 
        var BASE_URL = "http://192.168.3.217/api/sw/"
+
+        var BASEAPI_URL = "http://192.168.3.217/"
 
         val instance: HttpUtil
             get() {

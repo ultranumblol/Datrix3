@@ -1,5 +1,6 @@
 package com.datatom.datrix3
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Build
 import android.os.Bundle
@@ -12,10 +13,15 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import com.datatom.datrix3.Activities.LoginActivity
+import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.Util.Someutil.updateToken
+import com.datatom.datrix3.base.AppConstant
 
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 
 
 abstract class BaseActivity : AppCompatActivity() {
@@ -151,6 +157,18 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun addsub(disposable: Disposable) {
         msubscription?.add(disposable)
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        if (System.currentTimeMillis() - Someutil.getlastLogintime() > AppConstant.TOKEN_LASTTIME){
+            updateToken()
+
+        }
+
+
 
     }
 
