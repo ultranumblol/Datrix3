@@ -1,25 +1,20 @@
 package com.datatom.datrix3.Adapter;
 
 import android.content.Context
-import android.content.Intent
-import android.os.Bundle
 import android.view.ViewGroup
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
 import android.util.SparseBooleanArray
-import android.view.View
 import android.widget.*
-
 import com.datatom.datrix3.Bean.PersonalFilelistData
 import com.datatom.datrix3.Util.SizeUtils
-import com.datatom.datrix3.Activities.ViewBigImageActivity
-import com.datatom.datrix3.Activities.PlayVideoActivity
 import com.datatom.datrix3.helpers.*
 
 
+
 /**
- * Created by wgz
+ * Created by wgz 空间页面数据适配
  */
 class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData.result2>(context) {
 
@@ -58,9 +53,7 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
 
     private inner class SpaceAdapterViewholder(itemView: ViewGroup) : BaseViewHolder<PersonalFilelistData.result2>(itemView, R.layout.item_sapceadapter) {
-        private var checkbox: CheckBox? = null
 
-       // private var root: LinearLayout? = null
 
         private var img: ImageView? = null
 
@@ -68,16 +61,13 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
         private var filecreatetime: TextView? = null
 
-        private var filesize: TextView? = null
+
+        private var checkboxIMG: ImageView? = null
 
 
         init {
 
 
-            checkbox = `$`(R.id.item_collect_cb)
-
-           // root = `$`(R.id.ll_root)
-            // text = `$`<TextView>(R.id.item_text) ll_root
 
             img = `$`(R.id.iv_thum)
 
@@ -85,9 +75,11 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
             filecreatetime = `$`(R.id.tv_date)
 
-            filesize = `$`(R.id.tv_filesize)
+            checkboxIMG = `$`(I.checkbox_img)
+
 
         }
+
 
         /**
          * 文档1
@@ -101,76 +93,42 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
         override fun setData(data: PersonalFilelistData.result2?) {
 
 
-
-
-            filecreatetime!!.text = data?.createtime
-
-            //data!!.cayman_pretreat_mimetype.LogD(" type : ")
-
-
+           // data!!.cayman_pretreat_mimetype.LogD(" type : ")
 
 
             when (data!!.type) {
-                "0" ->{
+                "0" -> {
                     img!!.setImageResource(R.drawable.ic_file_wenjianjia)
 
-                    filesize!!.hide()
-
+                    //(data!!.filename).LogD("hidesiezeFIle :  ")
+                    filecreatetime!!.text = data?.createtime
                 }
 
+                "1" -> {
 
-                "1" ->
-
-
+                    filecreatetime!!.text = SizeUtils.getSize(data?.filesize) + "  " + data?.createtime
                     when (data!!.cayman_pretreat_mimetype) {
 
-                        //"png", "bmp", "gif", "jpeg",
+                    //"png", "bmp", "gif", "jpeg",
                         "image" -> {
                             img!!.setImageResource(D.ic_file_img)
 
-
-                            val imglist = arrayListOf<String>(data.fileid)
-
-//                            root!!.setOnClickListener {
-//                                data.toString().LogD("click : ")
-//
-//                                val bundle = Bundle()
-//                                bundle.apply {
-//
-//                                    putInt("selet", 1)// 2 大图显示当前页数; 1,头像，不显示页数
-//                                    putInt("code", 1)//第几张
-//                                    putStringArrayList("imageuri", imglist)
-//                                }
-//
-//
-//                                context.startActivity(Intent(context, ViewBigImageActivity::class.java).putExtras(bundle).putExtra("file",data!!))
-//                            }
-
-
                         }
 
-                        //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
+                    //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
                         "video"
                         -> {
                             img!!.setImageResource(D.ic_file_video)
-//                            root!!.setOnClickListener {
-//
-//                                data.toString().LogD("click : ")
-//
-//                                context.startActivity(Intent(context, PlayVideoActivity::class.java)
-//                                        .putExtra("file",data))
-//
-//                            }
 
                         }
 
-                       // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
+                    // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
                         "aideo"
                         -> {
                             img!!.setImageResource(D.ic_file_mic)
                         }
 
-                        "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml"
+                        "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
                         -> {
                             img!!.setImageResource(D.ic_file_doc)
 
@@ -179,40 +137,121 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
                             img!!.setImageResource(D.ic_file_zip)
 
                         }
+                        else ->{
+
+                            img!!.setImageResource(D.ic_file_doc)
+                        }
 
 
                     }
-
+                }
 
             }
 
             filename!!.text = data?.filename
 
 
-            filesize!!.text = SizeUtils.getSize(data?.filesize)
+            // checkbox!!.visibility = if (showCheckbox) View.VISIBLE else View.GONE
+            // checkboxIMG!!.visibility = if (showCheckbox) View.GONE else View.VISIBLE
 
 
-//            if (filesize!!.text.toString().contains("0B")){
-//                filesize!!.hide()
+//            checkbox!!.setOnCheckedChangeListener { _, isChecked ->
+//                // Log.d("wgz", "adapter : " + adapterPosition)
+//                if (isChecked) {
+//                    mCheckStates.put(adapterPosition, true)
+//
+//                    RxBus.get().post("updatespacecheckbox")
+//                } else {
+//                    mCheckStates.delete(adapterPosition)
+//                    RxBus.get().post("updatespacecheckbox")
+//                }
 //            }
 
+//            checkbox!!.apply {
+//                setOnCheckedChangeListener(null)
+//                setOnCheckedChangeListener(checkedListener)
+//
+//
+//            }
+//            checkbox!!.isChecked = mCheckStates.get(adapterPosition, false)
 
 
+            checkboxIMG!!.apply {
 
-            checkbox!!.setOnCheckedChangeListener { _, isChecked ->
-                // Log.d("wgz", "adapter : " + adapterPosition)
-                if (isChecked) {
-                    mCheckStates.put(adapterPosition, true)
+//                if (tag!= null){
+//                    when(this.tag as Int){
+//                        D.ic_remove_circle_outline_black_18dp ->   setImageResource(D.ic_remove_circle_outline_black_18dp)
+//
+//                        D.ic_filechecked -> setImageResource(D.ic_filechecked)
+//
+//                    }
+//                }
+//                else{
+//                    setImageResource(D.ic_remove_circle_outline_black_18dp)
+//                    tag = D.ic_remove_circle_outline_black_18dp
+//                }
 
-                    RxBus.get().post("updatespacecheckbox")
-                } else {
-                    mCheckStates.delete(adapterPosition)
-                    RxBus.get().post("updatespacecheckbox")
+                when(mCheckStates.get(adapterPosition, false)){
+
+                    true ->{
+                        setImageResource(D.ic_filechecked)
+
+                    }
+                    false ->{
+                        setImageResource(D.ic_remove_circle_outline_black_18dp)
+
+                    }
+
                 }
+
+
+                setOnClickListener {
+
+                    when(mCheckStates.get(adapterPosition,false)){
+                        false -> {
+                            setImageResource(D.ic_filechecked)
+                            mCheckStates.put(adapterPosition, true)
+                            RxBus.get().post("updatespacecheckbox")
+                        }
+                        true ->{
+                            setImageResource(D.ic_remove_circle_outline_black_18dp)
+                            mCheckStates.delete(adapterPosition)
+                            RxBus.get().post("updatespacecheckbox")
+                        }
+
+                    }
+
+
+//                    when (this.tag as Int) {
+//
+//                        D.ic_filechecked -> {
+//                            setImageResource(D.ic_remove_circle_outline_black_18dp)
+//                            tag = D.ic_remove_circle_outline_black_18dp
+//                            mCheckStates.delete(adapterPosition)
+//                            RxBus.get().post("updatespacecheckbox")
+//
+//                        }
+//                        D.ic_remove_circle_outline_black_18dp -> {
+//
+//                            setImageResource(D.ic_filechecked)
+//                            tag = D.ic_filechecked
+//                            mCheckStates.put(adapterPosition, true)
+//
+//                            RxBus.get().post("updatespacecheckbox")
+//
+//                        }
+//
+//                    }
+
+                    //mCheckStates.put(adapterPosition, true)
+
+                   // RxBus.get().post("updatespacecheckbox")
+
+                    //checkboxIMG!!.hide()
+
+                }
+
             }
-
-            checkbox!!.isChecked = mCheckStates.get(adapterPosition, false)
-
 
         }
     }

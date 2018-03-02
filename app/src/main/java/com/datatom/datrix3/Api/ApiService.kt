@@ -1,10 +1,7 @@
 package com.datatom.datrix3.Api
 
 
-import com.datatom.datrix3.Bean.LoginInfo
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.PublicFilelistData
-import com.datatom.datrix3.Bean.VerifyCode
+import com.datatom.datrix3.Bean.*
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.http.*
@@ -65,7 +62,7 @@ interface ApiService {
 
     fun persondir_listdirfiles(
 
-            @Header("ACCESS-TOKEN") token : String,
+            @Header("ACCESS-TOKEN") token: String,
 
             @Field("dirid") dirid: String,
 
@@ -86,7 +83,7 @@ interface ApiService {
             @Field("isauth") isauth: Boolean
 
 
-    ) : Observable<PersonalFilelistData>
+    ): Observable<PersonalFilelistData>
 
 
     /**
@@ -112,7 +109,7 @@ interface ApiService {
     @POST("pubdir/listdirfiles")
     fun pubdir_listdirfiles(
 
-            @Header("ACCESS-TOKEN") token : String,
+            @Header("ACCESS-TOKEN") token: String,
 
             @Field("dirid") dirid: String,
 
@@ -133,7 +130,7 @@ interface ApiService {
             @Field("isauth") isauth: Boolean
 
 
-    ) : Observable<PublicFilelistData>
+    ): Observable<PublicFilelistData>
 
 
     /**
@@ -141,9 +138,58 @@ interface ApiService {
      */
     @FormUrlEncoded
     @POST("verify/code")
-    fun getVerifyCode(  @Header("ACCESS-TOKEN") token : String,
+    fun getVerifyCode(@Header("ACCESS-TOKEN") token: String,
 
-                        @Field("fileid") fileid: String
-                        ) : Observable<VerifyCode>
+                      @Field("fileid") fileid: String
+    ): Observable<VerifyCode>
 
+    /**
+     *
+    dirname
+    (required)
+    目录名称
+
+    formData	string
+    userid
+    创建者id。不传则从用户登录信息中获取
+
+    formData	string
+    parentuid
+    父级目录创建者的用户id，父级目录为根目录，传空
+
+    formData	string
+    parentid
+    父级目录id, 为空表示在个人目录根目录下创建
+
+    formData	string
+    parentobj
+    父级目录的objectid，根目录为空，但是非根目录的时候一定要传
+
+    formData	string
+    isclient
+    是否是datrix客户端调用，还是web网页上调用（默认web网页上调用，值为false）
+
+    formData	boolean
+     *
+     *
+     */
+    @FormUrlEncoded
+    @POST("persondir/create")
+    fun createPersondir(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("dirname") dirname: String,
+
+            @Field("userid") userid: String,
+
+            @Field("parentuid") parentuid: String,
+
+            @Field("parentid") parentid: String,
+
+            @Field("parentobj") parentobj: String,
+
+            @Field("isclient") isclient: Boolean
+
+
+
+    ): Observable<CreateDir>
 }

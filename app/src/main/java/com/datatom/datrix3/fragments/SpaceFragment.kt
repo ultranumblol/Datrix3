@@ -1,9 +1,14 @@
 package com.datatom.datrix3.fragments
 
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
@@ -23,13 +28,21 @@ import com.jude.easyrecyclerview.EasyRecyclerView
 import org.jetbrains.anko.find
 
 import android.view.ViewGroup
+import collections.forEach
+import com.datatom.datrix3.Activities.PDFViewerActivity
 import com.datatom.datrix3.Activities.PlayVideoActivity
 import com.datatom.datrix3.Activities.ViewBigImageActivity
 import com.datatom.datrix3.Bean.PersonalFilelistData
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.Util.Someutil.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE
+import com.datatom.datrix3.Util.Someutil.checkPermissionREAD_EXTERNAL_STORAGE
 import io.github.tonnyl.charles.Charles
 import io.github.tonnyl.charles.engine.impl.GlideEngine
+import io.reactivex.schedulers.Schedulers
+import org.jetbrains.anko.support.v4.swipeRefreshLayout
+import org.jetbrains.anko.support.v4.toast
+import org.jetbrains.anko.toast
 
 
 /**
@@ -37,7 +50,7 @@ import io.github.tonnyl.charles.engine.impl.GlideEngine
  * 空间页面
  */
 
-class SpaceFragment : BaseFragment(), View.OnClickListener {
+class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.OnRefreshListener {
 
 
     companion object {
@@ -45,6 +58,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         val PERSONAL_SPACE_ID = "8A85A16BB60D88F0"
         val PUBLIC_SPACE_ID = "1E07037D38FA20BB"
         val TEAM_SPACE_ID = "5C59EBB7F9BDF00F"
+
+        var currentID = ""
 
 
     }
@@ -94,7 +109,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
     private var clear_his: TextView? = null
     private var zhezhao: FrameLayout? = null
 
-    private lateinit var datalist : List<PersonalFilelistData.result2>
+    private var cpge = 1
+
+    private lateinit var datalist: List<PersonalFilelistData.result2>
 
     override fun initview(view: View) {
 
@@ -116,19 +133,15 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         move = view.find(I.edit_rv_move)
         detil = view.find(I.edit_rv_detil)
         zhezhao = view.find(I.space_zhezhao)
-
         mCardViewSearch = view.find(I.cardView_search)
         ivSearchBack = view.find(I.iv_search_back)
         mEtSearch = view.find(I.et_search)
         searchll = view.find(I.search_layout)
         searchrv = view.find(I.recycleview)
         clear_his = view.find(I.clear_his)
-
         pailie = view.find(I.space_pailie)
         uploadfile = view.find(I.space_upload)
         newfile = view.find(I.space_newfile)
-
-
         cardview = view.find(I.change_space_cardview)
         personspace = view.find(I.change_space_person)
         publicspace = view.find(I.change_space_public)
@@ -137,7 +150,6 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         pailie!!.setOnClickListener(this)
         uploadfile!!.setOnClickListener(this)
         newfile!!.setOnClickListener(this)
-
         rename!!.setOnClickListener(this)
         download!!.setOnClickListener(this)
         share!!.setOnClickListener(this)
@@ -175,9 +187,13 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
             false
         }
-        searchrv!!.setLayoutManager(LinearLayoutManager(activity!!))
+        searchrv!!.layoutManager = LinearLayoutManager(activity!!)
         searchadapter = searchhisadapter(activity!!)
-        searchrv!!.adapter = searchadapter
+
+        searchrv!!.apply {
+            adapter = searchadapter
+
+        }
 
         searchadapter!!.setOnItemClickListener {
 
@@ -190,22 +206,19 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
             SearchViewUtils.handleToolBar(context!!, mCardViewSearch!!, mEtSearch!!)
         }
 
-
-
         cardview!!.hide()
+
         rv!!.apply {
             setLayoutManager(LinearLayoutManager(activity))
             adapter = rvadapter
+            setRefreshListener(this@SpaceFragment)
+
 
         }
 
 
-
-
-
-
-
-        initData(PERSONAL_SPACE_ID)
+        currentID = PERSONAL_SPACE_ID
+        initData(currentID)
 
         editll!!.hide()
         editllmore!!.hide()
@@ -237,11 +250,17 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
                     if (rvadapter!!.getcheckboxArrary().size() > 0) {
                         RxBus.get().post("hidemainbar")
                         editll!!.Show()
+                        // rvadapter!!.showCheckBox()
+                        rvadapter!!.notifyDataSetChanged()
+
 
                     } else {
                         RxBus.get().post("showmainbar")
+                        // rvadapter!!.hideCheckBox()
+
                         editll!!.hide()
                         editllmore!!.hide()
+                        rvadapter!!.notifyDataSetChanged()
                     }
 
                 }
@@ -265,23 +284,56 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
                 }
 
+                "editState" -> {
+
+
+                }
+
             }
 
         }
 
+        rvadapter!!.apply {
 
-        //列表点击事件
-        rvadapter!!.setOnItemClickListener {
+            //setNoMore(R.layout.view_nomore)
 
-            when(datalist[it].type){
-                "0" ->{
 
-                }
-                "1" ->{
-                    when(datalist[it].cayman_pretreat_mimetype){
-                        "image" -> {
+            setMore(L.view_more, {
+                Handler().postDelayed({
+                    cpge++
 
-                            val imglist = arrayListOf<String>(datalist[it].fileid)
+                    rvadapter!!.setCheckBoxNoneSelect()
+                    rvadapter!!.notifyDataSetChanged()
+
+                    when (currentID) {
+
+                        PERSONAL_SPACE_ID -> {
+                            initData(PERSONAL_SPACE_ID)
+                        }
+                        PUBLIC_SPACE_ID -> {
+                            initpublicData(PUBLIC_SPACE_ID)
+                        }
+                    }
+
+                }, 1000)
+
+            })
+            setOnItemClickListener {
+
+                rvadapter!!.allData[it].type.LogD("click  type : ")
+
+                rvadapter!!.allData[it].cayman_pretreat_mimetype.LogD("click  cayman_pretreat_mimetype : ")
+
+                rvadapter!!.allData[it].ext?.LogD("click  ext : ")
+
+                when (rvadapter!!.allData[it].type) {
+                    "0" -> {
+                    }
+                    "1" -> {
+                        when (rvadapter!!.allData[it].cayman_pretreat_mimetype) {
+                            "image" -> {
+
+                                val imglist = arrayListOf<String>(rvadapter!!.allData[it].fileid)
 
                                 val bundle = Bundle()
                                 bundle.apply {
@@ -292,114 +344,125 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
                                 }
 
 
-                                context!!.startActivity(Intent(context, ViewBigImageActivity::class.java).putExtras(bundle).putExtra("file",datalist[it]!!))
+                                context!!.startActivity(Intent(context, ViewBigImageActivity::class.java).putExtras(bundle).putExtra("file", rvadapter!!.allData[it]!!))
 
 
+                            }
 
-                        }
-
-                    //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
-                        "video"
-                        -> {
-
+                        //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
+                            "video"
+                            -> {
 
 
-                            datalist[it].toString().LogD("click : ")
+                                rvadapter!!.allData[it].toString().LogD("click : ")
 
                                 context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
-                                        .putExtra("file",datalist[it]))
+                                        .putExtra("file", rvadapter!!.allData[it]))
 
 
+                            }
 
+                        // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
+                            "aideo"
+                            -> {
+                            }
+
+                            "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml"
+                            -> {
+
+                            }
+                            "zip" -> {
+
+                            }
+                            "pdf" ->{
+
+                                context!!.startActivity(Intent(context, PDFViewerActivity::class.java)
+                                        .putExtra("file", rvadapter!!.allData[it]))
+
+
+                            }
                         }
-
-                    // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
-                        "aideo"
-                        -> {
-
-                        }
-
-                        "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml"
-                        -> {
-
-
-                        }
-                        "zip" -> {
-
-
-                        }
-
                     }
-
 
                 }
 
-
             }
 
-
         }
+
     }
 
-    private fun initData(listid : String) {
-
-        rvadapter!!.clear()
+    private fun initData(listid: String) {
 
 
-        HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(),listid, Someutil.getUserID(),
+        HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(), listid, Someutil.getUserID(),
                 "type,createtime", "asc,desc",
-                1, 300, -1, false, false
+                cpge, 40, -1, false, false
         )
                 .compose(RxSchedulers.compose())
                 .subscribe({
 
-                    if (it.msg!=null && it.msg.contains("获取token信息失败")){
+                    if (it.msg != null && it.msg.contains("获取token信息失败")) {
 
                         Someutil.updateToken()
                         initData(PERSONAL_SPACE_ID)
-                    }else{
+                    } else {
 
-                        it.toString().LogD("person : ")
+                        //it.toString().LogD("person : ")
+
+                        if (cpge == 1) {
+                            rvadapter!!.clear()
+
+                        }
 
                         datalist = it.reuslt.result2
+                        if (datalist.size < 40) {
+                            rvadapter!!.stopMore()
 
+                        }
                         rvadapter!!.addAll(datalist)
                         rvadapter!!.notifyDataSetChanged()
                         rvadapter!!.allData.toString().LogD(" all data : ")
                     }
 
 
-
                 }, {
                     it.toString().LogD("error : ")
+                    rvadapter!!.apply {
+                        clear()
+                        notifyDataSetChanged()
+
+                    }
                 })
 
 
     }
 
-    private fun initpublicData(listid : String) {
-
-        rvadapter!!.clear()
+    private fun initpublicData(listid: String) {
 
 
-
-       // Someutil.getToken().LogD("token : ")
-       // Someutil.getUserID().LogD("name : ")
-        HttpUtil.instance.apiService().pubdir_listdirfiles(Someutil.getToken(),listid, Someutil.getUserID(),
+        HttpUtil.instance.apiService().pubdir_listdirfiles(Someutil.getToken(), listid, Someutil.getUserID(),
                 "type,createtime", "asc,desc",
-                1, 100, -1, false, false
+                cpge, 40, -1, false, false
         )
                 .compose(RxSchedulers.compose())
                 .subscribe({
 
-                    if (it.msg!=null && it.msg.contains("获取token信息失败")){
+                    if (it.msg != null && it.msg.contains("获取token信息失败")) {
 
                         Someutil.updateToken()
                         initpublicData(PUBLIC_SPACE_ID)
-                    }
-                    else{
+                    } else {
                         //it.toString().LogD("public : ")
                         datalist = it.reuslt.dir.result2
+                        if (cpge == 1) {
+                            rvadapter!!.clear()
+
+                        }
+                        if (datalist.size < 40) {
+                            rvadapter!!.stopMore()
+
+                        }
 
                         rvadapter!!.addAll(datalist)
                         rvadapter!!.notifyDataSetChanged()
@@ -408,8 +471,12 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
                     }
 
 
+                }, {
 
-
+                    rvadapter!!.apply {
+                        clear()
+                        notifyDataSetChanged()
+                    }
 
                 })
 
@@ -479,24 +546,58 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
             }
             I.edit_rv_xiazai -> {
 
-                context.let {
-                    AlertDialog.Builder(it!!)
-                            .run {
-                                setMessage("你即将使用手机流量传输文件，继续传输将产生流量费用")
-                                setNegativeButton("仅WI-FI传输") { _, _ ->
+                rvadapter!!.getcheckboxArrary().forEach { i, b ->
 
+                    // i.toString().LogD("index : ")
+
+                    var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + datalist[i].fileid + "&iswindows=0&optuser=admin"
+
+                    url.LogD("url : ")
+
+                    toast("开始后台下载")
+
+                    HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(Schedulers.newThread())
+                            .subscribe({
+
+
+                                if (Someutil.writeResponseBodyToDisk(it, datalist[i].fileid)) {
+                                    "下载成功".LogD()
+                                    //  toast("下载成功")
+
+                                } else {
+                                    "下载失败".LogD()
 
                                 }
-                                setPositiveButton("手机流量传输") { _, _ -> }
-                                show()
-                            }.apply {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
-                        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
 
-                    }
+                            }, {
+                                it.toString().LogD("download error : ")
+                            })
 
 
                 }
+
+
+//                context.let {
+//                    AlertDialog.Builder(it!!)
+//                            .run {
+//                                setMessage("你即将使用手机流量传输文件，继续传输将产生流量费用")
+//                                setNegativeButton("仅WI-FI传输") { _, _ ->
+//
+//
+//                                    //
+//
+//                                }
+//                                setPositiveButton("手机流量传输") { _, _ -> }
+//                                show()
+//                            }.apply {
+//                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+//                        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
+//
+//                    }
+//
+//                }
 
 
             }
@@ -580,8 +681,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
                 hideCradview()
                 RxBus.get().post(SpaceType("个人空间"))
+                currentID = PERSONAL_SPACE_ID
                 initData(PERSONAL_SPACE_ID)
-
 
 
             }
@@ -589,6 +690,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
                 hideCradview()
                 RxBus.get().post(SpaceType("公共空间"))
+                currentID = PUBLIC_SPACE_ID
+
                 initpublicData(PUBLIC_SPACE_ID)
 
             }
@@ -596,8 +699,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
                 hideCradview()
                 RxBus.get().post(SpaceType("讨论组"))
-                //initData(TEAM_SPACE_ID)
-
+                initData(TEAM_SPACE_ID)
 
 
             }
@@ -615,7 +717,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
                     addAll(searchhiss)
 
                 }
-                if (searchhiss!!.size > 0) {
+                if (searchhiss!!.isNotEmpty()) {
                     clear_his!!.Show()
                 } else clear_his!!.hide()
 
@@ -642,19 +744,64 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
             }
 
             I.space_newfile -> {
+                var renametext = EditText(activity)
+
+                renametext.apply {
+                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+
+                    hint = " 文件夹名称"
+
+                    textSize = 16f
+
+                    setPadding(28, 24, 14, 14)
+
+                    background = null
+
+
+                }
+
+                context.let {
+                    AlertDialog.Builder(it!!).run {
+                        setView(renametext)
+                        setTitle("请输入文件夹名称")
+                        setNegativeButton("取消") { _, _ ->
+
+                        }
+                        setPositiveButton("确认") { _, _ ->
+                            HttpUtil.instance.apiService().createPersondir(Someutil.getToken(), renametext.text.toString(), Someutil.getUserID()
+                                    , "", "", "", false)
+                                    .compose(RxSchedulers.compose())
+                                    .subscribe({
+                                        it.toString().LogD("createfile reuslt : ")
+                                        if (it.code == 200) {
+
+                                            activity!!.toast("创建成功！")
+                                            refreshData()
+                                        } else {
+                                            activity!!.toast("创建失败！")
+
+                                        }
+
+
+                                    }, {
+                                        it.toString().LogD("httperror : ")
+                                        activity!!.toast("创建失败！")
+
+                                    })
+
+                        }
+                        show()
+                    }.apply {
+                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+                        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
+                    }
+                }
 
 
             }
             I.space_upload -> {
-                Charles.from(this)
-                        .choose()
-                        .maxSelectable(9)
-                        .progressRate(true)
-                        .theme(R.style.Charles)
-                        .imageEngine(GlideEngine())
-                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                        .forResult(101)
 
+                openchose()
 
             }
             I.space_pailie -> {
@@ -665,6 +812,62 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
 
 
     }
+
+    fun refreshData() {
+        cpge = 1
+        rvadapter!!.setCheckBoxNoneSelect()
+        rvadapter!!.notifyDataSetChanged()
+
+        when (currentID) {
+
+            PERSONAL_SPACE_ID -> {
+                initData(PERSONAL_SPACE_ID)
+            }
+            PUBLIC_SPACE_ID -> {
+                initpublicData(PUBLIC_SPACE_ID)
+            }
+        }
+
+    }
+
+
+    fun openchose() {
+
+        if (checkPermissionREAD_EXTERNAL_STORAGE(this.context!!)) {
+            Charles.from(this)
+                    .choose()
+                    .maxSelectable(9)
+                    .progressRate(true)
+                    .theme(R.style.Charles)
+                    .imageEngine(GlideEngine())
+                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                    .forResult(101)
+
+        }
+
+
+    }
+
+    @SuppressLint("NeedOnRequestPermissionsResult")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE -> if (grantResults[0] === PackageManager.PERMISSION_GRANTED) {
+                Charles.from(this)
+                        .choose()
+                        .maxSelectable(9)
+                        .progressRate(true)
+                        .theme(R.style.Charles)
+                        .imageEngine(GlideEngine())
+                        .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                        .forResult(101)
+            } else {
+                "permission error : ".LogD()
+            }
+            else -> super.onRequestPermissionsResult(requestCode, permissions,
+                    grantResults)
+        }
+    }
+
 
     fun hideCradview() {
         RxBus.get().post("hidezhezhao")
@@ -685,5 +888,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener {
         return R.layout.fragment_space;
     }
 
+
+    override fun onRefresh() {
+
+        Handler().postDelayed({
+            refreshData()
+        }, 1000)
+
+
+    }
 
 }

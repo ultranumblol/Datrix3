@@ -10,7 +10,7 @@ buildscript {
 
         }
 
-
+        maven { url 'http://oss.jfrog.org/artifactory/oss-snapshot-local/' }
 
     }
     dependencies {

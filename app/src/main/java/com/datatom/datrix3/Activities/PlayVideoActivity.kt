@@ -81,17 +81,20 @@ class PlayVideoActivity : BaseActivity() {
 
 
                     var url2 = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=origin&fileid=" + data.fileid +
-                            "&objectid=" + data.objid + "&createuid=" + data.createuid +"&code="+code+"&key=" +key +"&token=" +
-                            Someutil.getToken() + "&quality=a"
+                            "&objectid=" + data.objid + "&createuid=" + data.createuid +
+                            "&code="+code+"&key=" +key +
+                            "&token=" + Someutil.getToken() + "&quality=a"
 
-                    var url3 =   "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"
-
-                    url2.LogD(" url :  ")
-
+//                    var url3 =   "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"
+//
+//
+//                    var url4 = "http://192.168.50.230/viewer/read.php?type=preview&fileid=2b20bad96983cf2bef7255d80ea632d4.wmv&objectid=20180227/16/2b20bad96983cf2bef7255d80ea632d4.wmv&createuid=test&code=4c429dd6d92cdfe19feb2ba9f3c12edc,3,1,3&key=8277e0910d750195b448797616e091ad&token="+Someutil.getToken()
+//                    url2.LogD(" url :  ")
+//
 
 
                     video_player.apply {
-                        setUp(url2, true, "ceshi ")
+                        setUp(url2, false, data.filename)
                         backButton.visibility = View.VISIBLE
                         backButton.setOnClickListener { onBackPressed() }
 
@@ -117,12 +120,7 @@ class PlayVideoActivity : BaseActivity() {
                 })
 
 
-        //http://192.168.3.217/datrix3/viewer/read.php?type=preview&fileid=51019269a35be4ae60d55fd3733641f6.mp4
-        // &objectid=20180227/15/51019269a35be4ae60d55fd3733641f6.mp4
-        // &createuid=app&code=1eb8012563def373827ef7942f25aa09,3,3,5&key=3c7a72ab2324009215e56d50d1b99569&token=f5037e1b769e12bc73afbbc64b3b5649&quality=a
 
-
-        // var url  = intent.getStringExtra("videourl")
 
     }
 

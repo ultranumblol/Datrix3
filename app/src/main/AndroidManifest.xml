@@ -36,7 +36,8 @@
             android:screenOrientation="portrait"
             android:theme="@style/ViewBigPicTheme" />
         <activity android:name=".Activities.PlayVideoActivity" />
-        <activity android:name=".Activities.TaskListActivity"></activity>
+        <activity android:name=".Activities.TaskListActivity" />
+        <activity android:name=".Activities.PDFViewerActivity"></activity>
     </application>
 
 </manifest>

@@ -1,11 +1,30 @@
 package com.datatom.datrix3.Util
 
+import android.Manifest
+import android.os.Environment
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.AppConstant
 import com.datatom.datrix3.helpers.AES
+import com.datatom.datrix3.helpers.LogD
 import com.datatom.datrix3.helpers.MD5
 import io.reactivex.schedulers.Schedulers
+import okhttp3.ResponseBody
+import java.io.*
 import kotlin.concurrent.thread
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.app.Activity
+import android.content.ActivityNotFoundException
+import android.content.Context
+import android.content.DialogInterface
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.os.Build
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v7.app.AlertDialog
+import com.datatom.datrix3.Activities.MainActivity
+
 
 /**
  * Created by wgz on 2018/2/24.
@@ -75,9 +94,6 @@ object Someutil {
 
     fun updateToken(){
 
-
-
-
         HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -95,6 +111,202 @@ object Someutil {
                 })
 
 
+    }
+
+    fun doOpenWord(filetype : String, context: Context,file : File) : String {
+
+        var intent = Intent()
+
+        intent.setAction("android.intent.action.VIEW");
+
+        intent.addCategory("android.intent.category.DEFAULT");
+
+        var fileMimeType ="application/msword";
+
+        intent.setDataAndType(Uri.fromFile(file),fileMimeType);
+
+        try{
+            context.startActivity(intent);
+
+            return ""
+
+        }catch(e : ActivityNotFoundException) {
+
+            return "未找到可查看软件"
+
+        }
+
+    }
+
+
+
+    fun writeResponseBodyToDisk2(body: ResponseBody, filename: String): Pair<Boolean, File> {
+        try {
+            // todo change the file location/name according to your needs
+            //File futureStudioIconFile = new File(getExternalFilesDir(null) + File.separator + filename);
+
+            val futureStudioIconFile = File(Environment.getExternalStorageDirectory().toString() + File.separator
+                    + "datrixdownload")
+            if (!futureStudioIconFile.exists())
+                futureStudioIconFile.mkdirs()
+            val file = File(futureStudioIconFile, filename)
+            ("filepath : " + file.absolutePath).LogD("file path : ")
+            var inputStream: InputStream? = null
+            var outputStream: OutputStream? = null
+
+            try {
+                val fileReader = ByteArray(4096)
+
+                val fileSize = body.contentLength()
+                var fileSizeDownloaded: Long = 0
+
+                inputStream = body.byteStream()
+                outputStream = FileOutputStream(file)
+
+                while (true) {
+                    val read = inputStream!!.read(fileReader)
+
+                    if (read == -1) {
+                        break
+                    }
+
+                    outputStream!!.write(fileReader, 0, read)
+
+                    fileSizeDownloaded += read.toLong()
+
+                    // Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                }
+
+                outputStream!!.flush()
+
+                return Pair(true, file)
+            } catch (e: IOException) {
+                e.toString().LogD("error1 : ")
+
+                return Pair(false, file)
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close()
+                }
+
+                if (outputStream != null) {
+                    outputStream.close()
+                }
+            }
+        } catch (e: IOException) {
+            e.toString().LogD("error2 : ")
+            return Pair(false, File("null"))
+        }
+
+    }
+
+    fun writeResponseBodyToDisk(body: ResponseBody, filename: String): Boolean {
+        try {
+            // todo change the file location/name according to your needs
+            //File futureStudioIconFile = new File(getExternalFilesDir(null) + File.separator + filename);
+
+            val futureStudioIconFile = File(Environment.getExternalStorageDirectory().toString() + File.separator
+                    + "datrixdownload")
+            if (!futureStudioIconFile.exists())
+                futureStudioIconFile.mkdirs()
+            val file = File(futureStudioIconFile, filename)
+            ("filepath : " + file.absolutePath).LogD("file path : ")
+            var inputStream: InputStream? = null
+            var outputStream: OutputStream? = null
+
+            try {
+                val fileReader = ByteArray(4096)
+
+                val fileSize = body.contentLength()
+                var fileSizeDownloaded: Long = 0
+
+                inputStream = body.byteStream()
+                outputStream = FileOutputStream(file)
+
+                while (true) {
+                    val read = inputStream!!.read(fileReader)
+
+                    if (read == -1) {
+                        break
+                    }
+
+                    outputStream!!.write(fileReader, 0, read)
+
+                    fileSizeDownloaded += read.toLong()
+
+                    // Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                }
+
+                outputStream!!.flush()
+
+                return true
+            } catch (e: IOException) {
+                e.toString().LogD("error1 : ")
+
+                return false
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close()
+                }
+
+                if (outputStream != null) {
+                    outputStream.close()
+                }
+            }
+        } catch (e: IOException) {
+            e.toString().LogD("error2 : ")
+            return false
+        }
+
+    }
+
+
+    val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123
+
+    fun checkPermissionREAD_EXTERNAL_STORAGE(context: Context): Boolean {
+        val currentAPIVersion = Build.VERSION.SDK_INT
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        context as Activity,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    showDialog("External storage", context,
+                            Manifest.permission.READ_EXTERNAL_STORAGE)
+
+                } else {
+                    ActivityCompat
+                            .requestPermissions(
+                                    context as Activity,
+                                    arrayOf<String>(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+                }
+                return false
+            } else {
+                return true
+            }
+
+        } else {
+            return true
+        }
+    }
+
+    fun showDialog(msg: String, context: Context,
+                   permission: String) {
+        val alertBuilder = AlertDialog.Builder(context)
+        alertBuilder.setCancelable(true)
+        alertBuilder.setTitle("Permission necessary")
+        alertBuilder.setMessage(msg + " permission is necessary")
+        alertBuilder.setPositiveButton(android.R.string.yes,
+                object : DialogInterface.OnClickListener {
+                   override fun onClick(dialog: DialogInterface, which: Int) {
+                        ActivityCompat.requestPermissions(context as Activity,
+                                arrayOf(permission),
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+                    }
+                })
+        val alert = alertBuilder.create()
+        alert.show()
     }
 
 }

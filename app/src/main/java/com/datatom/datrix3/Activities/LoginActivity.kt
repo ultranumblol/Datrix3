@@ -72,20 +72,24 @@ class LoginActivity : AppCompatActivity() {
 
             if (System.currentTimeMillis() - Someutil.getlastLogintime() > AppConstant.TOKEN_LASTTIME){
 
-                HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(Schedulers.io())
-                        .subscribe({
-                            SPBuild(app.mapp.applicationContext)
-                                    .addData(AppConstant.USER_TOKEN,it.reuslt.token)
-                                    .build()
 
-                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                            this@LoginActivity.finish()
-                        },{
-                            Someutil.updateToken()
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 
-                        })
+                Someutil.updateToken()
+//                HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(Schedulers.io())
+//                        .subscribe({
+//                            SPBuild(app.mapp.applicationContext)
+//                                    .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+//                                    .build()
+//
+//                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+//                            this@LoginActivity.finish()
+//                        },{
+//                            Someutil.updateToken()
+//
+//                        })
 
 
 

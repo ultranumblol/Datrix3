@@ -12,7 +12,8 @@ import com.datatom.datrix3.helpers.I
 
 import com.jude.easyrecyclerview.EasyRecyclerView
 import org.jetbrains.anko.find
-import org.jetbrains.anko.support.v4.toast
+
+import org.jetbrains.anko.toast
 
 
 /**
@@ -77,7 +78,7 @@ class MoreFragment : BaseFragment(){
         rvadapter!!.apply {
            addAll(items)
             setOnItemClickListener {
-                toast(" "+(it+1))
+                activity!!.toast(" "+(it+1))
             }
 
         }
@@ -85,14 +86,14 @@ class MoreFragment : BaseFragment(){
 
         tvsetting!!.apply {
             setOnClickListener{
-                toast("click!")
+                activity!!.toast("click!")
 
             }
 
         }
         tvfankui!!.apply {
             setOnClickListener{
-                toast("click!")
+                activity!!.toast("click!")
 
             }
 
