@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/rootlayout"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="horizontal"
+    android:background="@drawable/ripple_item_white_bg"
+    android:padding="@dimen/item_padding">
+
+    <FrameLayout
+        android:id="@+id/iconLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/item_media_image_width"
+            android:visibility="gone"
+            android:layout_height="@dimen/item_media_image_height"
+            android:contentDescription="@null" />
+
+
+
+    </FrameLayout>
+
+    <Space
+        android:id="@+id/space1"
+        android:layout_width="@dimen/item_padding"
+        android:layout_height="match_parent"
+
+        android:layout_toEndOf="@id/iconLayout" />
+
+    <ImageView
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:padding="14dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/id_myprobar"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="4dp"
+        android:src="@drawable/ic_pause_grey_400_24dp"
+
+
+        />
+
+    <!--<com.datatom.datrix3.view.MyProgressBar-->
+        <!--android:layout_width="50dp"-->
+        <!--android:layout_height="50dp"-->
+        <!--android:layout_alignParentEnd="true"-->
+        <!--android:layout_centerVertical="true"-->
+        <!--android:layout_marginRight="4dp"-->
+        <!--app:radius="15"-->
+        <!--android:id="@+id/id_myprobar"-->
+        <!--&gt;</com.datatom.datrix3.view.MyProgressBar>-->
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_toEndOf="@id/space1"
+        android:layout_marginRight="60dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/nameTextView"
+            android:textSize="14dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#212121"
+            android:text="Screenshot.png" />
+
+        <TextView
+            android:id="@+id/descTextView"
+            android:textSize="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="0B/471.33M"
+            android:textColor="#757575"
+            />
+
+    </LinearLayout>
+
+</RelativeLayout>
+

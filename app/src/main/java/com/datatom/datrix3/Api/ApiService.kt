@@ -3,6 +3,8 @@ package com.datatom.datrix3.Api
 
 import com.datatom.datrix3.Bean.*
 import io.reactivex.Observable
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.http.*
 
@@ -59,7 +61,6 @@ interface ApiService {
      */
     @FormUrlEncoded
     @POST("persondir/listdirfiles")
-
     fun persondir_listdirfiles(
 
             @Header("ACCESS-TOKEN") token: String,
@@ -190,6 +191,79 @@ interface ApiService {
             @Field("isclient") isclient: Boolean
 
 
-
     ): Observable<CreateDir>
+
+
+    /**
+     * detrix 创建文件creat方法(1)
+     *
+     * @param filename
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("file/create")
+    fun FileCreate(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("filename") filename: String,
+            @Field("filesize") filesize: String,
+            @Field("createuid") createuid: String,
+            @Field("parentuid") parentuid: String,
+            @Field("dirid") dirid: String,
+            @Field("parentobj") parentobj: String,
+            @Field("isperdir") isperdir: Boolean,
+            @Field("isclient") isclient: Boolean
+
+    ):
+            Observable<CreateFIie>
+
+
+    /**
+     * detrix 上传写入文件方法(2)
+     *@Part MultipartBody.Part file
+     * @return
+     */
+    @Multipart
+
+    @POST("file/write")
+    //@POST("http://192.168.3.217/api/cayman/store/object/write/file/write")
+    fun FileWrite(
+            @Header("ACCESS-TOKEN") token: String,
+
+            @Part("object") objectid: String,
+            @Part("offset") offset: String,
+            @Part("length") length: String,
+            @Part("bucket") bucket: String,
+            @PartMap params: Map<String, @JvmSuppressWildcards RequestBody>):
+
+            Observable<String>
+
+    @Multipart
+    @POST("http://192.168.50.227/api/cayman/store/object/write/file/write")
+    fun FileWrite2(
+            @Header("ACCESS-TOKEN") token: String,
+            @Part("object") objectid: String,
+            @Part("offset") offset: String,
+            @Part("length") length: String,
+            @Part("bucket") bucket: String,
+            @Part file: MultipartBody.Part):
+
+            Observable<String>
+
+
+    /**
+     * detrix 上传结束方法(3)
+     *
+     * @param fileid
+     * @param customjson
+     * @return
+     */
+    @FormUrlEncoded
+    @POST("file/finish")
+
+    fun FileFinish(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileid") fileid: String,
+            @Field("objectid") objectid: String,
+            @Field("createuid") createuid: String
+    ): Observable<String>
 }

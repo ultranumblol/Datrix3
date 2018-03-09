@@ -4,9 +4,11 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
+import com.datatom.datrix3.Bean.OfficeFile
 import com.datatom.datrix3.Bean.SearchHis
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Bean.User
+import com.datatom.datrix3.database.Dao.OfficeFileDao
 import com.datatom.datrix3.database.Dao.SearchHisDao
 import com.datatom.datrix3.database.Dao.TaskFileDao
 import com.datatom.datrix3.database.Dao.UserDao
@@ -15,7 +17,7 @@ import com.datatom.datrix3.database.Dao.UserDao
  * Created by wgz on 2018/1/29.
  */
 
-@Database(entities = [ (SearchHis::class),(User::class),(TaskFile::class)], version = 1)
+@Database(entities = [ (SearchHis::class),(User::class),(TaskFile::class),(OfficeFile::class)], version = 1)
 //@Database(entities = arrayOf(SearchHis::class,User::class), version = 1, exportSchema = true)
 abstract class AppDatabase : RoomDatabase() {
 
@@ -43,6 +45,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
 
     abstract fun TaskFileDao(): TaskFileDao
+
+    abstract fun OfficefileDao(): OfficeFileDao
 
     abstract fun SearchHisDao() : SearchHisDao
 

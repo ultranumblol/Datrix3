@@ -18,6 +18,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.net.Uri
 import android.os.Build
 import android.support.v4.app.ActivityCompat
@@ -104,6 +105,7 @@ object Someutil {
 
 
                 },{
+                    it.toString().LogD("updatetoken error : ")
                     Thread.sleep(2000)
                     updateToken()
 
@@ -117,16 +119,16 @@ object Someutil {
 
         var intent = Intent()
 
-        intent.setAction("android.intent.action.VIEW");
+        intent.setAction("android.intent.action.VIEW")
 
-        intent.addCategory("android.intent.category.DEFAULT");
+        intent.addCategory("android.intent.category.DEFAULT")
 
-        var fileMimeType ="application/msword";
+        var fileMimeType ="application/msword"
 
-        intent.setDataAndType(Uri.fromFile(file),fileMimeType);
+        intent.setDataAndType(Uri.fromFile(file),fileMimeType)
 
         try{
-            context.startActivity(intent);
+            context.startActivity(intent)
 
             return ""
 
@@ -308,6 +310,54 @@ object Someutil {
         val alert = alertBuilder.create()
         alert.show()
     }
+
+
+    fun delFolder(folderPath: String) {
+        try {
+            delAllFile(folderPath) //删除完里面所有内容
+            var filePath = folderPath
+            filePath = filePath.toString()
+            val myFilePath = java.io.File(filePath)
+            myFilePath.delete() //删除空文件夹
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun dpToPixel(dp: Float): Float {
+        val metrics = Resources.getSystem().displayMetrics
+        return dp * metrics.density
+    }
+    fun delAllFile(path: String): Boolean {
+        var flag = false
+        val file = File(path)
+        if (!file.exists()) {
+            return flag
+        }
+        if (!file.isDirectory) {
+            return flag
+        }
+        val tempList = file.list()
+        var temp: File? = null
+        for (i in tempList.indices) {
+            if (path.endsWith(File.separator)) {
+                temp = File(path + tempList[i])
+            } else {
+                temp = File(path + File.separator + tempList[i])
+            }
+            if (temp.isFile) {
+                temp.delete()
+            }
+            if (temp.isDirectory) {
+                delAllFile(path + "/" + tempList[i])//先删除文件夹里面的文件
+                delFolder(path + "/" + tempList[i])//再删除空文件夹
+                flag = true
+            }
+        }
+        return flag
+    }
+
 
 }
 

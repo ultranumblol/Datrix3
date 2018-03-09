@@ -174,7 +174,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (this.msubscription != null && msubscription!!.isDisposed) {
+        if (this.msubscription != null ) {
             this.msubscription!!.dispose()
         }
 

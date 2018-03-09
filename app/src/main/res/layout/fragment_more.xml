@@ -154,6 +154,7 @@
             android:gravity="center"
             android:layout_marginTop="16dp"
             android:text="退出登录"
+            android:id="@+id/logout_button"
             android:background="@color/white"
             android:textColor="#FD898C"
             android:textSize="18dp"

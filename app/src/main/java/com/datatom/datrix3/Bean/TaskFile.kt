@@ -3,6 +3,7 @@ package com.datatom.datrix3.Bean
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import com.datatom.datrix3.Util.Someutil
 
 /**
  * Created by wgz on 2018/1/29.
@@ -12,43 +13,54 @@ import android.arch.persistence.room.PrimaryKey
 
 
         @ColumnInfo(name = "fileid")
-        val fileid: String,
+        var fileid: String = "",
 
         @ColumnInfo(name = "filename")
-        val filename: String,
+        var filename: String = "",
 
         @ColumnInfo(name = "filepersent")
-        val filepersent: String,
+        var filepersent: Int = 0,
 
         @ColumnInfo(name = "filesize")
-        val filesize: String,
+        var filesize: String = "",
 
         @ColumnInfo(name = "filetype")
-        val filetype: String,
+        var filetype: Int = 0,
 
         @ColumnInfo(name = "filePath")
-        val filePath: String,
+        var filePath: String = "",
 
         @ColumnInfo(name = "filestate")
-        val filestate: String,
+        var filestate: Int = 0,
 
+        @ColumnInfo(name = "taskstate")
+        var taskstate: Int = 0,
+
+        @ColumnInfo(name = "dirpath")
+        var dirpath: String = "",
+
+        @ColumnInfo(name = "objid")
+        var objid: String = "",
+
+        @ColumnInfo(name = "userid")
+        var userid: String = Someutil.getUserID(),
 
         //偏移量
         @ColumnInfo(name = "offset")
-        val offset: Long,
+        var offset: Long  = 0,
         //当前进度
         @ColumnInfo(name = "mCompeleteSize")
-        val mCompeleteSize: Long,
+        var mCompeleteSize: Long = 0,
 
         @ColumnInfo(name = "total")
-        val total: Long,
+        var total: Long  = 0,
 
 
 
         @PrimaryKey
         @ColumnInfo(name = "id")
 
-        val id: Long?
+        var id: String  = ""
 
 
 

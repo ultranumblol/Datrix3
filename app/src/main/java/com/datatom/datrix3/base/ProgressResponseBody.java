@@ -13,7 +13,7 @@ import okio.Okio;
 import okio.Source;
 
 /**
- * Created by wgz on 2016/8/17.
+ *
  */
 
 public class ProgressResponseBody extends ResponseBody {
@@ -53,10 +53,6 @@ public class ProgressResponseBody extends ResponseBody {
                 long bytesRead = super.read(sink, byteCount);
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
                 long progress = totalBytesRead * 100 / responseBody.contentLength();
-                // DecimalFormat df = new DecimalFormat("0.00");
-               // LogUtil.d("下载 ：current :"+totalBytesRead +" totle :"+responseBody.contentLength());
-               // RxBus.getDefault().post(new downloadprogress(progress));
-
 
                 listener.onProgress(totalBytesRead, responseBody.contentLength(), bytesRead == -1);
                 return bytesRead;

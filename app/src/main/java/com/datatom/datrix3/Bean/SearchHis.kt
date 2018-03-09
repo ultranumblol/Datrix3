@@ -3,6 +3,7 @@ package com.datatom.datrix3.Bean
 import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import com.datatom.datrix3.Util.Someutil
 
 
 /**
@@ -14,6 +15,7 @@ import android.arch.persistence.room.PrimaryKey
 
         @ColumnInfo(name = "searchstr")
         val searchstr: String,
+
 
 
         @PrimaryKey

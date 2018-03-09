@@ -42,6 +42,7 @@ import java.util.concurrent.TimeUnit
 class LoginActivity : AppCompatActivity() {
 
     var mbutton: Button? = null
+    private var ifupdate  = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,12 +71,13 @@ class LoginActivity : AppCompatActivity() {
 
             cb_auto_login.isChecked = true
 
+
             if (System.currentTimeMillis() - Someutil.getlastLogintime() > AppConstant.TOKEN_LASTTIME){
 
-
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-
-                Someutil.updateToken()
+                    ifupdate = true
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java).putExtra("ifupdate",ifupdate))
+                this@LoginActivity.finish()
+                //Someutil.updateToken()
 //                HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
 //                        .subscribeOn(Schedulers.io())
 //                        .observeOn(Schedulers.io())
@@ -87,7 +89,8 @@ class LoginActivity : AppCompatActivity() {
 //                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
 //                            this@LoginActivity.finish()
 //                        },{
-//                            Someutil.updateToken()
+//                            toast("自动登录失败")
+//                            //Someutil.updateToken()
 //
 //                        })
 
@@ -95,7 +98,8 @@ class LoginActivity : AppCompatActivity() {
 
             }
             else{
-                startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                ifupdate = false
+                startActivity(Intent(this@LoginActivity, MainActivity::class.java).putExtra("ifupdate",ifupdate))
                 this@LoginActivity.finish()
             }
 

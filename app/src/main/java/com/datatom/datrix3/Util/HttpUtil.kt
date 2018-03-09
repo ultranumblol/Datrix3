@@ -6,8 +6,13 @@ import java.util.concurrent.TimeUnit
 
 import com.datatom.datrix3.Api.ApiService
 import com.datatom.datrix3.Api.DownLoadApi
+import com.datatom.datrix3.Bean.OfficeFile
+import com.datatom.datrix3.app
 import com.datatom.datrix3.base.ProgressResponseBody
+import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.LogD
+import com.datatom.datrix3.helpers.upload.UpLoadProgressInterceptor
+import com.datatom.datrix3.helpers.upload.UploadListener
 import com.datatom.datrix3.listener.ProgressListener
 
 import okhttp3.Cache
@@ -37,10 +42,11 @@ class HttpUtil {
         val cacheSize = 10 * 1024 * 1024
         val cache = Cache(cacheFile, cacheSize.toLong())
         val okBuilder = OkHttpClient.Builder()
-        okBuilder.cache(cache)
-        okBuilder.readTimeout(20, TimeUnit.SECONDS)
+        // okBuilder.cache(cache)
+        okBuilder.readTimeout(10, TimeUnit.SECONDS)
         okBuilder.connectTimeout(10, TimeUnit.SECONDS)
-        okBuilder.writeTimeout(20, TimeUnit.SECONDS)
+        okBuilder.writeTimeout(10, TimeUnit.SECONDS)
+        okBuilder.retryOnConnectionFailure(true)
         val client = okBuilder.build()
 
         // val client = RetrofitUrlManager.getInstance().with(OkHttpClient.Builder())
@@ -48,6 +54,46 @@ class HttpUtil {
 
 
         return client
+    }
+
+    private fun downloadOkHttpClient(data: OfficeFile): OkHttpClient {
+
+        var database: AppDatabase = AppDatabase.getInstance(app.mapp)
+        val okBuilder = OkHttpClient.Builder()
+
+
+        okBuilder.apply {
+            readTimeout(8, TimeUnit.SECONDS)
+            connectTimeout(5, TimeUnit.SECONDS)
+            writeTimeout(8, TimeUnit.SECONDS)
+            retryOnConnectionFailure(true)
+            addNetworkInterceptor {
+                val orginalResponse = it.proceed(it.request())
+
+                return@addNetworkInterceptor orginalResponse.newBuilder()
+                        .body(ProgressResponseBody(orginalResponse.body(), object : ProgressListener {
+                            override fun onProgress(progress: Long, total: Long, done: Boolean) {
+
+
+                                data.progress = (progress * 100 / data.totle).toInt()
+                                database.OfficefileDao().updatefiles(data)
+                                // (progress * 100 / data.totle).toString().LogD(" progress1 : ")
+
+                            }
+                        }))
+
+                        /*.body(new ProgressResponseBody(orginalResponse.body(), (progress, total, done) -> {
+                            }))*/
+                        .build();
+
+            }
+
+        }
+        val client = okBuilder.build()
+
+        return client
+
+
     }
 
 
@@ -58,9 +104,10 @@ class HttpUtil {
 
 
         okBuilder.apply {
-            readTimeout(20, TimeUnit.SECONDS)
-            connectTimeout(10, TimeUnit.SECONDS)
-            writeTimeout(20, TimeUnit.SECONDS)
+            readTimeout(8, TimeUnit.SECONDS)
+            connectTimeout(8, TimeUnit.SECONDS)
+            writeTimeout(8, TimeUnit.SECONDS)
+            retryOnConnectionFailure(true)
             addNetworkInterceptor {
                 val orginalResponse = it.proceed(it.request())
 
@@ -79,13 +126,7 @@ class HttpUtil {
             }
 
         }
-
-
         val client = okBuilder.build()
-
-        // val client = RetrofitUrlManager.getInstance().with(OkHttpClient.Builder())
-        //        .build();
-
 
         return client
 
@@ -99,11 +140,40 @@ class HttpUtil {
                     .baseUrl(BASE_URL)
                     .addConverterFactory(ScalarsConverterFactory.create())
                     .addConverterFactory(GsonConverterFactory.create())
+
                     .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                     .client(defaultOkHttpClient())
                     .build()
             apiService = retrofit.create(ApiService::class.java)
         }
+
+
+        return apiService!!
+    }
+
+    fun apiService2(listener: UploadListener): ApiService {
+
+        var interceptor = UpLoadProgressInterceptor(listener)
+        val okBuilder = OkHttpClient.Builder()
+                .readTimeout(10, TimeUnit.SECONDS)
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .addInterceptor(interceptor)
+                .retryOnConnectionFailure(true)
+                .retryOnConnectionFailure(true)
+                .build()
+
+
+
+            val retrofit = Retrofit.Builder()
+                    .baseUrl(BASE_URL)
+                    .addConverterFactory(ScalarsConverterFactory.create())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                    .client(okBuilder)
+                    .build()
+          var  apiService = retrofit.create(ApiService::class.java)
+
 
 
         return apiService!!
@@ -130,14 +200,33 @@ class HttpUtil {
         return downLoadApi!!
     }
 
+    /**
+     * 带文件下载进度存储的下载
+     */
+    fun downLoadApi(file: OfficeFile): DownLoadApi {
 
+
+        val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                //.callbackExecutor(executorService)
+                .client(downloadOkHttpClient(file))
+                .build()
+        downLoadApi = retrofit.create(DownLoadApi::class.java)
+
+
+
+        return downLoadApi!!
+    }
 
     companion object {
         private var sHttpUtils: HttpUtil? = null
 
-        var BASE_URL = "http://192.168.3.217/api/sw/"
+        var BASE_URL = "http://192.168.50.227/api/sw/"
 
-        var BASEAPI_URL = "http://192.168.3.217/"
+        var BASEAPI_URL = "http://192.168.50.227/"
 
         val instance: HttpUtil
             get() {

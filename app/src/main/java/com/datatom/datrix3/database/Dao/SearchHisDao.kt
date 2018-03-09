@@ -20,4 +20,7 @@ interface SearchHisDao {
     @Delete()
     fun  deleteHis(searchstr: SearchHis)
 
+    @Query("DELETE FROM searchhis")
+    fun nukeTable()
+
 }

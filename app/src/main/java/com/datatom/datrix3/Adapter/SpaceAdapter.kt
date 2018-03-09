@@ -46,6 +46,26 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
     }
 
+    fun setItemChecked(position : Int){
+
+        when(mCheckStates.get(position,false)){
+            false -> {
+
+                mCheckStates.put(position, true)
+                RxBus.get().post("updatespacecheckbox")
+            }
+            true ->{
+
+                mCheckStates.delete(position)
+                RxBus.get().post("updatespacecheckbox")
+            }
+
+        }
+
+
+
+    }
+
 
     override fun OnCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         return SpaceAdapterViewholder(parent)
@@ -96,17 +116,20 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
            // data!!.cayman_pretreat_mimetype.LogD(" type : ")
 
 
-            when (data!!.type) {
+            when (data!!.type ) {
                 "0" -> {
                     img!!.setImageResource(R.drawable.ic_file_wenjianjia)
 
-                    //(data!!.filename).LogD("hidesiezeFIle :  ")
+                   // data.filename.LogD(" filename : ")
+
                     filecreatetime!!.text = data?.createtime
                 }
 
                 "1" -> {
 
                     filecreatetime!!.text = SizeUtils.getSize(data?.filesize) + "  " + data?.createtime
+
+                    if (data!!.cayman_pretreat_mimetype !=null)
                     when (data!!.cayman_pretreat_mimetype) {
 
                     //"png", "bmp", "gif", "jpeg",
@@ -123,7 +146,7 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
                         }
 
                     // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
-                        "aideo"
+                        "audio"
                         -> {
                             img!!.setImageResource(D.ic_file_mic)
                         }
@@ -133,7 +156,7 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
                             img!!.setImageResource(D.ic_file_doc)
 
                         }
-                        "zip" -> {
+                        "zip" ,"7z","rar","tar"-> {
                             img!!.setImageResource(D.ic_file_zip)
 
                         }
@@ -143,6 +166,9 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
                         }
 
 
+                    }
+                    else{
+                        img!!.setImageResource(D.ic_file_doc)
                     }
                 }
 
