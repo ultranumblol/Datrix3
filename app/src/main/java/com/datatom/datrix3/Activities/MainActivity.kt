@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         initView()
         //启动消息推送服务
         startService(Intent(this, TaskService::class.java))
-
+        Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)
         if (intent.getBooleanExtra("ifupdate", false)) {
             Someutil.updateToken()
 
@@ -381,7 +381,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
             }
             I.img_page_back -> {
-                RxBus.get().post("pagegoback")
+
+
+
+                RxBus.get().post("pback")
 
             }
 

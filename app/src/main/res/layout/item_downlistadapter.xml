@@ -6,7 +6,7 @@
     android:layout_height="80dp"
     android:orientation="horizontal"
     android:background="@drawable/ripple_item_white_bg"
-    android:padding="@dimen/item_padding">
+    android:padding="2dp">
 
     <FrameLayout
         android:id="@+id/iconLayout"
@@ -33,9 +33,9 @@
         android:layout_toEndOf="@id/iconLayout" />
 
     <ImageView
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:padding="14dp"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:padding="29dp"
         android:scaleType="centerCrop"
         android:id="@+id/id_myprobar"
         android:layout_alignParentEnd="true"
@@ -62,7 +62,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_toEndOf="@id/space1"
-        android:layout_marginRight="60dp"
+
+        android:layout_marginRight="80dp"
+        android:padding="14dp"
         android:orientation="vertical">
 
         <TextView

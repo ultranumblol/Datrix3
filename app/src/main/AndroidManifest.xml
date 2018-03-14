@@ -22,6 +22,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service android:name=".Service.TaskService" />
+
         <activity android:name=".Activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -39,7 +40,8 @@
         <activity android:name=".Activities.PlayVideoActivity" />
         <activity android:name=".Activities.TaskListActivity" />
         <activity android:name=".Activities.PDFViewerActivity" />
-        <activity android:name=".Activities.OfficeFileShowActivity"></activity>
+        <activity android:name=".Activities.OfficeFileShowActivity" />
+        <activity android:name=".Activities.PreviewTXTFileActivity"></activity>
     </application>
 
 </manifest>

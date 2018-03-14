@@ -266,4 +266,16 @@ interface ApiService {
             @Field("objectid") objectid: String,
             @Field("createuid") createuid: String
     ): Observable<String>
+
+
+    /**
+     * 获取用户配额
+     */
+    @FormUrlEncoded
+    @POST("user/quota")
+    fun userQuota(
+           @Header("ACCESS-TOKEN") token : String,
+           @Field("userid") userid : String
+
+    ) : Observable<Quota>
 }

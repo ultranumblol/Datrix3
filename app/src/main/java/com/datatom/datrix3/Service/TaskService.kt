@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Util.DownLoadUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.Util.UploadFileUtil
 import com.datatom.datrix3.Util.UploadFileUtil2
@@ -30,6 +31,7 @@ class TaskService : Service() {
         val DONE = 666
         val PAUSE = 44
         val NEWFILE = 101
+        val DOWNLOADING = 777
 
 
     }
@@ -43,12 +45,13 @@ class TaskService : Service() {
                 compose(RxSchedulers.compose())
                 .subscribe {
 
-                    data = appdatabase.queryUploadTaskFile(UploadFileUtil.UPLOAD, Someutil.getUserID()).sortedByDescending { it.id }
+                    data = appdatabase.queryUploadTaskFile(UPLOAD, Someutil.getUserID()).sortedByDescending { it.id }
 
                     data!!.apply {
                         //toString().LogD("task file info : ")
                         forEach {
-
+                           //"taskstate : ${it.taskstate}".LogD()
+                           // "forcestop : ${it.forcestop}".LogD()
                             when (it.taskstate) {
 
                                 NEWFILE -> {
@@ -57,9 +60,46 @@ class TaskService : Service() {
                                 }
 
                                 PAUSE -> {
-                                    it.taskstate = WRITING
-                                    UploadFileUtil2(it).ReUpload()
+                                    if(it.forcestop){
+                                       // " 不重上传".LogD()
+                                    }
+                                    else{
+                                        it.taskstate = WRITING
+                                       // "重上传".LogD()
+                                        UploadFileUtil2(it).ReUpload()
+                                    }
+                                }
+                                else ->{
 
+
+                                }
+                            }
+
+                        }
+                    }
+                }
+
+
+        Observable.interval(1, TimeUnit.SECONDS).
+                compose(RxSchedulers.compose())
+                .subscribe {
+
+                    data = appdatabase.queryUploadTaskFile(DOWNLOAD, Someutil.getUserID()).sortedByDescending { it.id }
+
+                    data!!.apply {
+                        //toString().LogD("task file info : ")
+                        forEach {
+
+                            when (it.taskstate) {
+
+                                NEWFILE -> {
+                                    it.taskstate = DOWNLOADING
+                                    DownLoadUtil().downloadFile(it)
+                                }
+
+                                PAUSE -> {
+//                                    it.taskstate = DOWNLOADING
+//                                    DownLoadUtil().downloadFile(it)
 
                                 }
 

@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException
 import kotlin.experimental.and
 import android.text.TextUtils
 import android.util.Base64
+import java.util.regex.Pattern
 
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
@@ -38,6 +39,25 @@ fun String.MD5() : String{
     }
 
     return ""
+
+
+}
+
+fun String.IsIP() : Boolean{
+    if (this.length < 7 || this.length > 15 || "" == this) {
+        return false
+    }
+    /**
+     * 判断IP格式和范围
+     */
+    val rexp = "([1-9]|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}"
+
+    val pat = Pattern.compile(rexp)
+
+    val mat = pat.matcher(this)
+
+    return mat.find()
+
 
 
 }

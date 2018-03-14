@@ -12,7 +12,6 @@ class AppConstant private constructor() {
 
         val USER_NICKNAME = "usernickname"
 
-
         val USER_LOGINNAME = "loginname"
 
 

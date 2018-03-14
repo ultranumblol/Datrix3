@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
 import com.datatom.datrix3.Util.Someutil
+import java.io.Serializable
 
 /**
  * Created by wgz on 2018/1/29.
@@ -36,11 +37,26 @@ import com.datatom.datrix3.Util.Someutil
         @ColumnInfo(name = "taskstate")
         var taskstate: Int = 0,
 
+        @ColumnInfo(name = "mimetype")
+        var mimetype: String = "",
+
+        @ColumnInfo(name = "exe")
+        var exe: String = "",
+
+        @ColumnInfo(name = "forcestop")
+        var forcestop: Boolean = false,
+
         @ColumnInfo(name = "dirpath")
         var dirpath: String = "",
 
         @ColumnInfo(name = "objid")
         var objid: String = "",
+
+        @ColumnInfo(name = "dirid")
+        var dirid: String = "",
+
+        @ColumnInfo(name = "parentobj")
+        var parentobj: String = "",
 
         @ColumnInfo(name = "userid")
         var userid: String = Someutil.getUserID(),
@@ -64,4 +80,4 @@ import com.datatom.datrix3.Util.Someutil
 
 
 
-)
+) : Serializable

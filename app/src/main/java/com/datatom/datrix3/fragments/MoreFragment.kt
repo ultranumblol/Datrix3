@@ -12,9 +12,7 @@ import com.datatom.datrix3.Base.GlideApp
 import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.Bean.MoreItems
 import com.datatom.datrix3.R
-import com.datatom.datrix3.Util.SPBuild
-import com.datatom.datrix3.Util.SPUtils
-import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.Util.*
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.I
@@ -49,18 +47,22 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
                         AppDatabase.getInstance(app.mapp).SearchHisDao().nukeTable()
 
                         GlideApp.get(activity!!).clearDiskCache()
-                    } } }
+                    }
+                }
+            }
         }
 
     }
 
-    var rvadapter: MoreFragmentadapter? = null
+    private var rvadapter: MoreFragmentadapter? = null
 
-    var rv: EasyRecyclerView? = null
+    private var rv: EasyRecyclerView? = null
 
-    var tvsetting: TextView? = null
+    private var tvsetting: TextView? = null
 
-    var tvfankui: TextView? = null
+    private var tvfankui: TextView? = null
+
+    private var quota: TextView? = null
 
     private var nickname: TextView? = null
 
@@ -100,6 +102,8 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
 
         logoutbutton = view.find(I.logout_button)
 
+        quota = view.find(I.tv_quota)
+
         nickname!!.text = Someutil.getUserNickname()
 
         logoutbutton!!.setOnClickListener(this)
@@ -134,6 +138,22 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
             }
 
         }
+
+        initData()
+
+    }
+
+    private fun initData() {
+        HttpUtil.instance.apiService().userQuota(Someutil.getToken(), Someutil.getUserID())
+                .compose(RxSchedulers.compose())
+                .subscribe({
+                    quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)} ${((it.res.used.toLong()/it.res.quota.toLong())*100)}%）"
+
+                }, {
+                    quota!!.text = "容量（-/-）"
+
+
+                })
 
 
     }

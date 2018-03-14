@@ -27,12 +27,9 @@ import org.jetbrains.anko.find
 
 import android.view.ViewGroup
 import collections.forEach
-import com.datatom.datrix3.Activities.OfficeFileShowActivity
-import com.datatom.datrix3.Activities.PDFViewerActivity
-import com.datatom.datrix3.Activities.PlayVideoActivity
-import com.datatom.datrix3.Activities.ViewBigImageActivity
+import com.datatom.datrix3.Activities.*
 import com.datatom.datrix3.Bean.*
-import com.datatom.datrix3.Service.TaskService.Companion.CREATING
+import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.NEWFILE
 import com.datatom.datrix3.Service.TaskService.Companion.UPLOAD
 import com.datatom.datrix3.Util.*
@@ -41,8 +38,6 @@ import com.datatom.datrix3.Util.Someutil.checkPermissionREAD_EXTERNAL_STORAGE
 import com.datatom.datrix3.app
 import io.github.tonnyl.charles.Charles
 import io.github.tonnyl.charles.engine.impl.GlideEngine
-import io.reactivex.schedulers.Schedulers
-import org.jetbrains.anko.support.v4.toast
 import org.jetbrains.anko.toast
 
 
@@ -62,6 +57,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         var currentID = ""
         var currentdir = ""
+        var currentParentObjid = ""
 
 
     }
@@ -111,7 +107,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
     private var clear_his: TextView? = null
     private var zhezhao: FrameLayout? = null
 
-    private lateinit var pagelist: ArrayList<SpacePageList>
+    private  var pagelist: ArrayList<SpacePageList> = arrayListOf()
 
     private var cpge = 1
 
@@ -222,7 +218,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         }
 
         pagelist = arrayListOf()
-        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true))
+        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true,""))
         currentID = PERSONAL_SPACE_ID
         currentdir = PERSONAL_SPACE_ID
         initData(currentdir)
@@ -291,24 +287,32 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                 }
 
-                "pagegoback" -> {
+                "pback" -> {
                     cpge = 1
+                   // pagelist.toString().LogD("click goback  pagelist : ")
+
                     when (currentID) {
                         PERSONAL_SPACE_ID -> {
-
+                            if (pagelist.size>1)
                             pagelist.removeAt(pagelist.size - 1)
+                            //pagelist.size.toString().LogD(" after remove list  : ")
                             currentdir = pagelist[pagelist.size - 1].fileid
+                            currentParentObjid = pagelist[pagelist.size - 1].objid
+
                             rvadapter!!.clear()
                             initData(currentdir)
                             RxBus.get().post(pagelist[pagelist.size - 1])
-                            pagelist.size.toString().LogD("pagelist.size : ")
+                           // pagelist.size.toString().LogD("pagelist.size : ")
 
 
                         }
                         PUBLIC_SPACE_ID -> {
+                            if (pagelist.size>1)
                             pagelist.removeAt(pagelist.size - 1)
                             rvadapter!!.clear()
                             currentdir = pagelist[pagelist.size - 1].fileid
+                            currentParentObjid = pagelist[pagelist.size - 1].objid
+
                             initpublicData(currentdir)
                             RxBus.get().post(pagelist[pagelist.size - 1])
 
@@ -355,7 +359,11 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             //设置适配器点击事件
             setOnItemClickListener {
 
-                allData[it].type.LogD("click  type : ")
+//                allData[it].type.LogD("click  type : ")
+//                allData[it].parentid.LogD("parentid: ")
+//                allData[it].objid.LogD("objid: ")
+//                allData[it].fileid.LogD("fileid: ")
+
 
                 if (allData[it].cayman_pretreat_mimetype != null)
                     allData[it].cayman_pretreat_mimetype?.LogD("click  cayman_pretreat_mimetype : ")
@@ -373,28 +381,28 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             when (currentID) {
                                 PERSONAL_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false,rvadapter!!.allData[it].objid)
                                     cpge = 1
+                                    pagelist.add(sp)
+                                    pagelist.toString().LogD("after add pagelist : ")
 
                                     currentdir = rvadapter!!.allData[it].fileid
-
-                                    initData(currentdir)
-
+                                    currentParentObjid = rvadapter!!.allData[it].objid
                                     rvadapter!!.clear()
-                                    pagelist.add(sp)
+                                    initData(currentdir)
                                     RxBus.get().post(sp)
 
 
                                 }
                                 PUBLIC_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false)
-
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false,rvadapter!!.allData[it].objid)
+                                    pagelist.add(sp)
                                     cpge = 1
                                     currentdir = rvadapter!!.allData[it].fileid
-                                    initpublicData(currentdir)
+                                    currentParentObjid = rvadapter!!.allData[it].objid
                                     rvadapter!!.clear()
-                                    pagelist.add(sp)
+                                    initpublicData(currentdir)
                                     RxBus.get().post(sp)
                                 }
 
@@ -441,8 +449,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                     -> {
                                     }
 
-                                    "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml"
+                                    "conf", "cpp", "htm", "html", "log", "sh", "xml"
                                     -> {
+
+                                    }
+                                    "txt" ->{
+                                        context!!.startActivity(Intent(context, PreviewTXTFileActivity::class.java)
+                                                .putExtra("file", rvadapter!!.allData[it]))
+
 
                                     }
                                     "zip" -> {
@@ -645,33 +659,32 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                     // i.toString().LogD("index : ")
 
-                    var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + rvadapter!!.allData[i].fileid + "&iswindows=0&optuser=admin"
+                   // var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + rvadapter!!.allData[i].fileid + "&iswindows=0&optuser=admin"
 
-                    url.LogD("url : ")
-
-                    context!!.toast("开始后台下载")
-
-                    rvadapter!!.setItemChecked(i)
-
-                    HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(Schedulers.newThread())
-                            .subscribe({
+                    //url.LogD("url : ")
 
 
-                                if (Someutil.writeResponseBodyToDisk(it, rvadapter!!.allData[i].fileid)) {
-                                    "下载成功".LogD()
-                                    //  toast("下载成功")
 
-                                } else {
-                                    "下载失败".LogD()
+                   // rvadapter!!.setItemChecked(i)
 
-                                }
+                    var taskfile  = TaskFile()
+                    taskfile!!.apply {
 
-                            }, {
-                                it.toString().LogD("download error : ")
-                            })
+                        filename = rvadapter!!.allData[i].filename
+                        fileid = rvadapter!!.allData[i].fileid
+                        mCompeleteSize = 0L
+                        offset = 0
+                        if (rvadapter!!.allData[i].cayman_pretreat_mimetype!= null)
+                        mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+                        exe = rvadapter!!.allData[i].ext
+                        filetype = DOWNLOAD
+                        taskstate = NEWFILE
+                        total = rvadapter!!.allData[i].filesize.toLong()
+                        userid = Someutil.getUserID()
+                        id = System.currentTimeMillis().toString()
 
+                    }
+                    AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
 
                 }
 
@@ -695,6 +708,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 //                    }
 //
 //                }
+                rvadapter!!.setCheckBoxNoneSelect()
+                RxBus.get().post("updatespacecheckbox")
+                context!!.toast("开始后台下载")
 
 
             }
@@ -782,9 +798,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 RxBus.get().post(SpaceType("个人空间"))
                 currentID = PERSONAL_SPACE_ID
                 currentdir = PERSONAL_SPACE_ID
+                currentParentObjid = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true))
+                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true,""))
                 rvadapter!!.clear()
                 initData(currentdir)
 
@@ -797,9 +814,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 RxBus.get().post(SpaceType("公共空间"))
                 currentID = PUBLIC_SPACE_ID
                 currentdir = PUBLIC_SPACE_ID
+                currentParentObjid = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true))
+                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true,""))
                 rvadapter!!.clear()
                 initpublicData(currentdir)
 
@@ -810,6 +828,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 hideCradview()
                 currentID = TEAM_SPACE_ID
                 currentdir = TEAM_SPACE_ID
+                currentParentObjid = ""
                 RxBus.get().post(SpaceType("讨论组"))
                 rvadapter!!.clear()
                 initData(TEAM_SPACE_ID)
@@ -884,14 +903,17 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                         }
                         setPositiveButton("确认") { _, _ ->
                             HttpUtil.instance.apiService().createPersondir(Someutil.getToken(), renametext.text.toString(), Someutil.getUserID()
-                                    , "", "", "", false)
+                                    , Someutil.getUserID(), currentdir, currentParentObjid, false)
                                     .compose(RxSchedulers.compose())
                                     .subscribe({
                                         it.toString().LogD("createfile reuslt : ")
                                         if (it.code == 200) {
 
                                             activity!!.toast("创建成功！")
-                                            refreshData()
+
+                                            Handler().postDelayed({
+                                                refreshData()
+                                            }, 1000)
                                         } else {
                                             activity!!.toast("创建失败！")
 
@@ -984,6 +1006,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                     offset = 0
                     filetype = UPLOAD
                     taskstate = NEWFILE
+                    parentobj = currentParentObjid
+                    dirid = currentdir
                     userid = Someutil.getUserID()
                     id = System.currentTimeMillis().toString()
 

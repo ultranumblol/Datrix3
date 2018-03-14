@@ -1,15 +1,13 @@
 package com.datatom.datrix3.Activities
 
 import android.graphics.Color
-import android.util.Log
-
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.PersonalFilelistData
+import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.LogD
-import com.datatom.datrix3.helpers.MD5
 import com.datatom.datrix3.helpers.Show
 import com.datatom.datrix3.helpers.hide
 import com.github.barteksc.pdfviewer.listener.OnLoadCompleteListener
@@ -21,6 +19,7 @@ import io.reactivex.schedulers.Schedulers
 
 import kotlinx.android.synthetic.main.activity_pdfviewer.*
 import org.jetbrains.anko.toast
+import java.io.File
 
 
 class PDFViewerActivity : BaseActivity(), OnPageChangeListener, OnLoadCompleteListener,
@@ -48,46 +47,74 @@ class PDFViewerActivity : BaseActivity(), OnPageChangeListener, OnLoadCompleteLi
 
     private fun loadData() {
 
-        var data = intent.getSerializableExtra("file") as PersonalFilelistData.result2
+        var data = intent.getSerializableExtra("file")
+
+        when(data){
+            is PersonalFilelistData.result2 ->{
+                pdfFileName = data.filename
+                setToolbartitle(pdfFileName)
+                var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + data.fileid + "&iswindows=0&optuser=admin"
+                var downpdf = HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.newThread())
+                        .subscribe({
+
+                            var result = Someutil.writeResponseBodyToDisk2(it, data.filename)
+                            var file = result.second
+
+                            if (result.first) {
+                                "下载成功".LogD()
+
+                                runOnUiThread {
+                                    pdf_progressbar.hide()
+                                    pdfView.fromFile(file)
+                                            .defaultPage(pageNumber)
+                                            .onPageChange(this)
+                                            .enableAnnotationRendering(true)
+                                            .onLoad(this)
+                                            .scrollHandle(DefaultScrollHandle(this))
+                                            .spacing(10) // in dp
+                                            .onPageError(this)
+                                            .load()
+                                }
+
+                            } else {
+                                "下载失败".LogD()
+
+                            }
+                        }, {
+                            it.toString().LogD("download error : ")
+                        })
+
+                addsub(downpdf)
+
+            }
+            is TaskFile ->{
+                pdfFileName = data.filename
+                setToolbartitle(pdfFileName)
+                runOnUiThread {
+                    pdf_progressbar.hide()
+                    pdfView.fromFile(File(data.filePath))
+                            .defaultPage(pageNumber)
+                            .onPageChange(this)
+                            .enableAnnotationRendering(true)
+                            .onLoad(this)
+                            .scrollHandle(DefaultScrollHandle(this))
+                            .spacing(10) // in dp
+                            .onPageError(this)
+                            .load()
+                }
+
+            }
+
+        }
 
 
-        pdfFileName = data.filename
-        setToolbartitle(pdfFileName)
-
-        var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + data.fileid + "&iswindows=0&optuser=admin"
 
 
-        HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
-                .subscribe({
 
-                    var result = Someutil.writeResponseBodyToDisk2(it, data.filename)
-                    var file = result.second
 
-                    if (result.first) {
-                        "下载成功".LogD()
 
-                        runOnUiThread {
-                            pdf_progressbar.hide()
-                            pdfView.fromFile(file)
-                                    .defaultPage(pageNumber)
-                                    .onPageChange(this)
-                                    .enableAnnotationRendering(true)
-                                    .onLoad(this)
-                                    .scrollHandle(DefaultScrollHandle(this))
-                                    .spacing(10) // in dp
-                                    .onPageError(this)
-                                    .load()
-                        }
-
-                    } else {
-                        "下载失败".LogD()
-
-                    }
-                }, {
-                    it.toString().LogD("download error : ")
-                })
 
     }
 

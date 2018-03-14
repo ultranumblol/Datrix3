@@ -10,8 +10,6 @@ import com.datatom.datrix3.helpers.MD5
 import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.*
-import kotlin.concurrent.thread
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
@@ -24,7 +22,7 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
-import com.datatom.datrix3.Activities.MainActivity
+import java.util.regex.Pattern
 
 
 /**
@@ -46,6 +44,7 @@ object Someutil {
 
     }
 
+
     fun getToken() : String{
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_TOKEN, "X7yABwjE20sUJLefATUFqU0iUs8mJPqEJo6iRnV63mI=") as String;
@@ -66,7 +65,7 @@ object Someutil {
 
     fun getloginIP() : String{
 
-        return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINIP, "000") as String;
+        return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINIP, "192.168.3.217") as String;
 
     }
     fun getloginname() : String{
@@ -86,17 +85,13 @@ object Someutil {
 
     }
 
-    interface updateTokenCallback {
-        fun afterupdateCallback()
 
-
-    }
 
 
     fun updateToken(){
 
         HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
-                .subscribeOn(Schedulers.io())
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
                 .subscribe({
                     SPBuild(app.mapp.applicationContext)
@@ -106,8 +101,8 @@ object Someutil {
 
                 },{
                     it.toString().LogD("updatetoken error : ")
-                    Thread.sleep(2000)
-                    updateToken()
+                    //Thread.sleep(2000)
+                   // updateToken()
 
 
                 })
@@ -202,6 +197,7 @@ object Someutil {
 
     }
 
+
     fun writeResponseBodyToDisk(body: ResponseBody, filename: String): Boolean {
         try {
             // todo change the file location/name according to your needs
@@ -262,6 +258,44 @@ object Someutil {
 
     }
 
+    fun getTXTFileString(inputStream: InputStream): String {
+        var inputStreamReader: InputStreamReader? = null
+        try {
+            inputStreamReader = InputStreamReader(inputStream, "utf-8")
+        } catch (e1: UnsupportedEncodingException) {
+            e1.printStackTrace()
+        }
+
+        val reader = BufferedReader(inputStreamReader)
+        val sb = StringBuilder("")
+        var line: String
+        try {
+
+//            while (true) {
+//                val byteCount = ins.read(buf)
+//                if (byteCount < 0) break
+//                out.write(buf, 0, byteCount)
+//
+//            }
+
+
+            while(true){
+                val line = reader.readLine() ?: break
+                sb.append(line)
+                sb.append("\n")
+
+            }
+
+//            while ((line = reader.readLine()) != null) {
+//                sb.append(line)
+//                sb.append("\n")
+//            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+
+        return sb.toString()
+    }
 
     val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123
 

@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit
 import com.datatom.datrix3.Api.ApiService
 import com.datatom.datrix3.Api.DownLoadApi
 import com.datatom.datrix3.Bean.OfficeFile
+import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.ProgressResponseBody
 import com.datatom.datrix3.database.AppDatabase
@@ -133,9 +134,68 @@ class HttpUtil {
 
     }
 
+    private fun downloadOkHttpClient(taskfile : TaskFile): OkHttpClient {
+
+        var database: AppDatabase = AppDatabase.getInstance(app.mapp)
+        val okBuilder = OkHttpClient.Builder()
+
+
+        okBuilder.apply {
+            readTimeout(8, TimeUnit.SECONDS)
+            connectTimeout(8, TimeUnit.SECONDS)
+            writeTimeout(8, TimeUnit.SECONDS)
+            retryOnConnectionFailure(true)
+            addNetworkInterceptor {
+                val orginalResponse = it.proceed(it.request())
+
+                return@addNetworkInterceptor orginalResponse.newBuilder()
+                        .body(ProgressResponseBody(orginalResponse.body(), object : ProgressListener {
+                            override fun onProgress(progress: Long, total: Long, done: Boolean) {
+
+                                //(progress * 100 / taskfile.total).toInt().toString().LogD(" progress : ")
+                                taskfile.filepersent = (progress * 100 / taskfile.total).toInt()
+                                database.TaskFileDao().updatefiles(taskfile)
+
+                            }
+                        }))
+
+                        /*.body(new ProgressResponseBody(orginalResponse.body(), (progress, total, done) -> {
+                            }))*/
+                        .build();
+
+            }
+
+        }
+        val client = okBuilder.build()
+
+        return client
+
+
+    }
+    /**
+     * 带文件下载进度存储的下载
+     */
+    fun downLoadApi(file: TaskFile): DownLoadApi {
+
+
+        val retrofit = Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                //.callbackExecutor(executorService)
+                .client(downloadOkHttpClient(file))
+                .build()
+        downLoadApi = retrofit.create(DownLoadApi::class.java)
+
+
+
+        return downLoadApi!!
+    }
+
     fun apiService(): ApiService {
 
-        if (apiService == null) {
+
             val retrofit = Retrofit.Builder()
                     .baseUrl(BASE_URL)
                     .addConverterFactory(ScalarsConverterFactory.create())
@@ -145,7 +205,7 @@ class HttpUtil {
                     .client(defaultOkHttpClient())
                     .build()
             apiService = retrofit.create(ApiService::class.java)
-        }
+        
 
 
         return apiService!!
@@ -224,9 +284,10 @@ class HttpUtil {
     companion object {
         private var sHttpUtils: HttpUtil? = null
 
-        var BASE_URL = "http://192.168.50.227/api/sw/"
+        //var BASE_URL = "http://192.168.3.217/api/sw/"
+        var BASE_URL = "http://${Someutil.getloginIP()}/api/sw/"
 
-        var BASEAPI_URL = "http://192.168.50.227/"
+        var BASEAPI_URL = "http://${Someutil.getloginIP()}/"
 
         val instance: HttpUtil
             get() {

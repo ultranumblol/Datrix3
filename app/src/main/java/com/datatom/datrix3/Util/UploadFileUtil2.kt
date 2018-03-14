@@ -1,7 +1,6 @@
 package com.datatom.datrix3.Util
 
-import com.datatom.datrix3.Bean.CancelTask
-import com.datatom.datrix3.Bean.Reupload
+
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.DefaultProgressListener
@@ -11,8 +10,7 @@ import com.datatom.datrix3.helpers.LogD
 import com.datatom.datrix3.helpers.RxBus
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.disposables.Disposable
+
 import io.reactivex.schedulers.Schedulers
 import okhttp3.RequestBody
 import java.io.ByteArrayInputStream
@@ -77,22 +75,9 @@ class UploadFileUtil2(file: TaskFile) {
         CreateFile()
     }
 
-//    fun cancelUpload() {
-//        if (msubscription != null) {
-//            msubscription!!.dispose()
-//            ("取消文件" + tfile!!.filename + " id： " + tfile!!.fileid + "的上传").LogD()
-//            tfile!!.taskstate = PAUSE
-//            database.TaskFileDao().updatefiles(tfile!!)
-//
-//        }
-//
-//    }
-
     fun ReUpload() {
 
         currentPieces = 1
-
-
 
         when (tfile!!.filestate) {
             CREATING -> {
@@ -112,15 +97,13 @@ class UploadFileUtil2(file: TaskFile) {
                 UploadFinish()
             }
         }
-
-
     }
 
     private fun CreateFile() {
 
 
         HttpUtil.instance.apiService().FileCreate(Someutil.getToken(), tfile!!.filename, tfile!!.total.toString(), Someutil.getUserID()
-                , "", "8A85A16BB60D88F0", "", true, true)
+                , Someutil.getUserID(), tfile!!.dirid, tfile!!.parentobj, true, true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
 
@@ -174,6 +157,16 @@ class UploadFileUtil2(file: TaskFile) {
 
         } else {
             uploadlenght = UPLOADLENGTH.toLong()
+        }
+
+       var boo =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(tfile!!.id).forcestop
+
+        if (boo){
+            tfile!!.taskstate = PAUSE
+            database.TaskFileDao().updatefiles(tfile!!)
+            "手动暂停".LogD()
+            return
+
         }
 
         Observable.just("split")
@@ -252,7 +245,10 @@ class UploadFileUtil2(file: TaskFile) {
 
 
                                 }, {
+
+
                                     tfile!!.taskstate = PAUSE
+                                    tfile!!.forcestop = database.TaskFileDao().queryTaskFile(tfile!!.id).forcestop
                                     database.TaskFileDao().updatefiles(tfile!!)
                                     it.toString().LogD("write http error : ")
 
@@ -341,6 +337,9 @@ class UploadFileUtil2(file: TaskFile) {
 
 
     }
+
+
+
 
 
 }

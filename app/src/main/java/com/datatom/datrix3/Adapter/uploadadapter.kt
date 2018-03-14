@@ -11,11 +11,14 @@ import com.datatom.datrix3.Bean.TaskFile
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Service.TaskService.Companion.PAUSE
+import com.datatom.datrix3.Service.TaskService.Companion.WRITING
 
 import com.datatom.datrix3.Util.SizeUtils
-import com.datatom.datrix3.Util.UploadFileUtil.Companion.DONE
+import com.datatom.datrix3.Util.UploadFileUtil2.Companion.DONE
+import com.datatom.datrix3.app
+import com.datatom.datrix3.database.AppDatabase
 
-import com.datatom.datrix3.Util.UploadFileUtil.Companion.PAUSE
 
 import com.datatom.datrix3.helpers.*
 
@@ -39,7 +42,6 @@ class uploadadapter(context: Context) : RecyclerArrayAdapter<TaskFile>(context) 
         private var root: RelativeLayout? = null
 
 
-
         init {
 
             name = `$`(I.nameTextView)
@@ -61,6 +63,26 @@ class uploadadapter(context: Context) : RecyclerArrayAdapter<TaskFile>(context) 
 
 
             img!!.apply {
+                setOnClickListener {
+                    data.toString().LogD("dataclick : ")
+
+//                    when (data.taskstate) {
+//                        PAUSE -> {
+//
+//                            allData[adapterPosition].forcestop = false
+//                            AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[adapterPosition])
+//                            allData[adapterPosition].taskstate = WRITING
+//                            notifyDataSetChanged()
+//                        }
+//
+//                        WRITING -> {
+//                            allData[adapterPosition].forcestop = true
+//                            allData[adapterPosition].taskstate = PAUSE
+//                            AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[adapterPosition])
+//                            notifyDataSetChanged()
+//                        }
+//                    }
+                }
 
 //                setOnClickListener {
 //
@@ -92,15 +114,25 @@ class uploadadapter(context: Context) : RecyclerArrayAdapter<TaskFile>(context) 
 //                }
 
                 when (data!!.taskstate) {
-//                    PAUSE -> {
-//                        setImageResource(D.ic_arrow_upward_grey_400_24dp)
-//                    }
+
+
+                    PAUSE -> {
+                        if (data!!.forcestop)
+                            setImageResource(D.ic_arrow_upward_grey_400_24dp)
+                        else
+                            setImageResource(D.ic_pause_grey_400_24dp)
+                    }
+
+
                     DONE -> {
                         setImageResource(D.ic_done_grey_400_24dp)
-                        loadsize!!.text = SizeUtils.getSize(data?.total)
+                        loadsize!!.text = SizeUtils.getSize(data?.total * data.filepersent / 100)
                     }
                     else -> {
-                        setImageResource(D.ic_pause_grey_400_24dp)
+                        if (data!!.forcestop)
+                            setImageResource(D.ic_arrow_upward_grey_400_24dp)
+                        else
+                            setImageResource(D.ic_pause_grey_400_24dp)
 
                     }
                 }

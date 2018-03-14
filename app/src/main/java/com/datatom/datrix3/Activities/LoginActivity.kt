@@ -77,24 +77,6 @@ class LoginActivity : AppCompatActivity() {
                     ifupdate = true
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java).putExtra("ifupdate",ifupdate))
                 this@LoginActivity.finish()
-                //Someutil.updateToken()
-//                HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
-//                        .subscribeOn(Schedulers.io())
-//                        .observeOn(Schedulers.io())
-//                        .subscribe({
-//                            SPBuild(app.mapp.applicationContext)
-//                                    .addData(AppConstant.USER_TOKEN,it.reuslt.token)
-//                                    .build()
-//
-//                            startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-//                            this@LoginActivity.finish()
-//                        },{
-//                            toast("自动登录失败")
-//                            //Someutil.updateToken()
-//
-//                        })
-
-
 
             }
             else{
@@ -102,10 +84,6 @@ class LoginActivity : AppCompatActivity() {
                 startActivity(Intent(this@LoginActivity, MainActivity::class.java).putExtra("ifupdate",ifupdate))
                 this@LoginActivity.finish()
             }
-
-
-
-
 
         }
         if (Someutil.getrememberuser()){
@@ -149,6 +127,12 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
+        if (!actv_ip.text.toString().IsIP()){
+            login_rootview.ShowSnackbarshort("请输入正确的ip格式")
+            return
+
+        }
+
         var name = actv_username.text.toString()
 
         if (TextUtils.isEmpty(name)){
@@ -167,6 +151,14 @@ class LoginActivity : AppCompatActivity() {
         }
 
         login_wait.Show()
+        SPBuild(applicationContext)
+                .addData(AppConstant.USER_LOGINIP,actv_ip.text.toString())
+                .build()
+
+        HttpUtil.BASE_URL = "http://${Someutil.getloginIP()}/api/sw/"
+        HttpUtil.BASEAPI_URL = "http://${Someutil.getloginIP()}/"
+
+        HttpUtil.BASE_URL.LogD(" httpurl : ")
 
         HttpUtil.instance.apiService().login(name, pwd, "uname", "android")
                 .compose(RxSchedulers.compose())
@@ -176,10 +168,7 @@ class LoginActivity : AppCompatActivity() {
                     when (it.code) {
 
                         200 -> {
-
-
                             Saveinfo(it)
-
                             login_wait.hide()
                             login_rootview.ShowSnackbarshort("登录成功！")
                                     .addCallback(object : Snackbar.Callback() {
@@ -228,7 +217,7 @@ class LoginActivity : AppCompatActivity() {
 
             }else{
                 SPBuild(applicationContext)
-                        .addData(AppConstant.USER_LOGINIP,"")
+                        .addData(AppConstant.USER_LOGINIP,Someutil.getloginIP())
                         .addData(AppConstant.USER_LOGINNAME,"")
                         .addData(AppConstant.USER_LOGINPASSWORD,"")
                         .build()

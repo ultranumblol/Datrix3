@@ -9,9 +9,14 @@ import com.datatom.datrix3.Bean.CancelTask
 import com.datatom.datrix3.Bean.Reupload
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Service.TaskService
+import com.datatom.datrix3.Service.TaskService.Companion.DONE
+import com.datatom.datrix3.Service.TaskService.Companion.PAUSE
+import com.datatom.datrix3.Service.TaskService.Companion.WRITING
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.Util.UploadFileUtil
+import com.datatom.datrix3.Util.UploadFileUtil2
 
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.BaseFragment
@@ -60,7 +65,7 @@ class UploadFragment : BaseFragment() {
 
     private fun initdata() {
 
-        data = database.TaskFileDao().queryUploadTaskFile(UploadFileUtil.UPLOAD, Someutil.getUserID()).sortedByDescending { it.id }
+        data = database.TaskFileDao().queryUploadTaskFile(UploadFileUtil2.UPLOAD, Someutil.getUserID()).sortedByDescending { it.id }
 
 
 
@@ -71,9 +76,42 @@ class UploadFragment : BaseFragment() {
         uploadadapter!!.apply {
 
             setOnItemClickListener {
-                "changan".LogD()
+
+
+                when (allData[it].taskstate) {
+                    DONE -> {
+
+                    }
+
+                    else ->{
+                       when(allData[it].forcestop){
+
+                           true -> {
+
+                               allData[it].forcestop = false
+                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[it])
+                               notifyDataSetChanged()
+                           }
+
+                           false -> {
+                               allData[it].forcestop = true
+                               allData[it].taskstate = PAUSE
+                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[it])
+                               notifyDataSetChanged()
+                           }
+
+                       }
+                    }
+                }
+
+
+            }
+
+            setOnItemLongClickListener {
+
+                //"changan".LogD()
                 AlertDialog.Builder(activity!!).run {
-                    setTitle("删除任务")
+                    setTitle("从任务列表删除")
                     setPositiveButton("确认删除") { _, _ ->
                         AppDatabase.getInstance(app.mapp).TaskFileDao().deletefile(allData[it])
 
@@ -82,7 +120,6 @@ class UploadFragment : BaseFragment() {
                             data = allData
                             notifyDataSetChanged()
                         }
-
 
 
                     }
@@ -98,6 +135,7 @@ class UploadFragment : BaseFragment() {
 
                 }
 
+                return@setOnItemLongClickListener true
             }
         }
 
@@ -116,6 +154,7 @@ class UploadFragment : BaseFragment() {
                             filepersent = database.TaskFileDao().queryTaskFile(it.id).filepersent
                             filestate = database.TaskFileDao().queryTaskFile(it.id).filestate
                             taskstate = database.TaskFileDao().queryTaskFile(it.id).taskstate
+
 
                         }
                         it.toString()

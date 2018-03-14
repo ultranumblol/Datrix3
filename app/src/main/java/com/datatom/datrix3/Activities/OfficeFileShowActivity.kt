@@ -7,6 +7,7 @@ import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.OfficeFile
 import com.datatom.datrix3.Bean.PersonalFilelistData
+import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.IntentUtil
 import com.datatom.datrix3.Util.Someutil
@@ -24,7 +25,7 @@ import java.util.concurrent.TimeUnit
 class OfficeFileShowActivity : BaseActivity() {
 
 
-    lateinit var data: PersonalFilelistData.result2
+
 
     private lateinit var database: AppDatabase
 
@@ -35,34 +36,79 @@ class OfficeFileShowActivity : BaseActivity() {
 
     override fun initView() {
 
-        data = intent.getSerializableExtra("file") as PersonalFilelistData.result2
-
-
-        file_downloadProgress.progress = 0
-
+        var data = intent.getSerializableExtra("file")
         database = AppDatabase.getInstance(this)
 
-        setToolbartitle(data.filename)
+        when(data){
+            is PersonalFilelistData.result2 ->{
+                file_downloadProgress.progress = 0
 
-        //data.size.toInt().toString().LogD(" size :: ")
+                setToolbartitle(data.filename)
 
-        DownfileAndOpen(data, OfficeFile(data.fileid, data.filename, 0, data.size.toInt(), data.fileid))
+                //data.size.toInt().toString().LogD(" size :: ")
 
-
-        val updatesub = Observable.interval(1, TimeUnit.SECONDS).compose(RxSchedulers.compose<Long>())
-                .subscribe {
-
-                    file_downloadProgress.progress = database.OfficefileDao().queryofficeifle(data.fileid).progress
-
-                    if (database.OfficefileDao().queryofficeifle(data.fileid).progress == 100) {
+                DownfileAndOpen(data, OfficeFile(data.fileid, data.filename, 0, data.size.toInt(), data.fileid))
 
 
-                    }
+                val updatesub = Observable.interval(1, TimeUnit.SECONDS).compose(RxSchedulers.compose<Long>())
+                        .subscribe {
+
+                            file_downloadProgress.progress = database.OfficefileDao().queryofficeifle(data.fileid).progress
+
+                            if (database.OfficefileDao().queryofficeifle(data.fileid).progress == 100) {
+
+
+                            }
 //
-                }
+                        }
 
-        addsub(updatesub)
+                addsub(updatesub)
+            }
 
+            is TaskFile ->{
+                file_downloadProgress.hide()
+
+                openfile(data)
+
+
+            }
+
+        }
+
+
+
+
+
+    }
+
+    private fun openfile(data: TaskFile) {
+
+        when (data.exe) {
+
+            "docx" -> {
+                this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
+            }
+            "doc" -> {
+                this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
+            }
+            "xls" -> {
+                this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
+            }
+            "xlsx" -> {
+                this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
+            }
+            "ppt" -> {
+                this!!.startActivity(IntentUtil.textopen(data.filePath, "ppt"))
+            }
+            "pptx" -> {
+                this!!.startActivity(IntentUtil.getPptFileIntent(data.filePath))
+            }
+            "txt" -> {
+                this!!.startActivity(IntentUtil.getTextFileIntent(data.filePath, false))
+            }
+            else -> "未找到类型"
+
+        }
 
     }
 
@@ -75,7 +121,7 @@ class OfficeFileShowActivity : BaseActivity() {
 
         url.LogD(" 下载URL ： ")
 
-        HttpUtil.instance.downLoadApi(officeFile).downloadFileWithFixedUrl(url)
+        val download  = HttpUtil.instance.downLoadApi(officeFile).downloadFileWithFixedUrl(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
                 .subscribe({
@@ -128,5 +174,7 @@ class OfficeFileShowActivity : BaseActivity() {
                     }
 
                 })
+
+        addsub(download)
     }
 }
