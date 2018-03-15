@@ -116,7 +116,7 @@ class HttpUtil {
                         .body(ProgressResponseBody(orginalResponse.body(), object : ProgressListener {
                             override fun onProgress(progress: Long, total: Long, done: Boolean) {
 
-                                progress.toString().LogD(" progress : ")
+                                //progress.toString().LogD(" progress : ")
                             }
                         }))
 
@@ -205,7 +205,7 @@ class HttpUtil {
                     .client(defaultOkHttpClient())
                     .build()
             apiService = retrofit.create(ApiService::class.java)
-        
+
 
 
         return apiService!!

@@ -5,17 +5,11 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 
 import com.datatom.datrix3.Adapter.uploadadapter
-import com.datatom.datrix3.Bean.CancelTask
-import com.datatom.datrix3.Bean.Reupload
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.R
-import com.datatom.datrix3.Service.TaskService
 import com.datatom.datrix3.Service.TaskService.Companion.DONE
 import com.datatom.datrix3.Service.TaskService.Companion.PAUSE
-import com.datatom.datrix3.Service.TaskService.Companion.WRITING
-import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
-import com.datatom.datrix3.Util.UploadFileUtil
 import com.datatom.datrix3.Util.UploadFileUtil2
 
 import com.datatom.datrix3.app
@@ -24,7 +18,6 @@ import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.C
 import com.datatom.datrix3.helpers.I
 import com.datatom.datrix3.helpers.LogD
-import com.datatom.datrix3.helpers.RxBus
 import com.jude.easyrecyclerview.EasyRecyclerView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -87,16 +80,24 @@ class UploadFragment : BaseFragment() {
                        when(allData[it].forcestop){
 
                            true -> {
-
+                               "继续" .LogD()
+                               var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                               task.forcestop = false
                                allData[it].forcestop = false
-                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[it])
+                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
                                notifyDataSetChanged()
                            }
 
                            false -> {
+
+                               //allData[it].taskstate = PAUSE
+                               "暂停" .LogD()
+                               var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                               task.forcestop = true
+                               task.taskstate = PAUSE
                                allData[it].forcestop = true
                                allData[it].taskstate = PAUSE
-                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[it])
+                               AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
                                notifyDataSetChanged()
                            }
 

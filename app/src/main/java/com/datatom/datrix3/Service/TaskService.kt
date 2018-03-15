@@ -39,8 +39,6 @@ class TaskService : Service() {
     override fun onCreate() {
         super.onCreate()
 
-
-
         Observable.interval(1, TimeUnit.SECONDS).
                 compose(RxSchedulers.compose())
                 .subscribe {
@@ -48,10 +46,11 @@ class TaskService : Service() {
                     data = appdatabase.queryUploadTaskFile(UPLOAD, Someutil.getUserID()).sortedByDescending { it.id }
 
                     data!!.apply {
-                        //toString().LogD("task file info : ")
+
                         forEach {
-                           //"taskstate : ${it.taskstate}".LogD()
-                           // "forcestop : ${it.forcestop}".LogD()
+                            // "offset : ${it.offset}".LogD()
+                            // "file  :"+it.toString().LogD()
+                            // "forcestop : ${it.forcestop}".LogD()
                             when (it.taskstate) {
 
                                 NEWFILE -> {
@@ -60,17 +59,18 @@ class TaskService : Service() {
                                 }
 
                                 PAUSE -> {
-                                    if(it.forcestop){
-                                       // " 不重上传".LogD()
-                                    }
-                                    else{
+                                    if (it.forcestop) {
+                                      //  " 不重上传".LogD()
+                                    } else {
                                         it.taskstate = WRITING
-                                       // "重上传".LogD()
+                                        "继续上传".LogD()
                                         UploadFileUtil2(it).ReUpload()
                                     }
                                 }
-                                else ->{
-
+                                else -> {
+                                    if (it.forcestop) {
+                                        //" 不重上传".LogD()
+                                    }
 
                                 }
                             }

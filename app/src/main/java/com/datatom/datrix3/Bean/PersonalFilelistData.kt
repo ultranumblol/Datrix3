@@ -96,6 +96,7 @@ data class PersonalFilelistData(
             @SerializedName("parentid")
             @Expose
             val parentid: String,
+
             @SerializedName("createuid")
             @Expose
             val createuid: String,

@@ -278,4 +278,67 @@ interface ApiService {
            @Field("userid") userid : String
 
     ) : Observable<Quota>
+
+    /**
+     * 删除文件 放入回收站
+     */
+    @FormUrlEncoded
+    @POST("trash/do")
+    fun trushDo(
+            @Header("ACCESS-TOKEN") token : String,
+            @Field("fileid") fileid: String,
+            @Field("objectid") objectid: String,
+            @Field("createuid") createuid: String
+
+    ) : Observable<String>
+
+    /**
+     * 文件重命名
+     * type ： 重名处理类型（1（无重名）、 2（有，并覆盖）、 3、（有，但保留））
+     */
+    @FormUrlEncoded
+    @POST("file/rename")
+    fun filerename (
+            @Header("ACCESS-TOKEN") token : String,
+            @Field("newname") newname: String,
+            @Field("fileid") fileid: String,
+            @Field("createuid") createuid: String,
+            @Field("objectid") objectid: String,
+            @Field("parentid") parentid: String,
+            @Field("type") type: String,
+            @Field("ext") ext: String
+
+    ) : Observable<String>
+
+    /**
+     * 文件重命名
+     * type ： 重名处理类型（1（无重名）、 2（有，并覆盖）、 3、（有，但保留））
+     */
+    @FormUrlEncoded
+    @POST("dir/rename")
+    fun dirrename (
+            @Header("ACCESS-TOKEN") token : String,
+            @Field("newname") newname: String,
+            @Field("fileid") fileid: String,
+            @Field("createuid") createuid: String,
+            @Field("objectid") objectid: String,
+            @Field("parentid") parentid: String,
+            @Field("type") type: String,
+            @Field("ext") ext: String
+
+    ) : Observable<String>
+
+    /**
+     * 获取文件基本信息
+     */
+    @FormUrlEncoded
+    @POST("file/basicinfo")
+    fun filebasicinfo(
+            @Header("ACCESS-TOKEN") token : String,
+            @Field("objectid") objectid: String,
+            @Field("createuid") createuid: String,
+            @Field("userid") userid: String
+
+
+    ) : Observable<FileBasicInfo>
 }

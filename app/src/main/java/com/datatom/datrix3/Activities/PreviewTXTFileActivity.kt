@@ -62,14 +62,5 @@ class PreviewTXTFileActivity : BaseActivity() {
             }
 
         }
-
-
-
-
-
-
-
-
-
     }
 }

@@ -107,7 +107,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
     private var clear_his: TextView? = null
     private var zhezhao: FrameLayout? = null
 
-    private  var pagelist: ArrayList<SpacePageList> = arrayListOf()
+    private var pagelist: ArrayList<SpacePageList> = arrayListOf()
 
     private var cpge = 1
 
@@ -218,7 +218,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         }
 
         pagelist = arrayListOf()
-        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true,""))
+        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, ""))
         currentID = PERSONAL_SPACE_ID
         currentdir = PERSONAL_SPACE_ID
         initData(currentdir)
@@ -289,12 +289,12 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                 "pback" -> {
                     cpge = 1
-                   // pagelist.toString().LogD("click goback  pagelist : ")
+                    // pagelist.toString().LogD("click goback  pagelist : ")
 
                     when (currentID) {
                         PERSONAL_SPACE_ID -> {
-                            if (pagelist.size>1)
-                            pagelist.removeAt(pagelist.size - 1)
+                            if (pagelist.size > 1)
+                                pagelist.removeAt(pagelist.size - 1)
                             //pagelist.size.toString().LogD(" after remove list  : ")
                             currentdir = pagelist[pagelist.size - 1].fileid
                             currentParentObjid = pagelist[pagelist.size - 1].objid
@@ -302,13 +302,13 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             rvadapter!!.clear()
                             initData(currentdir)
                             RxBus.get().post(pagelist[pagelist.size - 1])
-                           // pagelist.size.toString().LogD("pagelist.size : ")
+                            // pagelist.size.toString().LogD("pagelist.size : ")
 
 
                         }
                         PUBLIC_SPACE_ID -> {
-                            if (pagelist.size>1)
-                            pagelist.removeAt(pagelist.size - 1)
+                            if (pagelist.size > 1)
+                                pagelist.removeAt(pagelist.size - 1)
                             rvadapter!!.clear()
                             currentdir = pagelist[pagelist.size - 1].fileid
                             currentParentObjid = pagelist[pagelist.size - 1].objid
@@ -359,12 +359,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             //设置适配器点击事件
             setOnItemClickListener {
 
-//                allData[it].type.LogD("click  type : ")
+                //                allData[it].type.LogD("click  type : ")
 //                allData[it].parentid.LogD("parentid: ")
 //                allData[it].objid.LogD("objid: ")
 //                allData[it].fileid.LogD("fileid: ")
-
-
                 if (allData[it].cayman_pretreat_mimetype != null)
                     allData[it].cayman_pretreat_mimetype?.LogD("click  cayman_pretreat_mimetype : ")
                 if (allData[it].ext != null)
@@ -381,7 +379,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             when (currentID) {
                                 PERSONAL_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false,rvadapter!!.allData[it].objid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid)
                                     cpge = 1
                                     pagelist.add(sp)
                                     pagelist.toString().LogD("after add pagelist : ")
@@ -396,7 +394,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                 }
                                 PUBLIC_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false,rvadapter!!.allData[it].objid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false, rvadapter!!.allData[it].objid)
                                     pagelist.add(sp)
                                     cpge = 1
                                     currentdir = rvadapter!!.allData[it].fileid
@@ -405,10 +403,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                     initpublicData(currentdir)
                                     RxBus.get().post(sp)
                                 }
-
                             }
-
-
                         }
                         "1" -> {
                             if (rvadapter!!.allData[it].cayman_pretreat_mimetype != null)
@@ -424,24 +419,15 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                             putInt("code", 1)//第几张
                                             putStringArrayList("imageuri", imglist)
                                         }
-
-
                                         context!!.startActivity(Intent(context, ViewBigImageActivity::class.java).putExtras(bundle).putExtra("file", rvadapter!!.allData[it]!!))
-
-
                                     }
 
                                 //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
                                     "video"
                                     -> {
-
-
                                         // rvadapter!!.allData[it].toString().LogD("click : ")
-
                                         context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
                                                 .putExtra("file", rvadapter!!.allData[it]))
-
-
                                     }
 
                                 // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
@@ -453,11 +439,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                     -> {
 
                                     }
-                                    "txt" ->{
+                                    "txt" -> {
                                         context!!.startActivity(Intent(context, PreviewTXTFileActivity::class.java)
                                                 .putExtra("file", rvadapter!!.allData[it]))
-
-
                                     }
                                     "zip" -> {
 
@@ -468,25 +452,18 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                 .putExtra("file", rvadapter!!.allData[it]))
 
                                     }
-
                                     "doc" -> {
                                         context!!.startActivity(Intent(context, OfficeFileShowActivity::class.java)
                                                 .putExtra("file", rvadapter!!.allData[it]))
-
                                     }
                                     else -> {
-
 
                                     }
                                 }
                         }
-
                     }
-
                 }
-
             }
-
         }
 
     }
@@ -618,64 +595,97 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
             }
 
-
+        //重命名
             I.edit_rv_rename -> {
+                var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
+                editview2.find<TextView>(I.dialog_edittext).hint = "请输入文件名称"
 
-                var renametext = EditText(activity)
+                if (rvadapter!!.getcheckboxArrary().size() == 1)
+                    context.let {
 
-                renametext.apply {
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+                        AlertDialog.Builder(it!!).run {
+                            setView(editview2)
+                            setTitle("重命名")
+                            setNegativeButton("取消") { _, _ ->
 
-                    hint = " 文件名称"
+                            }
+                            setPositiveButton("确认") { _, _ ->
 
-                    textSize = 16f
+                                when (rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].type) {
+                                    //文件夹重命名
+                                    "0" -> {
+                                        HttpUtil.instance.apiService().dirrename(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString()
+                                                , rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].fileid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].createuid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].objid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].parentid,
+                                                "1", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].ext)
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
 
-                    setPadding(28, 14, 14, 14)
+                                                    it.toString().LogD("rename : ")
+                                                    if (it.contains("200"))
+                                                        activity!!.toast("重命名成功！")
+                                                    rvadapter!!.setCheckBoxNoneSelect()
+                                                    RxBus.get().post("updatespacecheckbox")
+                                                    Handler().postDelayed({
+                                                        refreshData()
+                                                    }, 1000)
+                                                }, {
+                                                    it.toString().LogD("error : ")
+                                                    activity!!.toast("重命名失败！")
+                                                })
+                                    }
+                                //文件重命名
+                                    "1" -> {
+                                        HttpUtil.instance.apiService().filerename(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString()
+                                                , rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].fileid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].createuid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].objid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].parentid,
+                                                "1", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].ext)
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
+
+                                                    it.toString().LogD("rename : ")
+                                                    if (it.contains("200"))
+                                                        activity!!.toast("重命名成功！")
+                                                    rvadapter!!.setCheckBoxNoneSelect()
+                                                    RxBus.get().post("updatespacecheckbox")
+                                                    Handler().postDelayed({
+                                                        refreshData()
+                                                    }, 1000)
+                                                }, {
+                                                    it.toString().LogD("error : ")
+                                                    activity!!.toast("重命名失败！")
+                                                })
+
+                                    }
+                                }
 
 
-                }
-
-                context.let {
-                    AlertDialog.Builder(it!!).run {
-                        setView(renametext)
-                        setTitle("重命名")
-                        setNegativeButton("取消") { _, _ ->
-
+                            }
+                            show()
+                        }.apply {
+                            getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+                            getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
                         }
-                        setPositiveButton("确认") { _, _ ->
-                        }
-                        show()
-                    }.apply {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
-                        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
                     }
-                }
-
 
             }
             I.edit_rv_xiazai -> {
 
                 rvadapter!!.getcheckboxArrary().forEach { i, _ ->
 
-                    // i.toString().LogD("index : ")
-
-                   // var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + rvadapter!!.allData[i].fileid + "&iswindows=0&optuser=admin"
-
-                    //url.LogD("url : ")
-
-
-
-                   // rvadapter!!.setItemChecked(i)
-
-                    var taskfile  = TaskFile()
+                    var taskfile = TaskFile()
                     taskfile!!.apply {
 
                         filename = rvadapter!!.allData[i].filename
                         fileid = rvadapter!!.allData[i].fileid
                         mCompeleteSize = 0L
                         offset = 0
-                        if (rvadapter!!.allData[i].cayman_pretreat_mimetype!= null)
-                        mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+                        if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
+                            mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
                         exe = rvadapter!!.allData[i].ext
                         filetype = DOWNLOAD
                         taskstate = NEWFILE
@@ -721,13 +731,34 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 AlertDialog.Builder(activity!!).run {
                     setMessage("30天内可在回收站内找回删除文件")
                     setPositiveButton("确认删除") { _, _ ->
-                        //todo 删除文件
+                        rvadapter!!.apply {
+                            getcheckboxArrary().forEach { i, _ ->
+                                HttpUtil.instance.apiService().trushDo(Someutil.getToken(), allData[i].fileid
+                                        , allData[i].objid, allData[i].createuid)
+                                        .compose(RxSchedulers.compose())
+                                        .subscribe({
+
+                                            if (it.contains("200")) {
+                                                activity!!.toast("删除成功！")
+                                                rvadapter!!.setCheckBoxNoneSelect()
+                                                RxBus.get().post("updatespacecheckbox")
+                                                Handler().postDelayed({
+                                                    refreshData()
+                                                }, 500)
+                                            } else {
+                                                activity!!.toast("删除失败！")
+                                            }
+                                            it.toString().LogD("delete file reuslt : ")
+                                        }, {
+                                            activity!!.toast("删除失败！")
+                                        })
+                            }
+                        }
                     }
                     setNegativeButton("取消") { _, _ ->
 
                     }
                     show()
-
 
                 }.apply {
                     getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.red))
@@ -746,21 +777,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             }
             I.edit_rv_dabaoxiazai -> {
 
-
-                var renametext = EditText(activity)
-                renametext.apply {
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-                    hint = " 请输入打包文件名"
-
-                    textSize = 16f
-
-                    setPadding(28, 14, 14, 14)
-
-
-                }
                 var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
-
+                editview2.find<TextView>(I.dialog_edittext).hint = "请输入打包文件名"
 
                 context.let {
                     AlertDialog.Builder(it!!).run {
@@ -787,7 +805,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             I.edit_rv_move -> {
 
             }
+        //详情
             I.edit_rv_detil -> {
+                if (rvadapter!!.getcheckboxArrary().size() == 1)
+                context!!.startActivity(Intent(activity, FileDetilActivity::class.java).putExtra("file",rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
+
+                Handler().postDelayed({
+                    refreshData()
+                }, 300)
 
             }
 
@@ -801,7 +826,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentParentObjid = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true,""))
+                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, ""))
                 rvadapter!!.clear()
                 initData(currentdir)
 
@@ -817,7 +842,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentParentObjid = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true,""))
+                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true, ""))
                 rvadapter!!.clear()
                 initpublicData(currentdir)
 
@@ -838,71 +863,45 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //点击搜索框
             I.search_layout -> {
                 SearchViewUtils.handleToolBar(context!!, mCardViewSearch!!, mEtSearch!!)
-
                 //Log.d("wgz", "his : " + database.SearchHisDao().querySearchHis().toString())
-
-
                 searchadapter!!.apply {
                     clear()
                     searchhiss = database.SearchHisDao().querySearchHis().sortedByDescending { it.id }
-
-
                     addAll(searchhiss)
 
                 }
                 if (searchhiss!!.isNotEmpty()) {
                     clear_his!!.Show()
                 } else clear_his!!.hide()
-
-
             }
         //清除搜索历史记录
             I.clear_his -> {
 
                 searchhiss!!.forEach {
-
                     database.SearchHisDao().deleteHis(it)
-
                 }
-
 
                 searchadapter!!.apply {
                     clear()
                     notifyDataSetChanged()
                     clear_his!!.hide()
-
-
                 }
-
-
             }
         //创建新文件夹
             I.space_newfile -> {
-                var renametext = EditText(activity)
 
-                renametext.apply {
-                    layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-
-                    hint = " 文件夹名称"
-
-                    textSize = 16f
-
-                    setPadding(28, 24, 14, 14)
-
-                    background = null
-
-
-                }
+                var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
+                editview2.find<TextView>(I.dialog_edittext).hint = "请输入文件夹名称"
 
                 context.let {
                     AlertDialog.Builder(it!!).run {
-                        setView(renametext)
+                        setView(editview2)
                         setTitle("请输入文件夹名称")
                         setNegativeButton("取消") { _, _ ->
 
                         }
                         setPositiveButton("确认") { _, _ ->
-                            HttpUtil.instance.apiService().createPersondir(Someutil.getToken(), renametext.text.toString(), Someutil.getUserID()
+                            HttpUtil.instance.apiService().createPersondir(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString(), Someutil.getUserID()
                                     , Someutil.getUserID(), currentdir, currentParentObjid, false)
                                     .compose(RxSchedulers.compose())
                                     .subscribe({
@@ -925,7 +924,6 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                         activity!!.toast("创建失败！")
 
                                     })
-
                         }
                         show()
                     }.apply {
@@ -954,11 +952,11 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
     //刷新数据
     fun refreshData() {
 
-        currentdir.LogD("currentdir : ")
+        //currentdir.LogD("currentdir : ")
         cpge = 1
         rvadapter!!.setCheckBoxNoneSelect()
         rvadapter!!.notifyDataSetChanged()
-
+        RxBus.get().post("updatespacecheckbox")
         when (currentID) {
 
             PERSONAL_SPACE_ID -> {

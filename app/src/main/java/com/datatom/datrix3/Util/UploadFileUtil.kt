@@ -1,19 +1,13 @@
 package com.datatom.datrix3.Util
 
-
 import com.datatom.datrix3.Bean.TaskFile
-import com.datatom.datrix3.Util.Someutil.delFolder
 import com.datatom.datrix3.app
 import com.datatom.datrix3.base.DefaultProgressListener
 import com.datatom.datrix3.base.UploadFileRequestBody
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.LogD
-import com.datatom.datrix3.helpers.RxBus
-
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-
 import io.reactivex.schedulers.Schedulers
 import okhttp3.RequestBody
 import java.io.ByteArrayInputStream
@@ -29,10 +23,10 @@ class UploadFileUtil(file: TaskFile) {
 
 
     var database = AppDatabase.getInstance(app.mapp)
-    private var taskFile: TaskFile? = null
+    private var tfile: TaskFile? = null
     private var currentPieces = 0
 
-    private lateinit var disposable  : Disposable
+
 
     companion object {
         val UPLOAD = 10
@@ -42,76 +36,71 @@ class UploadFileUtil(file: TaskFile) {
         val FINISHING = 555
         val DONE = 666
         val PAUSE = 44
-        private val UPLOADLENGTH = 2 * 1024 * 1024
+        private val UPLOADLENGTH = 1 * 1024 * 1024
 
     }
 
     init {
-        taskFile = file
+        tfile = file!!
 
-        RxBus.get().toFlowable(this.javaClass).subscribe{
+    }
 
+    fun settaskFile(taskfile: TaskFile) {
 
-        }
+        this.tfile = taskfile
     }
 
     fun doUpload() {
-        initFile(taskFile!!)
+        initFile()
     }
 
-    private fun initFile(tfile: TaskFile) {
+    private fun initFile() {
 
         currentPieces = 1
-        val file = File(tfile.filePath)
+        val file = File(tfile!!.filePath)
         file.length().toString().LogD("length : ")
-        tfile.apply {
+
+        tfile!!.apply {
             total = file.length()
+            filesize = file.length().toString()
             filename = file.name
-            mCompeleteSize = 0L
-            offset = 0
-            filetype = UPLOAD
-            filestate = CREATING
-            userid = Someutil.getUserID()
-            tfile.id = System.currentTimeMillis().toString()
-            taskFile!!.id = System.currentTimeMillis().toString()
-        }
-        database.TaskFileDao().insert(tfile)
-
-        CreateFile(tfile!!)
-    }
-
-    fun cancelUpload(){
-        if (disposable!=null){
-            disposable.dispose()
+            taskstate = CREATING
         }
 
+        database.TaskFileDao().updatefiles(tfile!!)
+
+        CreateFile()
     }
 
     fun ReUpload() {
 
         currentPieces = 1
 
-        when(taskFile!!.filestate){
-            CREATING ->{
-                CreateFile(taskFile!!)
+        when (tfile!!.filestate) {
+            CREATING -> {
+
+                tfile!!.taskstate = WRITING
+                database.TaskFileDao().updatefiles(tfile!!)
+                CreateFile()
             }
-            WRITING ->{
-                WriteFile(taskFile!!)
+            WRITING -> {
+                tfile!!.taskstate = WRITING
+                database.TaskFileDao().updatefiles(tfile!!)
+                WriteFile()
             }
-            FINISHING ->{
-                UploadFinish(taskFile!!)
+            FINISHING -> {
+                tfile!!.taskstate = WRITING
+                database.TaskFileDao().updatefiles(tfile!!)
+                UploadFinish()
             }
         }
-
-
-
     }
 
-    private fun CreateFile(tfile: TaskFile) {
+    private fun CreateFile() {
 
 
-        HttpUtil.instance.apiService().FileCreate(Someutil.getToken(), tfile.filename, tfile.total.toString(), Someutil.getUserID()
-                , "", "8A85A16BB60D88F0", "", true, true)
+        HttpUtil.instance.apiService().FileCreate(Someutil.getToken(), tfile!!.filename, tfile!!.total.toString(), Someutil.getUserID()
+                , Someutil.getUserID(), tfile!!.dirid, tfile!!.parentobj, true, true)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
 
@@ -120,7 +109,7 @@ class UploadFileUtil(file: TaskFile) {
                     when (it.code) {
                         200 -> {
                             it.toString().LogD("创建文件成功 : ")
-                            tfile.apply {
+                            tfile!!.apply {
 
                                 fileid = it.reuslt.fileid
                                 dirpath = it.reuslt.dirpath
@@ -129,20 +118,22 @@ class UploadFileUtil(file: TaskFile) {
 
                             }
                             //添加文件到数据库
-                            database.TaskFileDao().updatefiles(tfile)
+                            database.TaskFileDao().updatefiles(tfile!!)
 
-                            WriteFile(tfile)
+                            WriteFile()
 
                         }
                         else -> {
-                            tfile.filestate = CREATING
-                            database.TaskFileDao().updatefiles(tfile)
+                            tfile!!.filestate = CREATING
+                            tfile!!.taskstate = PAUSE
+                            database.TaskFileDao().updatefiles(tfile!!)
                             it.toString().LogD("创建文件失败 :code =!200 ")
                         }
                     }
                 }, {
-                    tfile.filestate = CREATING
-                    database.TaskFileDao().updatefiles(tfile)
+                    tfile!!.filestate = CREATING
+                    tfile!!.taskstate = PAUSE
+                    database.TaskFileDao().updatefiles(tfile!!)
 
                     it.toString().LogD("创建文件失败 : ")
 
@@ -151,17 +142,32 @@ class UploadFileUtil(file: TaskFile) {
 
     }
 
-    private fun WriteFile(tfile: TaskFile) {
+    private fun WriteFile() {
+
+        var tfile2 = database.TaskFileDao().queryTaskFile(tfile!!.id)
+
+        tfile2.toString().LogD("quary tfile2  ::::::::")
 
         val bodyMap = HashMap<String, RequestBody>()
-        val file = File(tfile.filePath)
+        val file = File(tfile2!!.filePath)
         val uploadlenght: Long
-        if (tfile.total < tfile.offset + UPLOADLENGTH) {
-            uploadlenght = tfile.total - tfile.offset
+        if (tfile2!!.total < tfile2!!.offset + UPLOADLENGTH) {
+            uploadlenght = tfile2!!.total - tfile2!!.offset
 
         } else {
             uploadlenght = UPLOADLENGTH.toLong()
         }
+
+//       var boo =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(tfile!!.id).forcestop
+//        tfile!!.forcestop = boo
+//        boo.toString().LogD(" 是否暂停 ： ")
+//        if (boo){
+//            tfile!!.taskstate = PAUSE
+//            database.TaskFileDao().updatefiles(tfile!!)
+//            "手动暂停".LogD()
+//            return
+//
+//        }
 
         Observable.just("split")
                 .subscribeOn(Schedulers.newThread())
@@ -170,7 +176,7 @@ class UploadFileUtil(file: TaskFile) {
                     var raf: RandomAccessFile?
                     try {
                         raf = RandomAccessFile(file, "r")
-                        raf.seek(tfile.offset)
+                        raf.seek(tfile2!!.offset)
                         val buffer = ByteArray(uploadlenght.toInt())
                         raf.readFully(buffer)
                         val ins = ByteArrayInputStream(buffer)
@@ -182,7 +188,7 @@ class UploadFileUtil(file: TaskFile) {
                             dir.mkdirs()
                         }
 
-                        val out = FileOutputStream(File(dir, "piece" + tfile.fileid))
+                        val out = FileOutputStream(File(dir, "piece" + tfile2!!.fileid))
                         val buf = ByteArray(1024)
 
                         while (true) {
@@ -194,7 +200,7 @@ class UploadFileUtil(file: TaskFile) {
 
                         out.close()
                         ins.close()
-                        val pfile = File("/sdcard/tmp/" + "piece" + tfile.fileid)
+                        val pfile = File("/sdcard/tmp/" + "piece" + tfile2!!.fileid)
 
 
                         val fileRequestBody = UploadFileRequestBody(pfile, DefaultProgressListener(tfile))
@@ -204,7 +210,7 @@ class UploadFileUtil(file: TaskFile) {
                         bodyMap.put("file; filename=\"blob\"", fileRequestBody)
 //
 
-                         disposable = HttpUtil.instance.apiService().FileWrite(Someutil.getToken(), tfile.objid, tfile.offset.toString(),
+                        var disposable = HttpUtil.instance.apiService().FileWrite(Someutil.getToken(), tfile2!!.objid, tfile2!!.offset.toString(),
                                 uploadlenght.toString(), Someutil.getUserID(), bodyMap)
                                 .compose(RxSchedulers.compose())
 
@@ -213,31 +219,37 @@ class UploadFileUtil(file: TaskFile) {
                                     it.LogD("write result : ")
                                     if (it.contains("200")) {
                                         currentPieces += 1
-                                        tfile.offset = tfile.offset + uploadlenght
+                                        tfile2!!.offset = tfile2!!.offset + uploadlenght
 
-                                        tfile.mCompeleteSize = tfile.offset
-                                        database.TaskFileDao().updatefiles(tfile)
+                                        tfile2!!.mCompeleteSize = tfile2!!.offset
+                                        database.TaskFileDao().updatefiles(tfile2!!)
 
 
-                                        if (tfile.mCompeleteSize === tfile.total) {
+                                        if (tfile!!.mCompeleteSize === tfile!!.total) {
 
-                                            tfile.filestate = FINISHING
-                                            database.TaskFileDao().updatefiles(tfile)
-                                            UploadFinish(tfile)
+                                            tfile2!!.filestate = FINISHING
+                                            database.TaskFileDao().updatefiles(tfile2!!)
+                                            UploadFinish()
                                             ("go finish").LogD()
 
                                         } else {
                                             ("continue write").LogD()
-                                            WriteFile(tfile)
+                                            WriteFile()
                                         }
 
 
+                                    } else {
+                                        tfile2!!.taskstate = PAUSE
+                                        database.TaskFileDao().updatefiles(tfile2!!)
                                     }
 
 
                                 }, {
-                                    tfile.filestate = PAUSE
-                                    database.TaskFileDao().updatefiles(tfile)
+
+
+                                    tfile2!!.taskstate = PAUSE
+                                    tfile2!!.forcestop = database.TaskFileDao().queryTaskFile(tfile2!!.id).forcestop
+                                    database.TaskFileDao().updatefiles(tfile2!!)
                                     it.toString().LogD("write http error : ")
 
                                     // WriteFile(tfile = tfile)
@@ -245,6 +257,8 @@ class UploadFileUtil(file: TaskFile) {
 
 
                                 })
+                       // RxApiManager().get()!!.add(tfile!!.id,disposable)
+
 //                        HttpUtil.instance.apiService2(UploadListener { bytesWritten, contentLength ->
 //
 ////                            bytesWritten.toString().LogD("bytesWritten")
@@ -296,30 +310,36 @@ class UploadFileUtil(file: TaskFile) {
 
     }
 
-    private fun UploadFinish(tfile: TaskFile) {
+    private fun UploadFinish() {
+        var tfile2 = database.TaskFileDao().queryTaskFile(tfile!!.id)
+        tfile2!!.toString().LogD("file ::: ")
 
-        tfile.toString().LogD("file ::: ")
-
-        HttpUtil.instance.apiService().FileFinish(Someutil.getToken(), tfile.fileid, tfile.objid, Someutil.getUserID())
+        HttpUtil.instance.apiService().FileFinish(Someutil.getToken(), tfile2!!.fileid, tfile2!!.objid, Someutil.getUserID())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
 
                 .subscribe({
                     if (it.contains("200")) {
-                        tfile.filepersent = 100
-                        tfile.filestate = DONE
-                        database.TaskFileDao().updatefiles(tfile)
+                        tfile2!!.filepersent = 100
+                        tfile2!!.taskstate = DONE
+                        database.TaskFileDao().updatefiles(tfile2!!)
                         ("file 上传完毕！").LogD()
-                        delFolder("/sdcard/tmp")
+                        Someutil.delFolder("/sdcard/tmp")
                     } else {
-
+                        tfile2!!.taskstate = PAUSE
+                        database.TaskFileDao().updatefiles(tfile2!!)
                         "dofinish失败！".LogD()
                     }
                 }, {
+                    tfile!!.taskstate = PAUSE
+                    database.TaskFileDao().updatefiles(tfile2!!)
                 })
 
 
     }
+
+
+
 
 
 }

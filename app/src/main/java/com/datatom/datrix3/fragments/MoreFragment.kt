@@ -16,6 +16,7 @@ import com.datatom.datrix3.Util.*
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.I
+import com.datatom.datrix3.helpers.LogD
 
 import com.jude.easyrecyclerview.EasyRecyclerView
 import org.jetbrains.anko.find
@@ -147,12 +148,14 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
         HttpUtil.instance.apiService().userQuota(Someutil.getToken(), Someutil.getUserID())
                 .compose(RxSchedulers.compose())
                 .subscribe({
-                    quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)} ${((it.res.used.toLong()/it.res.quota.toLong())*100)}%）"
+                   // quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)} ${((it.res.used.toLong()/it.res.quota.toLong())*100)}%）"
+                    quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)}）"
 
                 }, {
+                    it.toString().LogD("quota error : ")
                     quota!!.text = "容量（-/-）"
-
-
+                    Thread.sleep(2000)
+                    initData()
                 })
 
 

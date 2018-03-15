@@ -19,7 +19,7 @@ class DefaultProgressListener(private val file: TaskFile?) : ProgressListener {
         var percent = (hasWrittenLen * 100 / totalLen).toInt()
         if (percent > 100) percent = 100
         if (percent < 0) percent = 0
-        val progress = (hasWrittenLen + file!!.offset) * 100 / file.total
+       // val progress = (hasWrittenLen + file!!.offset) * 100 / file.total
 
         if (file != null) {
 
@@ -28,9 +28,11 @@ class DefaultProgressListener(private val file: TaskFile?) : ProgressListener {
             val nowtime = System.currentTimeMillis()
             if (nowtime - settime > 300) {
                 file.filepersent = progress.toInt()
+                if (AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(file.id)!=null)
+                file.forcestop = AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(file.id).forcestop
                 AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(file)
 
-                ("progress : " + progress).LogD("upprogress : ")
+                ("progress : " + progress).LogD()
 
 
                 settime = nowtime

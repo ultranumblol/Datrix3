@@ -30,7 +30,6 @@ class UploadFileUtil2(file: TaskFile) {
     private var currentPieces = 0
 
 
-
     companion object {
         val UPLOAD = 10
         val DOWNLOAD = 20
@@ -39,7 +38,7 @@ class UploadFileUtil2(file: TaskFile) {
         val FINISHING = 555
         val DONE = 666
         val PAUSE = 44
-        private val UPLOADLENGTH = 2 * 1024 * 1024
+        private val UPLOADLENGTH = 1 * 1024 * 1024
 
     }
 
@@ -67,7 +66,7 @@ class UploadFileUtil2(file: TaskFile) {
             total = file.length()
             filesize = file.length().toString()
             filename = file.name
-            taskstate = CREATING
+            taskstate = WRITING
         }
 
         database.TaskFileDao().updatefiles(tfile!!)
@@ -147,6 +146,7 @@ class UploadFileUtil2(file: TaskFile) {
 
     private fun WriteFile() {
 
+
         tfile!!.fileid.LogD("file id ::::::::")
 
         val bodyMap = HashMap<String, RequestBody>()
@@ -159,9 +159,10 @@ class UploadFileUtil2(file: TaskFile) {
             uploadlenght = UPLOADLENGTH.toLong()
         }
 
-       var boo =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(tfile!!.id).forcestop
-
-        if (boo){
+        var boo = AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(tfile!!.id).forcestop
+        tfile!!.forcestop = boo
+        boo.toString().LogD(" 是否暂停 ： ")
+        if (boo) {
             tfile!!.taskstate = PAUSE
             database.TaskFileDao().updatefiles(tfile!!)
             "手动暂停".LogD()
@@ -210,31 +211,34 @@ class UploadFileUtil2(file: TaskFile) {
                         bodyMap.put("file; filename=\"blob\"", fileRequestBody)
 //
 
-                        var disposable = HttpUtil.instance.apiService().FileWrite(Someutil.getToken(), tfile!!.objid, tfile!!.offset.toString(),
+                        HttpUtil.instance.apiService().FileWrite(Someutil.getToken(), tfile!!.objid, tfile!!.offset.toString(),
                                 uploadlenght.toString(), Someutil.getUserID(), bodyMap)
                                 .compose(RxSchedulers.compose())
 
                                 .subscribe({
 
-                                    it.LogD("write result : ")
+                                  //  it.LogD("write result : ")
+
                                     if (it.contains("200")) {
                                         currentPieces += 1
                                         tfile!!.offset = tfile!!.offset + uploadlenght
-
+                                        tfile!!.forcestop = database.TaskFileDao().queryTaskFile(tfile!!.id).forcestop
                                         tfile!!.mCompeleteSize = tfile!!.offset
                                         database.TaskFileDao().updatefiles(tfile!!)
 
 
                                         if (tfile!!.mCompeleteSize === tfile!!.total) {
-
                                             tfile!!.filestate = FINISHING
                                             database.TaskFileDao().updatefiles(tfile!!)
                                             UploadFinish()
                                             ("go finish").LogD()
 
                                         } else {
+
                                             ("continue write").LogD()
                                             WriteFile()
+
+
                                         }
 
 
@@ -257,7 +261,7 @@ class UploadFileUtil2(file: TaskFile) {
 
 
                                 })
-                       // RxApiManager().get()!!.add(tfile!!.id,disposable)
+                        // RxApiManager().get()!!.add(tfile!!.id,disposable)
 
 //                        HttpUtil.instance.apiService2(UploadListener { bytesWritten, contentLength ->
 //
@@ -337,9 +341,6 @@ class UploadFileUtil2(file: TaskFile) {
 
 
     }
-
-
-
 
 
 }
