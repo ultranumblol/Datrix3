@@ -10,7 +10,9 @@ import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.LogD
 import kotlinx.android.synthetic.main.activity_file_detil.*
 
-
+/**
+ * 文件详情
+ */
 class FileDetilActivity : BaseActivity() {
 
 

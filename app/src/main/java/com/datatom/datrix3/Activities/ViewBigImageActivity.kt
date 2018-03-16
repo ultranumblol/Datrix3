@@ -40,7 +40,7 @@ import java.io.File
 /**
  * 用于查看大图
  *
- * @author jingbin
+ *
  */
 class ViewBigImageActivity : FragmentActivity(), OnPageChangeListener, PhotoViewAttacher.OnPhotoTapListener {
 

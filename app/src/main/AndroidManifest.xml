@@ -42,7 +42,8 @@
         <activity android:name=".Activities.PDFViewerActivity" />
         <activity android:name=".Activities.OfficeFileShowActivity" />
         <activity android:name=".Activities.PreviewTXTFileActivity" />
-        <activity android:name=".Activities.FileDetilActivity"></activity>
+        <activity android:name=".Activities.FileDetilActivity" />
+        <activity android:name=".Activities.SearchResultActivity"></activity>
     </application>
 
 </manifest>

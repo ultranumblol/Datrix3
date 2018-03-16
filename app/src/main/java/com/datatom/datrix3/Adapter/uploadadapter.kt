@@ -63,55 +63,7 @@ class uploadadapter(context: Context) : RecyclerArrayAdapter<TaskFile>(context) 
 
 
             img!!.apply {
-                setOnClickListener {
-                    data.toString().LogD("dataclick : ")
 
-//                    when (data.taskstate) {
-//                        PAUSE -> {
-//
-//                            allData[adapterPosition].forcestop = false
-//                            AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[adapterPosition])
-//                            allData[adapterPosition].taskstate = WRITING
-//                            notifyDataSetChanged()
-//                        }
-//
-//                        WRITING -> {
-//                            allData[adapterPosition].forcestop = true
-//                            allData[adapterPosition].taskstate = PAUSE
-//                            AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(allData[adapterPosition])
-//                            notifyDataSetChanged()
-//                        }
-//                    }
-                }
-
-//                setOnClickListener {
-//
-//                    ("img click : "+data.toString()) .LogD()
-//
-//                    when (data.taskstate) {
-//
-//                        PAUSE -> {
-//                        data.taskstate = WRITING
-//                        AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(data)
-//                        notifyDataSetChanged()
-//                        UploadFileUtil2(data).ReUpload()
-//
-//                    }
-//                    DONE -> {
-//
-//                        //todo 打开文件
-//                    }
-//                    else -> {
-//
-//                        data.taskstate = PAUSE
-//                        AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(data)
-//                        notifyDataSetChanged()
-//                        RxApiManager().get()!!.cancel(data.id)
-//
-//                    }
-//                    }
-//
-//                }
 
                 when (data!!.taskstate) {
 

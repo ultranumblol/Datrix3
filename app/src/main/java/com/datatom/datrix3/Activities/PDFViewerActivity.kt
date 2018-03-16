@@ -21,7 +21,9 @@ import kotlinx.android.synthetic.main.activity_pdfviewer.*
 import org.jetbrains.anko.toast
 import java.io.File
 
-
+/**
+ * pdf预览页面
+ */
 class PDFViewerActivity : BaseActivity(), OnPageChangeListener, OnLoadCompleteListener,
         OnPageErrorListener {
 

@@ -21,7 +21,9 @@ import kotlinx.android.synthetic.main.activity_office_file_show.*
 import org.jetbrains.anko.toast
 import java.util.concurrent.TimeUnit
 
-
+/**
+ * office文件下载预览
+ */
 class OfficeFileShowActivity : BaseActivity() {
 
 

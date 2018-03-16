@@ -225,7 +225,7 @@ interface ApiService {
     @Multipart
 
     @POST("file/write")
-    //@POST("http://192.168.3.217/api/cayman/store/object/write/file/write")
+            //@POST("http://192.168.3.217/api/cayman/store/object/write/file/write")
     fun FileWrite(
             @Header("ACCESS-TOKEN") token: String,
 
@@ -274,10 +274,10 @@ interface ApiService {
     @FormUrlEncoded
     @POST("user/quota")
     fun userQuota(
-           @Header("ACCESS-TOKEN") token : String,
-           @Field("userid") userid : String
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("userid") userid: String
 
-    ) : Observable<Quota>
+    ): Observable<Quota>
 
     /**
      * 删除文件 放入回收站
@@ -285,12 +285,12 @@ interface ApiService {
     @FormUrlEncoded
     @POST("trash/do")
     fun trushDo(
-            @Header("ACCESS-TOKEN") token : String,
+            @Header("ACCESS-TOKEN") token: String,
             @Field("fileid") fileid: String,
             @Field("objectid") objectid: String,
             @Field("createuid") createuid: String
 
-    ) : Observable<String>
+    ): Observable<String>
 
     /**
      * 文件重命名
@@ -298,8 +298,8 @@ interface ApiService {
      */
     @FormUrlEncoded
     @POST("file/rename")
-    fun filerename (
-            @Header("ACCESS-TOKEN") token : String,
+    fun filerename(
+            @Header("ACCESS-TOKEN") token: String,
             @Field("newname") newname: String,
             @Field("fileid") fileid: String,
             @Field("createuid") createuid: String,
@@ -308,7 +308,7 @@ interface ApiService {
             @Field("type") type: String,
             @Field("ext") ext: String
 
-    ) : Observable<String>
+    ): Observable<String>
 
     /**
      * 文件重命名
@@ -316,8 +316,8 @@ interface ApiService {
      */
     @FormUrlEncoded
     @POST("dir/rename")
-    fun dirrename (
-            @Header("ACCESS-TOKEN") token : String,
+    fun dirrename(
+            @Header("ACCESS-TOKEN") token: String,
             @Field("newname") newname: String,
             @Field("fileid") fileid: String,
             @Field("createuid") createuid: String,
@@ -326,7 +326,7 @@ interface ApiService {
             @Field("type") type: String,
             @Field("ext") ext: String
 
-    ) : Observable<String>
+    ): Observable<String>
 
     /**
      * 获取文件基本信息
@@ -334,11 +334,28 @@ interface ApiService {
     @FormUrlEncoded
     @POST("file/basicinfo")
     fun filebasicinfo(
-            @Header("ACCESS-TOKEN") token : String,
+            @Header("ACCESS-TOKEN") token: String,
             @Field("objectid") objectid: String,
             @Field("createuid") createuid: String,
             @Field("userid") userid: String
 
 
-    ) : Observable<FileBasicInfo>
+    ): Observable<FileBasicInfo>
+
+
+    @FormUrlEncoded
+    @POST("filesearch/simplesearch")
+    fun filesimpleSearch(
+
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("keyword") keyword: String,
+            @Field("dirid") dirid: String,
+            @Field("page") page: Int,
+            @Field("perpage") perpage: Int,
+            @Field("createuid") createuid: String,
+            @Field("includetrash") includetrash: Boolean,
+            @Field("userid") userid: String
+
+
+    ): Observable<SearchResultData>
 }

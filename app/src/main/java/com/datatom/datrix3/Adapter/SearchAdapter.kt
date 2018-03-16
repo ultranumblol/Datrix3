@@ -1,22 +1,22 @@
-package com.datatom.datrix3.Adapter;
+package com.datatom.datrix3.Adapter
 
 import android.content.Context
+import android.util.SparseBooleanArray
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import com.datatom.datrix3.Bean.PersonalFilelistData
+import com.datatom.datrix3.Bean.SearchResultData
+import com.datatom.datrix3.R
+import com.datatom.datrix3.Util.SizeUtils
+import com.datatom.datrix3.helpers.RxBus
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
-import com.datatom.datrix3.R
-import android.util.SparseBooleanArray
-import android.widget.*
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Util.SizeUtils
-import com.datatom.datrix3.helpers.*
-
-
 
 /**
  * Created by wgz 空间页面数据适配
  */
-class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData.result2>(context) {
+class SearchAdapter(context: Context) : RecyclerArrayAdapter<SearchResultData.res>(context) {
 
     var mCheckStates = SparseBooleanArray()
 
@@ -68,11 +68,11 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
 
     override fun OnCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
-        return SpaceAdapterViewholder(parent)
+        return SearchViewholder(parent)
     }
 
 
-    private inner class SpaceAdapterViewholder(itemView: ViewGroup) : BaseViewHolder<PersonalFilelistData.result2>(itemView, R.layout.item_sapceadapter) {
+    private inner class SearchViewholder(itemView: ViewGroup) : BaseViewHolder<SearchResultData.res>(itemView, R.layout.item_sapceadapter) {
 
 
         private var img: ImageView? = null
@@ -95,7 +95,7 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
             filecreatetime = `$`(R.id.tv_date)
 
-            checkboxIMG = `$`(I.checkbox_img)
+            checkboxIMG = `$`(R.id.checkbox_img)
 
 
         }
@@ -110,7 +110,7 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
         文本	6
         资料集	1000
          */
-        override fun setData(data: PersonalFilelistData.result2?) {
+        override fun setData(data: SearchResultData.res?) {
 
 
            // data!!.cayman_pretreat_mimetype.LogD(" type : ")
@@ -134,41 +134,41 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
                     //"png", "bmp", "gif", "jpeg",
                         "image" -> {
-                            img!!.setImageResource(D.ic_file_img)
+                            img!!.setImageResource(R.drawable.ic_file_img)
 
                         }
 
                     //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
                         "video"
                         -> {
-                            img!!.setImageResource(D.ic_file_video)
+                            img!!.setImageResource(R.drawable.ic_file_video)
 
                         }
 
                     // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
                         "audio"
                         -> {
-                            img!!.setImageResource(D.ic_file_mic)
+                            img!!.setImageResource(R.drawable.ic_file_mic)
                         }
 
                         "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
                         -> {
-                            img!!.setImageResource(D.ic_file_doc)
+                            img!!.setImageResource(R.drawable.ic_file_doc)
 
                         }
                         "zip" ,"7z","rar","tar"-> {
-                            img!!.setImageResource(D.ic_file_zip)
+                            img!!.setImageResource(R.drawable.ic_file_zip)
 
                         }
                         else ->{
 
-                            img!!.setImageResource(D.ic_file_doc)
+                            img!!.setImageResource(R.drawable.ic_file_doc)
                         }
 
 
                     }
                     else{
-                        img!!.setImageResource(D.ic_file_doc)
+                        img!!.setImageResource(R.drawable.ic_file_doc)
                     }
                 }
 
@@ -183,11 +183,11 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
                 when(mCheckStates.get(adapterPosition, false)){
 
                     true ->{
-                        setImageResource(D.ic_filechecked)
+                        setImageResource(R.drawable.ic_filechecked)
 
                     }
                     false ->{
-                        setImageResource(D.ic_remove_circle_outline_black_18dp)
+                        setImageResource(R.drawable.ic_remove_circle_outline_black_18dp)
 
                     }
 
@@ -198,12 +198,12 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
                     when(mCheckStates.get(adapterPosition,false)){
                         false -> {
-                            setImageResource(D.ic_filechecked)
+                            setImageResource(R.drawable.ic_filechecked)
                             mCheckStates.put(adapterPosition, true)
                             RxBus.get().post("updatespacecheckbox")
                         }
                         true ->{
-                            setImageResource(D.ic_remove_circle_outline_black_18dp)
+                            setImageResource(R.drawable.ic_remove_circle_outline_black_18dp)
                             mCheckStates.delete(adapterPosition)
                             RxBus.get().post("updatespacecheckbox")
                         }
