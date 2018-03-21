@@ -200,12 +200,12 @@ class SearchAdapter(context: Context) : RecyclerArrayAdapter<SearchResultData.re
                         false -> {
                             setImageResource(R.drawable.ic_filechecked)
                             mCheckStates.put(adapterPosition, true)
-                            RxBus.get().post("updatespacecheckbox")
+                            RxBus.get().post("updateSearchcheckbox")
                         }
                         true ->{
                             setImageResource(R.drawable.ic_remove_circle_outline_black_18dp)
                             mCheckStates.delete(adapterPosition)
-                            RxBus.get().post("updatespacecheckbox")
+                            RxBus.get().post("updateSearchcheckbox")
                         }
 
                     }

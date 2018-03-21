@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.datatom.datrix3.Adapter.SearchAdapter
@@ -22,7 +23,7 @@ import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_search_result.*
 
 
-class SearchResultActivity : BaseActivity() {
+class SearchResultActivity : BaseActivity() ,View.OnClickListener {
 
     private var rvadapter: SearchAdapter? = null
     private var currentdirid = ""
@@ -41,7 +42,8 @@ class SearchResultActivity : BaseActivity() {
         rvadapter = SearchAdapter(this)
         rv_searchresult.adapter = rvadapter
         tool_bar.hide()
-
+        edit_ll!!.hide()
+        edit_more_ll!!.hide()
         et_search.setText(intent.getStringExtra("keyword"))
         et_search!!.setOnEditorActionListener { _, i, _ ->
 
@@ -58,6 +60,16 @@ class SearchResultActivity : BaseActivity() {
             }
             false
         }
+        edit_ll.setOnClickListener(this)
+        edit_more_ll.setOnClickListener(this)
+        edit_rv_rename.setOnClickListener(this)
+        edit_rv_xiazai.setOnClickListener(this)
+        edit_rv_share.setOnClickListener(this)
+        edit_rv_delete.setOnClickListener(this)
+        edit_rv_dabaoxiazai.setOnClickListener(this)
+        edit_rv_copy.setOnClickListener(this)
+        edit_rv_move.setOnClickListener(this)
+        edit_rv_detil.setOnClickListener(this)
 
         iv_search_back.setOnClickListener {
             onBackPressed()
@@ -175,9 +187,30 @@ class SearchResultActivity : BaseActivity() {
         initdata(keyword)
         (this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
 
+        RxBus.get().toFlowable(String::class.java).subscribe {
+            when (it) {
+                "updateSearchcheckbox" -> {
+                    if (rvadapter!!.getcheckboxArrary().size() > 0) {
+
+                        edit_ll!!.Show()
+
+
+                        rvadapter!!.notifyDataSetChanged()
+
+
+                    } else {
+
+                        edit_ll!!.hide()
+                        edit_more_ll!!.hide()
+                        rvadapter!!.notifyDataSetChanged()
+                    }
+
+
+                }
+            }
+        }
 
     }
-
 
 
     private fun showpageback() {
@@ -218,8 +251,18 @@ class SearchResultActivity : BaseActivity() {
         else goback()
 
     }
+    override fun onClick(v: View?) {
 
-    private fun initdata(keyword : String) {
+        when(v){
+            edit_ll ->{
+                edit_more_ll!!.visibility =
+                        if (edit_more_ll!!.visibility == View.VISIBLE) View.GONE
+                        else View.VISIBLE
+            }
+        }
+    }
+
+    private fun initdata(keyword: String) {
 
 
         HttpUtil.instance.apiService().filesimpleSearch(Someutil.getToken(), keyword, currentdirid, cpge, 40, Someutil.getUserID()

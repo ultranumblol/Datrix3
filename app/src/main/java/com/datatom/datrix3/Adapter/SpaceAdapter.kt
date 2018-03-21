@@ -12,7 +12,6 @@ import com.datatom.datrix3.Util.SizeUtils
 import com.datatom.datrix3.helpers.*
 
 
-
 /**
  * Created by wgz 空间页面数据适配
  */
@@ -46,22 +45,21 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
     }
 
-    fun setItemChecked(position : Int){
+    fun setItemChecked(position: Int) {
 
-        when(mCheckStates.get(position,false)){
+        when (mCheckStates.get(position, false)) {
             false -> {
 
                 mCheckStates.put(position, true)
                 RxBus.get().post("updatespacecheckbox")
             }
-            true ->{
+            true -> {
 
                 mCheckStates.delete(position)
                 RxBus.get().post("updatespacecheckbox")
             }
 
         }
-
 
 
     }
@@ -88,7 +86,6 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
         init {
 
 
-
             img = `$`(R.id.iv_thum)
 
             filename = `$`(R.id.tv_filename)
@@ -99,7 +96,6 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
 
         }
-
 
         /**
          * 文档1
@@ -113,14 +109,14 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
         override fun setData(data: PersonalFilelistData.result2?) {
 
 
-           // data!!.cayman_pretreat_mimetype.LogD(" type : ")
+            // data!!.cayman_pretreat_mimetype.LogD(" type : ")
 
 
-            when (data!!.type ) {
+            when (data!!.type) {
                 "0" -> {
                     img!!.setImageResource(R.drawable.ic_file_wenjianjia)
 
-                   // data.filename.LogD(" filename : ")
+                    // data.filename.LogD(" filename : ")
 
                     filecreatetime!!.text = data?.createtime
                 }
@@ -129,45 +125,45 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
                     filecreatetime!!.text = SizeUtils.getSize(data?.filesize) + "  " + data?.createtime
 
-                    if (data!!.cayman_pretreat_mimetype !=null)
-                    when (data!!.cayman_pretreat_mimetype) {
+                    if (data!!.cayman_pretreat_mimetype != null)
+                        when (data!!.cayman_pretreat_mimetype) {
 
-                    //"png", "bmp", "gif", "jpeg",
-                        "image" -> {
-                            img!!.setImageResource(D.ic_file_img)
+                        //"png", "bmp", "gif", "jpeg",
+                            "image" -> {
+                                img!!.setImageResource(D.ic_file_img)
+
+                            }
+
+                        //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
+                            "video"
+                            -> {
+                                img!!.setImageResource(D.ic_file_video)
+
+                            }
+
+                        // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
+                            "audio"
+                            -> {
+                                img!!.setImageResource(D.ic_file_mic)
+                            }
+
+                            "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
+                            -> {
+                                img!!.setImageResource(D.ic_file_doc)
+
+                            }
+                            "zip", "7z", "rar", "tar" -> {
+                                img!!.setImageResource(D.ic_file_zip)
+
+                            }
+                            else -> {
+
+                                img!!.setImageResource(D.ic_file_doc)
+                            }
+
 
                         }
-
-                    //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
-                        "video"
-                        -> {
-                            img!!.setImageResource(D.ic_file_video)
-
-                        }
-
-                    // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
-                        "audio"
-                        -> {
-                            img!!.setImageResource(D.ic_file_mic)
-                        }
-
-                        "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
-                        -> {
-                            img!!.setImageResource(D.ic_file_doc)
-
-                        }
-                        "zip" ,"7z","rar","tar"-> {
-                            img!!.setImageResource(D.ic_file_zip)
-
-                        }
-                        else ->{
-
-                            img!!.setImageResource(D.ic_file_doc)
-                        }
-
-
-                    }
-                    else{
+                    else {
                         img!!.setImageResource(D.ic_file_doc)
                     }
                 }
@@ -176,67 +172,36 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
             filename!!.text = data?.filename
 
-
-
             checkboxIMG!!.apply {
 
-                when(mCheckStates.get(adapterPosition, false)){
+                when (mCheckStates.get(adapterPosition, false)) {
 
-                    true ->{
+                    true -> {
                         setImageResource(D.ic_filechecked)
 
                     }
-                    false ->{
+                    false -> {
                         setImageResource(D.ic_remove_circle_outline_black_18dp)
 
                     }
 
                 }
 
-
                 setOnClickListener {
 
-                    when(mCheckStates.get(adapterPosition,false)){
+                    when (mCheckStates.get(adapterPosition, false)) {
                         false -> {
                             setImageResource(D.ic_filechecked)
                             mCheckStates.put(adapterPosition, true)
                             RxBus.get().post("updatespacecheckbox")
                         }
-                        true ->{
+                        true -> {
                             setImageResource(D.ic_remove_circle_outline_black_18dp)
                             mCheckStates.delete(adapterPosition)
                             RxBus.get().post("updatespacecheckbox")
                         }
 
                     }
-
-
-//                    when (this.tag as Int) {
-//
-//                        D.ic_filechecked -> {
-//                            setImageResource(D.ic_remove_circle_outline_black_18dp)
-//                            tag = D.ic_remove_circle_outline_black_18dp
-//                            mCheckStates.delete(adapterPosition)
-//                            RxBus.get().post("updatespacecheckbox")
-//
-//                        }
-//                        D.ic_remove_circle_outline_black_18dp -> {
-//
-//                            setImageResource(D.ic_filechecked)
-//                            tag = D.ic_filechecked
-//                            mCheckStates.put(adapterPosition, true)
-//
-//                            RxBus.get().post("updatespacecheckbox")
-//
-//                        }
-//
-//                    }
-
-                    //mCheckStates.put(adapterPosition, true)
-
-                   // RxBus.get().post("updatespacecheckbox")
-
-                    //checkboxIMG!!.hide()
 
                 }
 

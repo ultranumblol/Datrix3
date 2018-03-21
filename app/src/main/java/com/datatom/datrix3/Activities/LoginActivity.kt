@@ -53,9 +53,6 @@ class LoginActivity : AppCompatActivity() {
 
         mbutton = find(R.id.button_get_started)
 
-
-
-
         //addUsernameAutoComplete()
         RxView.clicks(mbutton!!).throttleFirst(100, TimeUnit.MILLISECONDS)
                 .subscribe {
