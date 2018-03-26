@@ -5,25 +5,34 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
+import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import android.widget.TextView
+import collections.forEach
 import com.datatom.datrix3.Adapter.SearchAdapter
 import com.datatom.datrix3.Adapter.SpaceAdapter
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.SpacePageList
+import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Service.TaskService
 
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.app
+import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.fragments.SpaceFragment
 import com.datatom.datrix3.helpers.*
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_search_result.*
+import org.jetbrains.anko.find
+import org.jetbrains.anko.toast
 
 
-class SearchResultActivity : BaseActivity() ,View.OnClickListener {
+class SearchResultActivity : BaseActivity(), View.OnClickListener {
 
     private var rvadapter: SearchAdapter? = null
     private var currentdirid = ""
@@ -190,21 +199,7 @@ class SearchResultActivity : BaseActivity() ,View.OnClickListener {
         RxBus.get().toFlowable(String::class.java).subscribe {
             when (it) {
                 "updateSearchcheckbox" -> {
-                    if (rvadapter!!.getcheckboxArrary().size() > 0) {
-
-                        edit_ll!!.Show()
-
-
-                        rvadapter!!.notifyDataSetChanged()
-
-
-                    } else {
-
-                        edit_ll!!.hide()
-                        edit_more_ll!!.hide()
-                        rvadapter!!.notifyDataSetChanged()
-                    }
-
+                    updatecheckBox()
 
                 }
             }
@@ -212,6 +207,24 @@ class SearchResultActivity : BaseActivity() ,View.OnClickListener {
 
     }
 
+    private fun updatecheckBox() {
+        if (rvadapter!!.getcheckboxArrary().size() > 0) {
+
+            edit_ll!!.Show()
+
+
+            rvadapter!!.notifyDataSetChanged()
+
+
+        } else {
+
+            edit_ll!!.hide()
+            edit_more_ll!!.hide()
+            rvadapter!!.notifyDataSetChanged()
+        }
+
+
+    }
 
     private fun showpageback() {
 
@@ -251,15 +264,195 @@ class SearchResultActivity : BaseActivity() ,View.OnClickListener {
         else goback()
 
     }
+
     override fun onClick(v: View?) {
 
-        when(v){
-            edit_ll ->{
+        when (v) {
+            edit_ll -> {
                 edit_more_ll!!.visibility =
                         if (edit_more_ll!!.visibility == View.VISIBLE) View.GONE
                         else View.VISIBLE
             }
+            edit_ll -> {
+
+            }
+            edit_more_ll -> {
+            }
+            edit_rv_rename -> {
+                var editview2 = View.inflate(this, R.layout.dialog_edittext_dabaoxiazai, null)
+                editview2.find<TextView>(I.dialog_edittext).hint = "请输入文件名称"
+
+                if (rvadapter!!.getcheckboxArrary().size() == 1)
+                    this.let {
+
+                        AlertDialog.Builder(it!!).run {
+                            setView(editview2)
+                            setTitle("重命名")
+                            setNegativeButton("取消") { _, _ ->
+
+                            }
+                            setPositiveButton("确认") { _, _ ->
+
+                                when (rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].type) {
+                                //文件夹重命名
+                                    "0" -> {
+                                        HttpUtil.instance.apiService().dirrename(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString()
+                                                , rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].fileid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].createuid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].objid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].parentid,
+                                                "1", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].ext)
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
+
+                                                    it.toString().LogD("rename : ")
+                                                    if (it.contains("200"))
+                                                        this@SearchResultActivity!!.toast("重命名成功！")
+                                                    rvadapter!!.setCheckBoxNoneSelect()
+                                                    updatecheckBox()
+                                                    Handler().postDelayed({
+                                                        refreshData()
+                                                    }, 1000)
+                                                }, {
+                                                    it.toString().LogD("error : ")
+                                                    this@SearchResultActivity!!.toast("重命名失败！")
+                                                })
+                                    }
+                                //文件重命名
+                                    "1" -> {
+                                        HttpUtil.instance.apiService().filerename(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString()
+                                                , rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].fileid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].createuid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].objid,
+                                                rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].parentid,
+                                                "1", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].ext)
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
+
+                                                    it.toString().LogD("rename : ")
+                                                    if (it.contains("200"))
+                                                        this@SearchResultActivity!!.toast("重命名成功！")
+                                                    rvadapter!!.setCheckBoxNoneSelect()
+                                                    updatecheckBox()
+                                                    Handler().postDelayed({
+                                                        refreshData()
+                                                    }, 1000)
+                                                }, {
+                                                    it.toString().LogD("error : ")
+                                                    this@SearchResultActivity!!.toast("重命名失败！")
+                                                })
+
+                                    }
+                                }
+
+
+                            }
+                            show()
+                        }.apply {
+                            getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+                            getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
+                        }
+                    }
+
+
+            }
+            edit_rv_xiazai -> {
+                rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+
+                    var taskfile = TaskFile()
+                    taskfile!!.apply {
+
+                        filename = rvadapter!!.allData[i].filename
+                        fileid = rvadapter!!.allData[i].fileid
+                        mCompeleteSize = 0L
+                        offset = 0
+                        if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
+                            mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+                        exe = rvadapter!!.allData[i].ext
+                        filetype = TaskService.DOWNLOAD
+                        taskstate = TaskService.NEWFILE
+                        total = rvadapter!!.allData[i].filesize.toLong()
+                        userid = Someutil.getUserID()
+                        id = System.currentTimeMillis().toString()
+
+                    }
+                    AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+
+                }
+                rvadapter!!.setCheckBoxNoneSelect()
+                updatecheckBox()
+                this!!.toast("开始后台下载")
+            }
+            edit_rv_share -> {
+            }
+            edit_rv_delete -> {
+                AlertDialog.Builder(this!!).run {
+                    setMessage("30天内可在回收站内找回删除文件")
+                    setPositiveButton("确认删除") { _, _ ->
+                        rvadapter!!.apply {
+                            getcheckboxArrary().forEach { i, _ ->
+                                HttpUtil.instance.apiService().trushDo(Someutil.getToken(), allData[i].fileid
+                                        , allData[i].objid, allData[i].createuid)
+                                        .compose(RxSchedulers.compose())
+                                        .subscribe({
+
+                                            if (it.contains("200")) {
+                                                this@SearchResultActivity!!.toast("删除成功！")
+                                                rvadapter!!.setCheckBoxNoneSelect()
+                                                updatecheckBox()
+                                                Handler().postDelayed({
+                                                    refreshData()
+                                                }, 500)
+                                            } else {
+                                                this@SearchResultActivity!!.toast("删除失败！")
+                                            }
+                                            it.toString().LogD("delete file reuslt : ")
+                                        }, {
+                                            this@SearchResultActivity!!.toast("删除失败！")
+                                        })
+                            }
+                        }
+                    }
+                    setNegativeButton("取消") { _, _ ->
+
+                    }
+                    show()
+
+                }.apply {
+                    getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.red))
+                    getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
+
+
+                }
+            }
+            edit_rv_dabaoxiazai -> {
+            }
+            edit_rv_copy -> {
+            }
+            edit_rv_move -> {
+                edit_more_ll!!.visibility =
+                        if (edit_more_ll!!.visibility == View.VISIBLE) View.GONE
+                        else View.VISIBLE
+
+            }
+            edit_rv_detil -> {
+                if (rvadapter!!.getcheckboxArrary().size() == 1)
+                    this!!.startActivity(Intent(this, FileDetilActivity::class.java).putExtra("file", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
+                updatecheckBox()
+                Handler().postDelayed({
+                    refreshData()
+                }, 300)
+            }
+
+
         }
+    }
+
+    private fun  refreshData(){
+        rvadapter!!.setCheckBoxNoneSelect()
+        rvadapter!!.notifyDataSetChanged()
+        updatecheckBox()
+        initdata(keyword)
     }
 
     private fun initdata(keyword: String) {
