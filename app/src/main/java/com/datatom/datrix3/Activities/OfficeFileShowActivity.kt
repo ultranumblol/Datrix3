@@ -19,6 +19,7 @@ import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_office_file_show.*
 import org.jetbrains.anko.toast
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 /**
@@ -85,32 +86,38 @@ class OfficeFileShowActivity : BaseActivity() {
 
     private fun openfile(data: TaskFile) {
 
-        when (data.exe) {
+        try {
+            when (data.exe) {
 
-            "docx" -> {
-                this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
+                "docx" -> {
+                    this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
+                }
+                "doc" -> {
+                    this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
+                }
+                "xls" -> {
+                    this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
+                }
+                "xlsx" -> {
+                    this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
+                }
+                "ppt" -> {
+                    this!!.startActivity(IntentUtil.textopen(data.filePath, "ppt"))
+                }
+                "pptx" -> {
+                    this!!.startActivity(IntentUtil.getPptFileIntent(data.filePath))
+                }
+                "txt" -> {
+                    this!!.startActivity(IntentUtil.getTextFileIntent(data.filePath, false))
+                }
+                else -> "未找到类型"
+
             }
-            "doc" -> {
-                this!!.startActivity(IntentUtil.getWordFileIntent(data.filePath))
-            }
-            "xls" -> {
-                this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
-            }
-            "xlsx" -> {
-                this!!.startActivity(IntentUtil.getExcelFileIntent(data.filePath))
-            }
-            "ppt" -> {
-                this!!.startActivity(IntentUtil.textopen(data.filePath, "ppt"))
-            }
-            "pptx" -> {
-                this!!.startActivity(IntentUtil.getPptFileIntent(data.filePath))
-            }
-            "txt" -> {
-                this!!.startActivity(IntentUtil.getTextFileIntent(data.filePath, false))
-            }
-            else -> "未找到类型"
+        } catch (e :Exception){
+            this.toast("未找到文件！")
 
         }
+
 
     }
 

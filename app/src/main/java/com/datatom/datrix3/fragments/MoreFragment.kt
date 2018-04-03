@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.datatom.datrix3.Activities.LoginActivity
+import com.datatom.datrix3.Activities.TrashActivity
 import com.datatom.datrix3.Adapter.MoreFragmentadapter
 import com.datatom.datrix3.Base.GlideApp
 import com.datatom.datrix3.base.BaseFragment
@@ -142,6 +143,18 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
 
         initData()
 
+        rvadapter!!.apply {
+            setOnItemClickListener {
+
+                when(allData[it].name){
+                    "回收站" ->{
+                            activity!!.startActivity(Intent(activity,TrashActivity::class.java))
+                    }
+
+                }
+            }
+
+        }
     }
 
     private fun initData() {

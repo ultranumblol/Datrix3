@@ -9,7 +9,11 @@ import com.datatom.datrix3.Activities.*
 import com.datatom.datrix3.Adapter.downlistadapter
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Service.TaskService
 import com.datatom.datrix3.Service.TaskService.Companion.DONE
+import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOADING
+import com.datatom.datrix3.Service.TaskService.Companion.NEWFILE
+import com.datatom.datrix3.Service.TaskService.Companion.PAUSE
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.Util.UploadFileUtil2
 
@@ -179,8 +183,24 @@ class DownloadFragment : BaseFragment() {
 //                        context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
 //                                .putExtra("file", allData[it]))
                     }
-                    else ->{
 
+                    DOWNLOADING -> {
+                        var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                        task.taskstate = PAUSE
+                        AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
+                        TaskService.DisposedTask(allData[it].id)
+                        notifyDataSetChanged()
+
+                    }
+
+                    PAUSE -> {
+                        var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                        task.taskstate = NEWFILE
+                        AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
+                        notifyDataSetChanged()
+
+                    }
+                    else ->{
 
                     }
                 }
@@ -224,6 +244,14 @@ class DownloadFragment : BaseFragment() {
 
         return R.layout.fragment_downloadlist;
     }
+    override fun onStop() {
+        super.onStop()
 
+        if (this.msubscription != null) {
+            this.msubscription!!.dispose()
+            "download取消订阅".LogD()
+        }
+
+    }
 
 }

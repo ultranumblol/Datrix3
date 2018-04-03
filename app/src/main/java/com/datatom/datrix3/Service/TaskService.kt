@@ -12,6 +12,8 @@ import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.LogD
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
 import java.util.concurrent.TimeUnit
 
 /**
@@ -22,9 +24,15 @@ class TaskService : Service() {
     private var data: List<TaskFile>? = null
     private var appdatabase = AppDatabase.getInstance(app.mapp).TaskFileDao()
 
+
     companion object {
+
+        private var disposeList = hashMapOf<String, Disposable>()
+
         val UPLOAD = 10
         val DOWNLOAD = 20
+        val NORMALDOWNLOAD = 201
+        val BEGDOWNLOAD = 202
         val CREATING = 333
         val WRITING = 444
         val FINISHING = 555
@@ -32,9 +40,25 @@ class TaskService : Service() {
         val PAUSE = 44
         val NEWFILE = 101
         val DOWNLOADING = 777
+        fun addDispose(map: HashMap<String, Disposable>) {
+            disposeList.putAll(map)
+        }
 
+        fun DisposedTask(taskid: String) {
+
+            disposeList!!.forEach {
+                if (it.key.equals(taskid)) {
+                    it.value.dispose()
+                    return@forEach
+                }
+            }
+            disposeList.remove(taskid)
+
+        }
 
     }
+
+
 
     override fun onCreate() {
         super.onCreate()
@@ -60,7 +84,7 @@ class TaskService : Service() {
 
                                 PAUSE -> {
                                     if (it.forcestop) {
-                                      //  " 不重上传".LogD()
+                                        //  " 不重上传".LogD()
                                     } else {
                                         it.taskstate = WRITING
                                         "继续上传".LogD()
@@ -93,13 +117,14 @@ class TaskService : Service() {
                             when (it.taskstate) {
 
                                 NEWFILE -> {
-                                    it.taskstate = DOWNLOADING
                                     DownLoadUtil().downloadFile(it)
                                 }
 
                                 PAUSE -> {
-//                                    it.taskstate = DOWNLOADING
-//                                    DownLoadUtil().downloadFile(it)
+//
+
+                                }
+                                else ->{
 
                                 }
 
@@ -111,6 +136,7 @@ class TaskService : Service() {
 
 
     }
+
 
     fun getdatalist(): List<TaskFile>? {
 

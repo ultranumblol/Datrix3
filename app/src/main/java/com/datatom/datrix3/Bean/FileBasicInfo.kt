@@ -50,6 +50,11 @@ data class FileBasicInfo (
             @Expose
             val createtime: String,
 
+
+            @SerializedName("fullpath")
+            @Expose
+            var fullpath : String,
+
             @SerializedName("modiftime")
             @Expose
             val modiftime: String,

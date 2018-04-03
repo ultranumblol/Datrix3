@@ -31,8 +31,11 @@ import android.view.inputmethod.InputMethodManager
 import collections.forEach
 import com.datatom.datrix3.Activities.*
 import com.datatom.datrix3.Bean.*
+import com.datatom.datrix3.Service.TaskService.Companion.BEGDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOAD
+import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOADING
 import com.datatom.datrix3.Service.TaskService.Companion.NEWFILE
+import com.datatom.datrix3.Service.TaskService.Companion.NORMALDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.UPLOAD
 import com.datatom.datrix3.Util.*
 import com.datatom.datrix3.Util.Someutil.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE
@@ -585,7 +588,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //SearchViewUtils.handleToolBar(context!!, mCardViewSearch!!, mEtSearch!!)
         (context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).toggleSoftInput(0, InputMethodManager.HIDE_NOT_ALWAYS)
 
-        context!!.startActivity(Intent(activity,SearchResultActivity::class.java).putExtra("keyword",str).putExtra("dirid", currentdir))
+        context!!.startActivity(Intent(activity, SearchResultActivity::class.java).putExtra("keyword", str).putExtra("dirid", currentdir))
 
     }
 
@@ -618,7 +621,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             setPositiveButton("确认") { _, _ ->
 
                                 when (rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].type) {
-                                    //文件夹重命名
+                                //文件夹重命名
                                     "0" -> {
                                         HttpUtil.instance.apiService().dirrename(Someutil.getToken(), editview2.find<TextView>(I.dialog_edittext).text.toString()
                                                 , rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].fileid,
@@ -694,6 +697,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
                         exe = rvadapter!!.allData[i].ext
                         filetype = DOWNLOAD
+                        filesubtype = NORMALDOWNLOAD
                         taskstate = NEWFILE
                         total = rvadapter!!.allData[i].filesize.toLong()
                         userid = Someutil.getUserID()
@@ -795,6 +799,58 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                         }
                         setPositiveButton("确认") { _, _ ->
 
+                            var fileidstr = StringBuilder()
+                            var filetotla  = 0L
+
+                            rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+
+                                fileidstr.append(rvadapter!!.allData[i].fileid)
+                                fileidstr.append(",")
+                                filetotla += rvadapter!!.allData[i].filesize.toLong()
+
+//                                var taskfile = TaskFile()
+//                                taskfile!!.apply {
+//
+//                                    filename = rvadapter!!.allData[i].filename
+//                                    fileid = rvadapter!!.allData[i].fileid
+//                                    mCompeleteSize = 0L
+//                                    offset = 0
+//                                    if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
+//                                        mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+//                                    exe = rvadapter!!.allData[i].ext
+//                                    filetype = DOWNLOAD
+//                                    taskstate = NEWFILE
+//                                    total = rvadapter!!.allData[i].filesize.toLong()
+//                                    userid = Someutil.getUserID()
+//                                    id = System.currentTimeMillis().toString()
+//
+//                                }
+//                                AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+
+                            }
+                            fileidstr.deleteCharAt(fileidstr.length - 1)
+                            var url = HttpUtil.BASEAPI_URL + "viewer/dcomp.php?fileidstr=" + fileidstr + "&iswindows=0&optuser=${Someutil.getUserID()}"
+
+                            var taskfile = TaskFile()
+                            taskfile!!.apply {
+                                filename = editview2.find<TextView>(I.dialog_edittext).text.toString()+".tar"
+                                fileid = System.currentTimeMillis().toString()
+                                id = System.currentTimeMillis().toString()
+                                taskstate = NEWFILE
+                                filesubtype = BEGDOWNLOAD
+                                mCompeleteSize = 0L
+                                offset = 0
+                                downloadurl = url
+                                exe = "tar"
+                                filetype = DOWNLOAD
+                                userid = Someutil.getUserID()
+                                total = filetotla
+                            }
+                            AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+                            rvadapter!!.setCheckBoxNoneSelect()
+                            RxBus.get().post("updatespacecheckbox")
+                            context!!.toast("开始后台下载")
+
 
                         }
                         show()
@@ -814,7 +870,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //详情
             I.edit_rv_detil -> {
                 if (rvadapter!!.getcheckboxArrary().size() == 1)
-                context!!.startActivity(Intent(activity, FileDetilActivity::class.java).putExtra("file",rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
+                    context!!.startActivity(Intent(activity, FileDetilActivity::class.java).putExtra("file", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
 
                 Handler().postDelayed({
                     refreshData()

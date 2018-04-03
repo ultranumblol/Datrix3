@@ -19,6 +19,7 @@ import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.SpacePageList
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Service.TaskService
+import com.datatom.datrix3.Service.TaskService.Companion.NORMALDOWNLOAD
 
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
@@ -370,6 +371,7 @@ class SearchResultActivity : BaseActivity(), View.OnClickListener {
                             mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
                         exe = rvadapter!!.allData[i].ext
                         filetype = TaskService.DOWNLOAD
+                        filesubtype = NORMALDOWNLOAD
                         taskstate = TaskService.NEWFILE
                         total = rvadapter!!.allData[i].filesize.toLong()
                         userid = Someutil.getUserID()
@@ -454,6 +456,7 @@ class SearchResultActivity : BaseActivity(), View.OnClickListener {
         updatecheckBox()
         initdata(keyword)
     }
+
 
     private fun initdata(keyword: String) {
 

@@ -43,7 +43,8 @@
         <activity android:name=".Activities.OfficeFileShowActivity" />
         <activity android:name=".Activities.PreviewTXTFileActivity" />
         <activity android:name=".Activities.FileDetilActivity" />
-        <activity android:name=".Activities.SearchResultActivity"></activity>
+        <activity android:name=".Activities.SearchResultActivity" />
+        <activity android:name=".Activities.TrashActivity"></activity>
     </application>
 
 </manifest>

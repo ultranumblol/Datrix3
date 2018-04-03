@@ -1,8 +1,11 @@
 package com.datatom.datrix3.Util
 
 import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Service.TaskService
+import com.datatom.datrix3.Service.TaskService.Companion.BEGDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.DONE
 import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOADING
+import com.datatom.datrix3.Service.TaskService.Companion.NORMALDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.PAUSE
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
@@ -17,14 +20,22 @@ class DownLoadUtil {
     var database = AppDatabase.getInstance(app.mapp).TaskFileDao()
 
     fun downloadFile(taskFile: TaskFile) {
+        var url = ""
+        when (taskFile.filesubtype) {
+            NORMALDOWNLOAD -> {
+                url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + taskFile.fileid + "&iswindows=0&optuser=admin"
+            }
+            BEGDOWNLOAD -> {
+                url = taskFile.downloadurl
 
-
-        var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + taskFile.fileid + "&iswindows=0&optuser=admin"
+            }
+        }
         url.LogD("url : ")
         taskFile.taskstate = DOWNLOADING
+        taskFile.filepersent = 0
         database.updatefiles(taskFile)
 
-        HttpUtil.instance.downLoadApi(taskFile).downloadFileWithFixedUrl(url)
+        var dispose = HttpUtil.instance.downLoadApi(taskFile).downloadFileWithFixedUrl(url)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.newThread())
                 .subscribe({
@@ -54,32 +65,10 @@ class DownLoadUtil {
                     database.updatefiles(taskFile)
                 })
 
-    }
-
-    fun downfileNOProgress(taskFile: TaskFile){
-        var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + taskFile.fileid + "&iswindows=0&optuser=admin"
-        url.LogD("url : ")
-
-        HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
-                .subscribeOn(Schedulers.io())
-                .observeOn(Schedulers.newThread())
-                .subscribe({
-
-
-                    if (Someutil.writeResponseBodyToDisk(it, taskFile.fileid)) {
-                        "下载成功".LogD()
-                        //  toast("下载成功")
-
-                    } else {
-                        "下载失败".LogD()
-
-                    }
-                }, {
-                    it.toString().LogD("download error : ")
-
-                })
-
-
+        TaskService.addDispose(hashMapOf(taskFile.id to dispose))
 
     }
+
+
+
 }

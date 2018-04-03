@@ -147,26 +147,26 @@ interface ApiService {
     /**
      *
     dirname
-    (required)
+   
     目录名称
 
-    formData	string
+  
     userid
     创建者id。不传则从用户登录信息中获取
 
-    formData	string
+  
     parentuid
     父级目录创建者的用户id，父级目录为根目录，传空
 
-    formData	string
+  
     parentid
     父级目录id, 为空表示在个人目录根目录下创建
 
-    formData	string
+  
     parentobj
     父级目录的objectid，根目录为空，但是非根目录的时候一定要传
 
-    formData	string
+  
     isclient
     是否是datrix客户端调用，还是web网页上调用（默认web网页上调用，值为false）
 
@@ -342,7 +342,9 @@ interface ApiService {
 
     ): Observable<FileBasicInfo>
 
-
+    /**
+     * 文件搜索
+     */
     @FormUrlEncoded
     @POST("filesearch/simplesearch")
     fun filesimpleSearch(
@@ -358,4 +360,111 @@ interface ApiService {
 
 
     ): Observable<SearchResultData>
+
+
+    /**
+     * 文件移动
+     */
+    @FormUrlEncoded
+    @POST("file/move")
+    fun filemove(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileid") fileid: String,
+            @Field("filename") filename: String,
+            @Field("createuid") createuid: String,
+            @Field("objectid") objectid: String,
+            @Field("newparentid") newparentid: String,
+            @Field("type") type: Int
+
+    ): Observable<String>
+
+    /**
+     * 文件复制
+     */
+    @FormUrlEncoded
+    @POST("file/copy")
+    fun filecopy(
+
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("createuid") createuid: String,
+            @Field("objectid") objectid: String,
+            @Field("fileid") fileid: String,
+            @Field("newparentid") newparentid: String,
+            @Field("isperdir") isperdir: Boolean,
+            @Field("userid") userid: String
+
+    )
+
+
+    /**
+     * 创建分享
+     *
+     *sharename
+    分享链接名
+  
+    descript
+    分享描述
+
+    shareuid
+    分享创建者ID
+
+    username
+    分享创建者用户名
+
+    fileid
+    文件ID
+
+    istimer
+    是否设置分享结束时间(用int 0和1代替bool)
+   
+    needpwd
+    是否设置提取码(用int 0和1代替bool)
+   
+    sharename
+    是否能下载(用int 0和1代替bool)
+
+    canedit
+    是否能修改(用int 0和1代替bool)
+
+    edtime
+    如果设置了分享时间,这里填写分享结束时间戳
+
+    pubsee
+    是否指定分享用户或组(用int 0和1代替bool)
+
+    users
+    指定分享用户列表
+    
+    groups
+    指定分享组列表
+
+    userid
+    当前操作的用户userid
+
+  
+     *
+     *
+     */
+    @FormUrlEncoded
+    @POST("shares/linkcreate")
+    fun linkcreate(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("sharename") sharename: String,
+            @Field("descript") descript: String,
+            @Field("shareuid") shareuid: String,
+            @Field("username") username: String,
+            @Field("fileid") fileid: String,
+            @Field("istimer") istimer: Int,
+            @Field("needpwd") needpwd: Int,
+            @Field("candown") candown: Int,
+            @Field("canedit") canedit: Int,
+            @Field("edtime") edtime: String,
+            @Field("pubsee") pubsee: Int,
+            @Field("users") users: String,
+            @Field("groups") groups: String,
+            @Field("userid") userid: String
+
+    ): Observable<String>
+
+
 }

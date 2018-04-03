@@ -147,7 +147,7 @@ object Someutil {
             if (!futureStudioIconFile.exists())
                 futureStudioIconFile.mkdirs()
             val file = File(futureStudioIconFile, filename)
-            ("filepath : " + file.absolutePath).LogD("file path : ")
+            ("filepath : " + file.absolutePath).LogD()
             var inputStream: InputStream? = null
             var outputStream: OutputStream? = null
 

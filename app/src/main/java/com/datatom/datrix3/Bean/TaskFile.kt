@@ -25,11 +25,18 @@ import java.io.Serializable
         @ColumnInfo(name = "filesize")
         var filesize: String = "",
 
+        @ColumnInfo(name = "filesubtype")
+        var filesubtype: Int = 0,
+
+
         @ColumnInfo(name = "filetype")
         var filetype: Int = 0,
 
         @ColumnInfo(name = "filePath")
         var filePath: String = "",
+
+        @ColumnInfo(name = "downloadurl")
+        var downloadurl: String = "",
 
         @ColumnInfo(name = "filestate")
         var filestate: Int = 0,

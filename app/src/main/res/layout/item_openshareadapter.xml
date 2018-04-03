@@ -1,0 +1,83 @@
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+
+    android:layout_height="250dp"
+    android:layout_margin="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:padding="10dp">
+
+        <com.jude.easyrecyclerview.EasyRecyclerView
+            android:id="@+id/rv_sharefile"
+            android:layout_width="match_parent"
+            android:layout_height="186dp"
+            android:background="#F5F5F5"
+            android:layout_marginRight="50dp"></com.jude.easyrecyclerview.EasyRecyclerView>
+
+        <ImageView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:layout_alignParentEnd="true"
+            android:id="@+id/img_share_download"
+            android:src="@drawable/ic_share_download" />
+
+        <ImageView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:id="@+id/img_share_delete"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:layout_below="@id/img_share_download"
+            android:src="@drawable/ic_share_delete" />
+
+        <ImageView
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:padding="10dp"
+            android:id="@+id/img_share_code"
+            android:layout_marginTop="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/img_share_delete"
+            android:src="@drawable/ic_share_code" />
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:layout_alignParentBottom="true">
+
+            <ImageView
+                android:id="@+id/pic_nowhy"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true"
+               android:background="@drawable/share_diandian"/>
+
+            <TextView
+                android:id="@+id/tv_who_share_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@id/pic_nowhy"
+                android:text="XXXX分享了一个文件"
+                android:textSize="18dp"
+
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="2017-07-25" />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+</android.support.v7.widget.CardView>

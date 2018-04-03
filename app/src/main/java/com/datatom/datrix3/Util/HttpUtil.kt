@@ -153,7 +153,10 @@ class HttpUtil {
                             override fun onProgress(progress: Long, total: Long, done: Boolean) {
 
                                 //(progress * 100 / taskfile.total).toInt().toString().LogD(" progress : ")
-                                taskfile.filepersent = (progress * 100 / taskfile.total).toInt()
+
+                               // var taskf = database.TaskFileDao().queryTaskFile(taskfile.id)
+                               taskfile.filepersent = (progress * 100 / taskfile.total).toInt()
+                                //taskf.filepersent = (progress * 100 / taskf.total).toInt()
                                 database.TaskFileDao().updatefiles(taskfile)
 
                             }

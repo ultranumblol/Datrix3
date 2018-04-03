@@ -4,13 +4,9 @@ import android.annotation.TargetApi
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
-import android.os.Bundle
-import android.os.Handler
 import android.support.v4.view.ViewCompat
 import android.transition.Transition
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
@@ -22,7 +18,6 @@ import com.datatom.datrix3.helpers.LogD
 import com.datatom.datrix3.helpers.MD5
 import com.datatom.datrix3.helpers.hide
 import com.datatom.datrix3.listener.OnTransitionListener
-import com.datatom.datrix3.view.SampleVideo
 import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import kotlinx.android.synthetic.main.activity_base.*
@@ -73,20 +68,16 @@ class PlayVideoActivity : BaseActivity() {
 
                             var code =  it.reuslt
 
-
                             var strs = it.reuslt.split(",")
-
 
                             var index = strs[1].toInt() + strs[3].toInt()
                             var length = strs[2].toInt()
 
 
-
                             var key = it.reuslt.substring(index , (index + length)).MD5()
 
 
-
-                            var url2 = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=origin&fileid=" + data.fileid +
+                            var url2 = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=preview&fileid=" + data.fileid +
                                     "&objectid=" + data.objid + "&createuid=" + data.createuid +
                                     "&code="+code+"&key=" +key +
                                     "&token=" + Someutil.getToken() + "&quality=a"
@@ -101,22 +92,14 @@ class PlayVideoActivity : BaseActivity() {
                                 setUp(url2, false, data.filename)
                                 backButton.visibility = View.VISIBLE
                                 backButton.setOnClickListener { onBackPressed() }
-
-
                                 setIsTouchWiget(true)
-
                                 fullscreenButton.setOnClickListener {
                                     orientationUtils!!.resolveByClick()
                                 }
-
-
                             }
-
                             orientationUtils = OrientationUtils(this, video_player)
 
                             initTransition()
-
-
                         }, {
 
                             it.toString().LogD("error : ")
