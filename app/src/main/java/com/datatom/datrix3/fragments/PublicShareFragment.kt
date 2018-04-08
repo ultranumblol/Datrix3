@@ -33,7 +33,7 @@ class PublicShareFragment : BaseFragment() {
         var list = arrayListOf<Int>(12,12,123)
 
 
-        rvadapter!!.addAll(list)
+
     }
 
     override fun getLayoutitem(): Int {

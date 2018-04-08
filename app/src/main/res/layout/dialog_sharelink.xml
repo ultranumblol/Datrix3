@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:text="生成下载链接，然后复制发送到好友"
+        android:textColor="@color/black"
+        android:textSize="14dp" />
+
+
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="34dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:hint="描述"
+            android:text=""
+            android:id="@+id/share_miaoshu"
+
+            />
+
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:paddingLeft="8dp"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="权限："
+            android:textColor="@color/black"
+            android:textSize="15dp"
+            />
+        <CheckBox
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="密码"
+            android:id="@+id/cb_needpwd"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="过期时间:"
+            android:textColor="@color/black"
+            android:layout_marginLeft="24dp"
+            />
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:hint="选择时间"
+            android:id="@+id/tv_picktime"
+            android:textColor="@color/black"
+            android:layout_marginLeft="8dp"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

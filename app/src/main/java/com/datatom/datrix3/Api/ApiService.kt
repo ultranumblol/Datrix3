@@ -393,7 +393,7 @@ interface ApiService {
             @Field("isperdir") isperdir: Boolean,
             @Field("userid") userid: String
 
-    )
+    ) : Observable<String>
 
 
     /**
@@ -464,7 +464,21 @@ interface ApiService {
             @Field("groups") groups: String,
             @Field("userid") userid: String
 
-    ): Observable<String>
+    ): Observable<CreatShare>
+
+    /**
+     * 展示该用户创建的分享链接列表
+     */
+    @FormUrlEncoded
+    @POST("shares/linklist_create")
+    fun linklist_create(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("userid") userid: String
+
+    ): Observable<ShareList>
+
+
+
 
 
 }

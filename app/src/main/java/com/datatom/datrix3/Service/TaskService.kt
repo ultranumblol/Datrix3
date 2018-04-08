@@ -58,8 +58,6 @@ class TaskService : Service() {
 
     }
 
-
-
     override fun onCreate() {
         super.onCreate()
 
@@ -133,10 +131,7 @@ class TaskService : Service() {
                         }
                     }
                 }
-
-
     }
-
 
     fun getdatalist(): List<TaskFile>? {
 

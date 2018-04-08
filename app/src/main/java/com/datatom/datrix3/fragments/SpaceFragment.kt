@@ -4,6 +4,7 @@ package com.datatom.datrix3.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -45,6 +46,14 @@ import io.github.tonnyl.charles.Charles
 import io.github.tonnyl.charles.engine.impl.GlideEngine
 import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
+
+import com.bigkoo.pickerview.listener.OnTimeSelectListener
+import com.bigkoo.pickerview.builder.TimePickerBuilder
+import com.bigkoo.pickerview.view.TimePickerView
+import com.datatom.datrix3.Adapter.DialogDirAdapter
+import com.datatom.datrix3.Util.Someutil.gettime
+import io.reactivex.Observable
+import java.util.*
 
 
 /**
@@ -237,6 +246,17 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         RxBus.get().toFlowable(String::class.java).subscribe {
 
             when (it) {
+
+
+                "cancel" ->{
+                    rvadapter!!.apply{
+                        setCheckBoxNoneSelect()
+                        notifyDataSetChanged()
+                    }
+                    RxBus.get().post("updatespacecheckbox")
+
+                }
+
                 "spaceselectall" -> {
 
                     // Log.d("wgz", "getcheckboxArrary :" + rvadapter!!.getcheckboxArrary().size())
@@ -592,6 +612,11 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
     }
 
+    fun checkboxhide() {
+        rvadapter!!.setCheckBoxNoneSelect()
+        RxBus.get().post("updatespacecheckbox")
+    }
+
     //所有控件点击事件
     override fun onClick(v: View?) {
 
@@ -607,7 +632,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //重命名
             I.edit_rv_rename -> {
                 var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
-                editview2.find<TextView>(I.dialog_edittext).hint = "请输入文件名称"
+                editview2.find<TextView>(I.dialog_edittext).text = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].filename
 
                 if (rvadapter!!.getcheckboxArrary().size() == 1)
                     context.let {
@@ -734,7 +759,81 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
 
             }
+        //文件链接分享
             I.edit_rv_share -> {
+                var fileidstr = StringBuilder()
+
+                rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+
+                    fileidstr.append(rvadapter!!.allData[i].fileid)
+                    fileidstr.append(",")
+                }
+                fileidstr.deleteCharAt(fileidstr.length - 1)
+
+                var shareview = View.inflate(activity, R.layout.dialog_sharelink, null)
+                var tv_picktime = shareview.find<TextView>(I.tv_picktime)
+                var miaoshu = shareview.find<EditText>(I.share_miaoshu)
+                var needpwd = shareview.find<CheckBox>(I.cb_needpwd)
+                var dialog = AlertDialog.Builder(activity!!).run {
+                    setTitle("链接分享")
+                    setView(shareview)
+                    setPositiveButton("创建分享链接") { _, _ ->
+
+                        //tv_picktime.text.toString().LogD("time")
+
+                        HttpUtil.instance.apiService().linkcreate(Someutil.getToken()
+                                , "sharefile", miaoshu.text.toString(), Someutil.getUserID()
+                                , Someutil.getUserNickname(), fileidstr.toString(), if (tv_picktime.text.toString().isEmpty()) 0 else 0
+                                , if (needpwd.isChecked) 1 else 0, 1, 0, "", 0, ""
+                                , "", Someutil.getUserID())
+                                .compose(RxSchedulers.compose())
+                                .subscribe({
+                                    it.toString().LogD("result : ")
+                                    if (it.code == 200) {
+                                        checkboxhide()
+                                        var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
+                                        editview2.find<TextView>(I.dialog_edittext).text = it.result.shareurl
+                                        if (needpwd.isChecked) {
+                                            AlertDialog.Builder(activity!!)
+                                                    .run {
+                                                        setTitle("分享成功！ 提取码：${it.result.sharepwd}")
+                                                        setView(editview2)
+                                                                .show()
+                                                    }
+                                        } else {
+                                            AlertDialog.Builder(activity!!)
+                                                    .run {
+                                                        setTitle("分享成功！")
+                                                        setView(editview2)
+                                                                .show()
+                                                    }
+                                        }
+                                        //  activity!!.toast("分享成功！")
+
+                                    }
+                                }, {
+                                    "error".LogD()
+                                })
+
+                    }
+                    show()
+
+                }
+                tv_picktime.setOnClickListener {
+
+
+                    dialog.dismiss()
+                    //时间选择器
+                    val pvTime = TimePickerBuilder(activity!!,
+                            OnTimeSelectListener { date, _ ->
+                                tv_picktime.text = gettime(date)
+                                dialog.show()
+                            }).build()
+
+
+                    pvTime.show()
+                }
+
             }
             I.edit_rv_delete -> {
 
@@ -800,7 +899,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                         setPositiveButton("确认") { _, _ ->
 
                             var fileidstr = StringBuilder()
-                            var filetotla  = 0L
+                            var filetotla = 0L
 
                             rvadapter!!.getcheckboxArrary().forEach { i, _ ->
 
@@ -833,7 +932,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                             var taskfile = TaskFile()
                             taskfile!!.apply {
-                                filename = editview2.find<TextView>(I.dialog_edittext).text.toString()+".tar"
+                                filename = editview2.find<TextView>(I.dialog_edittext).text.toString() + ".tar"
                                 fileid = System.currentTimeMillis().toString()
                                 id = System.currentTimeMillis().toString()
                                 taskstate = NEWFILE
@@ -862,20 +961,183 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
             }
             I.edit_rv_copy -> {
+                var dirlayout = View.inflate(activity, R.layout.dialog_dirs, null)
+                var rv = dirlayout.find<EasyRecyclerView>(I.rv_dirs)
+                var goback = dirlayout.find<LinearLayout>(I.dialog_goback)
+                var diradapter = DialogDirAdapter(activity!!)
+                rv.setLayoutManager(LinearLayoutManager(activity!!))
+                rv.adapter = diradapter
+                goback.setOnClickListener {
+                    showDirs(PERSONAL_SPACE_ID)
+                            .compose(RxSchedulers.compose())
+                            .subscribe {
+                                diradapter.notifyDataSetChanged()
+                                goback.visibility =  View.GONE
+                                diradapter!!.clear()
+                                diradapter!!. addAll(it.reuslt.result2)
+
+
+                            }
+                }
+                diradapter!!.apply {
+                    setOnItemClickListener {
+                        showDirs(allData[it].fileid)
+                                .compose(RxSchedulers.compose())
+                                .subscribe {
+                                    diradapter.notifyDataSetChanged()
+                                    goback.visibility = if (it.reuslt.result2.isNotEmpty()) View.GONE else View.VISIBLE
+                                    clear()
+                                    addAll(it.reuslt.result2)
+
+
+                                }
+                    }
+                }
+
+                HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(), PERSONAL_SPACE_ID, Someutil.getUserID(),
+                        "type,createtime", "asc,desc",
+                        cpge, 40, 0, false, false
+                )
+                        .compose(RxSchedulers.compose())
+                        .subscribe {
+
+                            goback.visibility = if (it.reuslt.result2.isNotEmpty()) View.GONE else View.VISIBLE
+                            diradapter.addAll(it.reuslt.result2)
+                            context.let {
+                                AlertDialog.Builder(it!!)
+                                        .setTitle("选择要移动的目录")
+                                        .setView(dirlayout)
+                                        .setPositiveButton("确认", { _, _ ->
+                                           //todo  diradapter.getcheckboxArrary()
+                                            var datafile = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]
+                                                HttpUtil.instance.apiService().filecopy(Someutil.getToken()
+                                                        , datafile.createuid, datafile.objid, datafile.fileid
+                                                ,diradapter.allData[diradapter.getcheckboxArrary().keyAt(0)].fileid
+                                                ,true,Someutil.getUserID())
+                                                        .compose(RxSchedulers.compose())
+                                                        .subscribe({
+
+
+                                                            if (it.contains("200")){
+                                                                activity!!.toast("复制完成！")
+                                                            }
+                                                            else{
+                                                                activity!!.toast("复制失败！")
+                                                            }
+
+                                                        },{
+                                                            it.toString().LogD("error : ")
+                                                            activity!!.toast("复制失败！")
+                                                        })
+
+
+
+
+
+                                            checkboxhide()
+                                        })
+                                        .show()
+                            }
+
+                        }
+
 
             }
             I.edit_rv_move -> {
+                var dirlayout = View.inflate(activity, R.layout.dialog_dirs, null)
+                var rv = dirlayout.find<EasyRecyclerView>(I.rv_dirs)
+                var goback = dirlayout.find<LinearLayout>(I.dialog_goback)
+                var diradapter = DialogDirAdapter(activity!!)
+                rv.setLayoutManager(LinearLayoutManager(activity!!))
+                rv.adapter = diradapter
+                goback.setOnClickListener {
+                    showDirs(PERSONAL_SPACE_ID)
+                            .compose(RxSchedulers.compose())
+                            .subscribe {
+                                diradapter.notifyDataSetChanged()
+                                goback.visibility =  View.GONE
+                                diradapter!!.clear()
+                                diradapter!!. addAll(it.reuslt.result2)
+
+
+                            }
+                }
+                diradapter!!.apply {
+                    setOnItemClickListener {
+                        showDirs(allData[it].fileid)
+                                .compose(RxSchedulers.compose())
+                                .subscribe {
+                                    diradapter.notifyDataSetChanged()
+                                    goback.visibility = if (it.reuslt.result2.isNotEmpty()) View.GONE else View.VISIBLE
+                                    clear()
+                                    addAll(it.reuslt.result2)
+
+
+                                }
+                    }
+                }
+
+                HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(), PERSONAL_SPACE_ID, Someutil.getUserID(),
+                        "type,createtime", "asc,desc",
+                        cpge, 40, 0, false, false
+                )
+                        .compose(RxSchedulers.compose())
+                        .subscribe {
+
+                            goback.visibility = if (it.reuslt.result2.isNotEmpty()) View.GONE else View.VISIBLE
+                            diradapter.addAll(it.reuslt.result2)
+                            context.let {
+                                AlertDialog.Builder(it!!)
+                                        .setTitle("选择要移动的目录")
+                                        .setView(dirlayout)
+                                        .setPositiveButton("确认", { _, _ ->
+                                            //todo  diradapter.getcheckboxArrary()
+                                            var datafile = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]
+                                            HttpUtil.instance.apiService().filemove(Someutil.getToken()
+                                                    , datafile.fileid, datafile.filename,datafile.createuid,
+                                                    datafile.objid,
+                                                    diradapter.allData[diradapter.getcheckboxArrary().keyAt(0)].fileid
+                                                    ,3)
+                                                    .compose(RxSchedulers.compose())
+                                                    .subscribe({
+
+
+                                                        if (it.contains("200")){
+                                                            activity!!.toast("文件移动完成！")
+                                                            Handler().postDelayed({
+                                                                refreshData()
+                                                            }, 300)
+                                                        }
+                                                        else{
+                                                            activity!!.toast("文件移动失败！")
+                                                        }
+
+                                                    },{
+                                                        it.toString().LogD("error : ")
+                                                        activity!!.toast("文件移动失败！")
+                                                    })
+
+
+
+
+
+                                            checkboxhide()
+                                        })
+                                        .show()
+                            }
+
+                        }
 
             }
         //详情
             I.edit_rv_detil -> {
-                if (rvadapter!!.getcheckboxArrary().size() == 1)
+                if (rvadapter!!.getcheckboxArrary().size() == 1) {
                     context!!.startActivity(Intent(activity, FileDetilActivity::class.java).putExtra("file", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
 
-                Handler().postDelayed({
-                    refreshData()
-                }, 300)
-
+                    Handler().postDelayed({
+                        refreshData()
+                    }, 300)
+                }
             }
 
         //切换到个人空间
@@ -1011,6 +1273,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
     }
 
+    private fun showDirs(dirid: String): Observable<PersonalFilelistData> {
+        return HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(), dirid, Someutil.getUserID(),
+                "type,createtime", "asc,desc",
+                cpge, 40, 0, false, false
+        )
+    }
+
+
     //刷新数据
     fun refreshData() {
 
@@ -1030,6 +1300,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         }
 
     }
+
 
     //打开文件选择器
     fun openchose() {

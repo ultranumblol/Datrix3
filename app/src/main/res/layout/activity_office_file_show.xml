@@ -23,14 +23,14 @@
         android:layout_marginLeft="48dp"
 
         />
+
     <TextView
+        android:id="@+id/downfile_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_above="@+id/file_downloadProgress"
         android:layout_centerHorizontal="true"
-        android:id="@+id/downfile_name"
         android:text="文件下载中"
-        android:layout_above="@id/file_downloadProgress"
         android:textColor="@color/black"
-        android:textSize="16dp"
-        />
+        android:textSize="16dp" />
 </RelativeLayout>

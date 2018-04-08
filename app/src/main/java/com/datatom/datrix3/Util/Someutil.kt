@@ -22,6 +22,8 @@ import android.os.Build
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AlertDialog
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 
@@ -134,7 +136,11 @@ object Someutil {
         }
 
     }
+fun gettime(date : Date): String? {
 
+    val format = SimpleDateFormat("yyyy-MM-dd")
+    return format.format(date)
+}
 
 
     fun writeResponseBodyToDisk2(body: ResponseBody, filename: String): Pair<Boolean, File> {

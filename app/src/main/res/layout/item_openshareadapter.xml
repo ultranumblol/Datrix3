@@ -13,7 +13,7 @@
         <com.jude.easyrecyclerview.EasyRecyclerView
             android:id="@+id/rv_sharefile"
             android:layout_width="match_parent"
-            android:layout_height="186dp"
+            android:layout_height="190dp"
             android:background="#F5F5F5"
             android:layout_marginRight="50dp"></com.jude.easyrecyclerview.EasyRecyclerView>
 
@@ -75,6 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:id="@+id/tv_sharetime"
                 android:text="2017-07-25" />
         </RelativeLayout>
 

@@ -45,13 +45,9 @@ class OfficeFileShowActivity : BaseActivity() {
         when(data){
             is PersonalFilelistData.result2 ->{
                 file_downloadProgress.progress = 0
-
                 setToolbartitle(data.filename)
-
                 //data.size.toInt().toString().LogD(" size :: ")
-
                 DownfileAndOpen(data, OfficeFile(data.fileid, data.filename, 0, data.size.toInt(), data.fileid))
-
 
                 val updatesub = Observable.interval(1, TimeUnit.SECONDS).compose(RxSchedulers.compose<Long>())
                         .subscribe {
@@ -59,7 +55,6 @@ class OfficeFileShowActivity : BaseActivity() {
                             file_downloadProgress.progress = database.OfficefileDao().queryofficeifle(data.fileid).progress
 
                             if (database.OfficefileDao().queryofficeifle(data.fileid).progress == 100) {
-
 
                             }
 //
@@ -69,13 +64,10 @@ class OfficeFileShowActivity : BaseActivity() {
             }
 
             is TaskFile ->{
-                file_downloadProgress.hide()
-
+                file_downloadProgress.visibility = View.INVISIBLE
                 openfile(data)
 
-
             }
-
         }
 
 

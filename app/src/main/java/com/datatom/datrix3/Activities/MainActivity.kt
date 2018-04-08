@@ -231,10 +231,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 "hidemainbar" -> {
                     main_bar.hide()
                     main_bar_line.hide()
+                    toolbar_qiehuan.text = "取消"
                 }
                 "showmainbar" -> {
                     main_bar.Show()
                     main_bar_line.Show()
+                    toolbar_qiehuan.text = "切换"
                 }
                 "hidezhezhao" -> {
                     zhezhao.hide()
@@ -354,6 +356,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
                     }
+                }
+                else{
+                    RxBus.get().post("cancel")
+                    toolbar_qiehuan.text = "切换"
+
                 }
 
 
