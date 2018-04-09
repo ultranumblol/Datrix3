@@ -2,7 +2,6 @@ package com.datatom.datrix3.Activities
 
 import android.content.Context
 import android.content.Intent
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AlertDialog
@@ -13,7 +12,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import collections.forEach
 import com.datatom.datrix3.Adapter.SearchAdapter
-import com.datatom.datrix3.Adapter.SpaceAdapter
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.SpacePageList
@@ -25,7 +23,6 @@ import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
-import com.datatom.datrix3.fragments.SpaceFragment
 import com.datatom.datrix3.helpers.*
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_search_result.*

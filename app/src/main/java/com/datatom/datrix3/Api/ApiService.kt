@@ -477,6 +477,17 @@ interface ApiService {
 
     ): Observable<ShareList>
 
+    /**
+     * 删除链接分享
+     */
+    @FormUrlEncoded
+    @POST("shares/linkdelete")
+    fun linkdelete(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("shareid") shareid: String
+
+    ): Observable<String>
+
 
 
 

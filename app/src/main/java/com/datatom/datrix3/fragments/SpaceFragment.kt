@@ -4,7 +4,6 @@ package com.datatom.datrix3.fragments
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
@@ -27,14 +26,12 @@ import com.datatom.datrix3.helpers.*
 import com.jude.easyrecyclerview.EasyRecyclerView
 import org.jetbrains.anko.find
 
-import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import collections.forEach
 import com.datatom.datrix3.Activities.*
 import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Service.TaskService.Companion.BEGDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOAD
-import com.datatom.datrix3.Service.TaskService.Companion.DOWNLOADING
 import com.datatom.datrix3.Service.TaskService.Companion.NEWFILE
 import com.datatom.datrix3.Service.TaskService.Companion.NORMALDOWNLOAD
 import com.datatom.datrix3.Service.TaskService.Companion.UPLOAD
@@ -44,12 +41,10 @@ import com.datatom.datrix3.Util.Someutil.checkPermissionREAD_EXTERNAL_STORAGE
 import com.datatom.datrix3.app
 import io.github.tonnyl.charles.Charles
 import io.github.tonnyl.charles.engine.impl.GlideEngine
-import org.jetbrains.anko.startActivity
 import org.jetbrains.anko.toast
 
 import com.bigkoo.pickerview.listener.OnTimeSelectListener
 import com.bigkoo.pickerview.builder.TimePickerBuilder
-import com.bigkoo.pickerview.view.TimePickerView
 import com.datatom.datrix3.Adapter.DialogDirAdapter
 import com.datatom.datrix3.Util.Someutil.gettime
 import io.reactivex.Observable
@@ -781,16 +776,20 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                         //tv_picktime.text.toString().LogD("time")
 
-                        HttpUtil.instance.apiService().linkcreate(Someutil.getToken()
-                                , "sharefile", miaoshu.text.toString(), Someutil.getUserID()
-                                , Someutil.getUserNickname(), fileidstr.toString(), if (tv_picktime.text.toString().isEmpty()) 0 else 0
-                                , if (needpwd.isChecked) 1 else 0, 1, 0, "", 0, ""
-                                , "", Someutil.getUserID())
+                        HttpUtil.instance.apiService().linkcreate(Someutil.getToken(),
+                                "sharefile", miaoshu.text.toString(), Someutil.getUserID(),
+                                Someutil.getUserNickname(), fileidstr.toString(), if (tv_picktime.text.toString().isEmpty()) 0 else 0,
+                                if (needpwd.isChecked) 1 else 0, 1, 0, "", 0, "",
+                                "", Someutil.getUserID())
                                 .compose(RxSchedulers.compose())
                                 .subscribe({
                                     it.toString().LogD("result : ")
                                     if (it.code == 200) {
                                         checkboxhide()
+                                        Handler().postDelayed({
+                                            RxBus.get().post("refresh_share")
+                                        }, 1000)
+
                                         var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
                                         editview2.find<TextView>(I.dialog_edittext).text = it.result.shareurl
                                         if (needpwd.isChecked) {
@@ -800,6 +799,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                         setView(editview2)
                                                                 .show()
                                                     }
+
                                         } else {
                                             AlertDialog.Builder(activity!!)
                                                     .run {

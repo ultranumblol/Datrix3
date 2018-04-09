@@ -7,6 +7,7 @@ import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.LogD
+import com.datatom.datrix3.helpers.hide
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_preview_txtfile.*
 import java.io.File
@@ -44,6 +45,7 @@ class PreviewTXTFileActivity : BaseActivity() {
 
                             var txtstr = Someutil.getTXTFileString(it.byteStream())
                             runOnUiThread {
+                                pro_loading.hide()
                                 tv_txtpreview.text =txtstr
                             }
                         }, {
@@ -55,6 +57,7 @@ class PreviewTXTFileActivity : BaseActivity() {
                 setToolbartitle(data.filename)
                 var txtstr = Someutil.getTXTFileString(File(data.filePath).inputStream())
                 runOnUiThread {
+                    pro_loading.hide()
                     tv_txtpreview.text =txtstr
                 }
 

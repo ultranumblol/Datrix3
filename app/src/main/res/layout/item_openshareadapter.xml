@@ -1,62 +1,64 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-
-    android:layout_height="250dp"
-    android:layout_margin="4dp">
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    android:minHeight="200dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-
-        android:padding="10dp">
+        android:padding="8dp">
 
         <com.jude.easyrecyclerview.EasyRecyclerView
             android:id="@+id/rv_sharefile"
             android:layout_width="match_parent"
-            android:layout_height="190dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="50dp"
             android:background="#F5F5F5"
-            android:layout_marginRight="50dp"></com.jude.easyrecyclerview.EasyRecyclerView>
+            android:layout_marginBottom="37dp"
+            android:minHeight="160dp"></com.jude.easyrecyclerview.EasyRecyclerView>
 
         <ImageView
+            android:id="@+id/img_share_download"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:padding="10dp"
             android:layout_alignParentEnd="true"
-            android:id="@+id/img_share_download"
+            android:padding="10dp"
             android:src="@drawable/ic_share_download" />
 
         <ImageView
+            android:id="@+id/img_share_delete"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:padding="10dp"
-            android:id="@+id/img_share_delete"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="16dp"
             android:layout_below="@id/img_share_download"
+            android:layout_marginTop="16dp"
+            android:padding="10dp"
             android:src="@drawable/ic_share_delete" />
 
         <ImageView
+            android:id="@+id/img_share_code"
             android:layout_width="44dp"
             android:layout_height="44dp"
-            android:padding="10dp"
-            android:id="@+id/img_share_code"
-            android:layout_marginTop="16dp"
             android:layout_alignParentEnd="true"
             android:layout_below="@id/img_share_delete"
+            android:layout_marginTop="16dp"
+            android:padding="10dp"
             android:src="@drawable/ic_share_code" />
 
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="36dp"
+            android:layout_height="32dp"
+
             android:layout_alignParentBottom="true">
 
             <ImageView
                 android:id="@+id/pic_nowhy"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:layout_centerVertical="true"
-               android:background="@drawable/share_diandian"/>
+                android:background="@drawable/share_diandian" />
 
             <TextView
                 android:id="@+id/tv_who_share_file"
@@ -71,11 +73,11 @@
                 />
 
             <TextView
+                android:id="@+id/tv_sharetime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:id="@+id/tv_sharetime"
                 android:text="2017-07-25" />
         </RelativeLayout>
 

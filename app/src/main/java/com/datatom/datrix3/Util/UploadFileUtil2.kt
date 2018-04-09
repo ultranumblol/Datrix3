@@ -47,10 +47,6 @@ class UploadFileUtil2(file: TaskFile) {
 
     }
 
-    fun settaskFile(taskfile: TaskFile) {
-
-        this.tfile = taskfile
-    }
 
     fun doUpload() {
         initFile()
