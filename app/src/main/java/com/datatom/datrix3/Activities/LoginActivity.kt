@@ -53,6 +53,12 @@ class LoginActivity : AppCompatActivity() {
 
         mbutton = find(R.id.button_get_started)
 
+
+        tv_saoyisao.setOnClickListener {
+            Someutil.checkPermissionCAMERA(this)
+            this.startActivity(Intent(this,SaoyisaoActivity::class.java))
+
+        }
         //addUsernameAutoComplete()
         RxView.clicks(mbutton!!).throttleFirst(100, TimeUnit.MILLISECONDS)
                 .subscribe {

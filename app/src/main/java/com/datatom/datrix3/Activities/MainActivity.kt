@@ -60,6 +60,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         //启动消息推送服务
         startService(Intent(this, TaskService::class.java))
         Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)
+
+
+
         if (intent.getBooleanExtra("ifupdate", false)) {
             Someutil.updateToken()
 

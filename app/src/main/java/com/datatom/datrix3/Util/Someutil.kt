@@ -304,10 +304,13 @@ fun gettime(date : Date): String? {
     }
 
     val MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123
+    val MY_PERMISSIONS_CAMER = 1233
 
     fun checkPermissionREAD_EXTERNAL_STORAGE(context: Context): Boolean {
         val currentAPIVersion = Build.VERSION.SDK_INT
         if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+
+
             if (ContextCompat.checkSelfPermission(context,
                     Manifest.permission.READ_EXTERNAL_STORAGE) !== PackageManager.PERMISSION_GRANTED) {
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -328,10 +331,45 @@ fun gettime(date : Date): String? {
                 return true
             }
 
+
+
         } else {
             return true
         }
     }
+
+    fun checkPermissionCAMERA(context: Context): Boolean {
+        val currentAPIVersion = Build.VERSION.SDK_INT
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+
+
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.CAMERA) !== PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        context as Activity,
+                        Manifest.permission.CAMERA)) {
+                    showDialog("External storage", context,
+                            Manifest.permission.CAMERA)
+
+                } else {
+                    ActivityCompat
+                            .requestPermissions(
+                                    context as Activity,
+                                    arrayOf<String>(Manifest.permission.CAMERA),
+                                    MY_PERMISSIONS_CAMER)
+                }
+                return false
+            } else {
+                return true
+            }
+
+
+
+        } else {
+            return true
+        }
+    }
+
 
     fun showDialog(msg: String, context: Context,
                    permission: String) {

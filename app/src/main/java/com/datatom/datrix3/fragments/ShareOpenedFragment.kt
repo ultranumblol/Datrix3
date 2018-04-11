@@ -1,9 +1,11 @@
 package com.datatom.datrix3.fragments
 
+import android.content.Intent
 import android.os.Handler
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import com.datatom.datrix3.Activities.SharedFilesActivity
 import com.datatom.datrix3.Adapter.openshareadapter
 import com.datatom.datrix3.base.BaseFragment
 import com.datatom.datrix3.R
@@ -29,7 +31,13 @@ class ShareOpenedFragment : BaseFragment(), SwipeRefreshLayout.OnRefreshListener
 
         rv = view.find(I.rv_openshare)
         rvadapter = openshareadapter(activity!!)
+        rvadapter!!.apply {
+            setOnItemClickListener {
+                context.startActivity(Intent(activity, SharedFilesActivity::class.java).putExtra("files",allData[it]._source))
 
+            }
+
+        }
         rv!!.apply {
             setLayoutManager(LinearLayoutManager(activity))
             adapter = rvadapter

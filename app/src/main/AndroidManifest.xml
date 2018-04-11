@@ -10,7 +10,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <!-- <uses-permission android:name="android.permission.CAMERA" /> -->
+    <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -44,7 +44,9 @@
         <activity android:name=".Activities.PreviewTXTFileActivity" />
         <activity android:name=".Activities.FileDetilActivity" />
         <activity android:name=".Activities.SearchResultActivity" />
-        <activity android:name=".Activities.TrashActivity"></activity>
+        <activity android:name=".Activities.TrashActivity" />
+        <activity android:name=".Activities.SharedFilesActivity" />
+        <activity android:name=".Activities.SaoyisaoActivity"></activity>
     </application>
 
 </manifest>

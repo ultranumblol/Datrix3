@@ -7,6 +7,7 @@ import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.OfficeFile
 import com.datatom.datrix3.Bean.PersonalFilelistData
+import com.datatom.datrix3.Bean.ShareList
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.IntentUtil
@@ -66,6 +67,11 @@ class OfficeFileShowActivity : BaseActivity() {
             is TaskFile ->{
                 file_downloadProgress.visibility = View.INVISIBLE
                 openfile(data)
+
+            }
+
+            is ShareList.Files ->{
+
 
             }
         }

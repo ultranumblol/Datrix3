@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import com.datatom.datrix3.Activities.LoginActivity
+import com.datatom.datrix3.Activities.SaoyisaoActivity
 import com.datatom.datrix3.Activities.TrashActivity
 import com.datatom.datrix3.Adapter.MoreFragmentadapter
 import com.datatom.datrix3.Base.GlideApp
@@ -120,9 +121,18 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
         rvadapter!!.apply {
             addAll(items)
             setOnItemClickListener {
-                activity!!.toast(" " + (it + 1))
-            }
 
+                when(allData[it].name){
+                    "回收站" ->{
+                        activity!!.startActivity(Intent(activity,TrashActivity::class.java))
+                    }
+                    "扫一扫" ->{
+
+                        activity!!.startActivity(Intent(activity,SaoyisaoActivity::class.java))
+                    }
+
+                }
+            }
         }
 
 
@@ -143,18 +153,6 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
 
         initData()
 
-        rvadapter!!.apply {
-            setOnItemClickListener {
-
-                when(allData[it].name){
-                    "回收站" ->{
-                            activity!!.startActivity(Intent(activity,TrashActivity::class.java))
-                    }
-
-                }
-            }
-
-        }
     }
 
     private fun initData() {

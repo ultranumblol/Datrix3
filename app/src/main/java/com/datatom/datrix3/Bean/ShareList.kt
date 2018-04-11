@@ -2,6 +2,7 @@ package com.datatom.datrix3.Bean
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 /**
  * Created by wgz on 2018/4/4.
@@ -18,7 +19,7 @@ data class ShareList(
         @Expose
         val msg: String
 
-) {
+) : Serializable {
 
     data class  result(
 
@@ -32,7 +33,7 @@ data class ShareList(
             val hits: List<Hits>
 
 
-    )
+    ): Serializable
 
     data class Hits(
             @SerializedName("_index")
@@ -47,7 +48,7 @@ data class ShareList(
             @SerializedName("_source")
             @Expose
             val _source: Source
-            )
+            ): Serializable
 
     data class  Source(
 
@@ -81,7 +82,7 @@ data class ShareList(
             @SerializedName("files")
             @Expose
             val files: List<Files>
-    )
+    ): Serializable
 
     data class Files(
             @SerializedName("fileid")
@@ -119,6 +120,6 @@ data class ShareList(
             @SerializedName("ext")
             @Expose
             val ext: String
-    )
+    ): Serializable
 
 }

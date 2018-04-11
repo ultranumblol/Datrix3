@@ -1,4 +1,4 @@
-package com.datatom.datrix3.Adapter;
+package com.datatom.datrix3.Adapter
 
 import android.app.AlertDialog
 import android.content.Context
@@ -10,29 +10,26 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.datatom.datrix3.Activities.SharedFilesActivity
 import com.datatom.datrix3.Bean.ShareList
-import com.jude.easyrecyclerview.adapter.BaseViewHolder
-import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
-import com.datatom.datrix3.helpers.I
-import com.datatom.datrix3.helpers.LogD
-import com.datatom.datrix3.helpers.RxBus
-import com.datatom.datrix3.helpers.createQRImage
+import com.datatom.datrix3.helpers.*
 import com.jude.easyrecyclerview.EasyRecyclerView
+import com.jude.easyrecyclerview.adapter.BaseViewHolder
+import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
 
 /**
  * Created by wgz
  */
-class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(context) {
+class publicshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(context) {
 
     override fun OnCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
-        return openshareadapterViewholder(parent)
+        return publicshareadapterViewholder(parent)
     }
 
-    private inner class openshareadapterViewholder(itemView: ViewGroup) : BaseViewHolder<ShareList.Hits>(itemView, R.layout.item_openshareadapter) {
+    private inner class publicshareadapterViewholder(itemView: ViewGroup) : BaseViewHolder<ShareList.Hits>(itemView, R.layout.item_openshareadapter) {
         private var img_download: ImageView? = null
         private var img_delete: ImageView? = null
         private var img_code: ImageView? = null
@@ -48,9 +45,9 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
             img_delete = `$`(R.id.img_share_delete)
             img_code = `$`(R.id.img_share_code)
 
-            whosharefile = `$`(I.tv_who_share_file)
-            sharetime = `$`(I.tv_sharetime)
-            rv = `$`(I.rv_sharefile)
+            whosharefile = `$`(R.id.tv_who_share_file)
+            sharetime = `$`(R.id.tv_sharetime)
+            rv = `$`(R.id.rv_sharefile)
 
             rvadapter = ShareRvAdapter(context)
             rv!!.apply {
@@ -81,6 +78,8 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
 
             }
             img_delete!!.apply {
+
+                hide()
                 setOnClickListener {
                     AlertDialog.Builder(context)
                             .run {
@@ -93,7 +92,7 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
                                             .subscribe({
                                                 if (it.contains("200")) {
                                                     context.toast("删除成功！")
-                                                    handler.postDelayed({ RxBus.get().post("refresh_share") }, 1000)
+                                                    handler.postDelayed({ RxBus.get().post("refresh_publicshare") }, 1000)
 
 
                                                 } else {

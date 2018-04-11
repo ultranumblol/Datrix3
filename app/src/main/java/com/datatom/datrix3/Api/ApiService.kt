@@ -478,6 +478,17 @@ interface ApiService {
     ): Observable<ShareList>
 
     /**
+     * 展示所有的公共分享链接(包含需要提取码)列表
+     */
+    @FormUrlEncoded
+    @POST("shares/linklist_public")
+    fun linklist_public(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("userid") userid: String
+
+    ): Observable<ShareList>
+
+    /**
      * 删除链接分享
      */
     @FormUrlEncoded
@@ -487,6 +498,29 @@ interface ApiService {
             @Field("shareid") shareid: String
 
     ): Observable<String>
+    /**
+     * 展示指定给该用户或用户组的分享链接列表
+     */
+    @FormUrlEncoded
+    @POST("shares/linklist_pubsee")
+    fun linklist_pubsee(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("userid") userid: String
+
+    ): Observable<ShareList>
+
+    /**
+     *回收站列表
+     */
+    @FormUrlEncoded
+    @POST("trash/list")
+    fun trash_list(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("createuid") userid: String,
+            @Field("page") page: Int,
+            @Field("perpage") perpage: Int
+
+    ): Observable<TrashBean>
 
 
 
