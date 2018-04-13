@@ -130,11 +130,11 @@ class LoginActivity : AppCompatActivity() {
             return
         }
 
-        if (!actv_ip.text.toString().IsIP()){
-            login_rootview.ShowSnackbarshort("请输入正确的ip格式")
-            return
-
-        }
+//        if (!actv_ip.text.toString().IsIP()){
+//            login_rootview.ShowSnackbarshort("请输入正确的ip格式")
+//            return
+//
+//        }
 
         var name = actv_username.text.toString()
 

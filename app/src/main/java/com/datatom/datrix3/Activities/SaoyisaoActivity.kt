@@ -1,15 +1,20 @@
 package com.datatom.datrix3.Activities
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Vibrator
+import android.support.v7.app.AlertDialog
+import android.text.method.LinkMovementMethod
+import android.text.util.Linkify
 import android.view.SurfaceHolder
 import android.view.View
 import com.datatom.datrix3.R
@@ -26,8 +31,10 @@ import java.io.IOException
 import java.util.*
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-
-
+import android.widget.TextView
+import com.datatom.datrix3.helpers.I
+import com.jude.easyrecyclerview.EasyRecyclerView
+import org.jetbrains.anko.find
 
 
 class SaoyisaoActivity : BaseActivity(), SurfaceHolder.Callback {
@@ -53,7 +60,6 @@ class SaoyisaoActivity : BaseActivity(), SurfaceHolder.Callback {
 
     override fun onResume() {
         super.onResume()
-
 
 
         val surfaceHolder = preview_view.getHolder()
@@ -181,6 +187,7 @@ class SaoyisaoActivity : BaseActivity(), SurfaceHolder.Callback {
         playBeepSoundAndVibrate()
         val resultString = result.text
         if (resultString == "") {
+
         } else {
             /*Intent resultIntent = new Intent();
             resultIntent.setClass(SaoYiSaoActivity.this, SecondCodeShowActivity.class);
@@ -194,7 +201,46 @@ class SaoyisaoActivity : BaseActivity(), SurfaceHolder.Callback {
             // startActivity(Intent(this@SaoYiSaoActivity, SecondCodeShowActivity::class.java).putExtra("result", resultString))
             // resultIntent.putExtras(bundle);
             //this.setResult(RESULT_OK, resultIntent);
-            this@SaoyisaoActivity.finish()
+            if (resultString.contains("datrix3/request.html")) {
+                AlertDialog.Builder(this).run {
+                    setTitle("此链接需要在浏览器打开，点击继续跳转")
+                    setMessage(resultString)
+                    setPositiveButton("继续", { _, _ ->
+                        var url = "http://192.168.3.217/datrix3/request.html?sid=YWM2ZDBiNmM0M2Q3MWIzYTQxOGFlNjBmZDVhNDRiOTYsNSw1&requestid=1a56435e3bc342d4e432cf8b75ad0f00"
+                        var intent = Intent()
+                        intent.action = Intent.ACTION_VIEW
+                        var content_url = Uri.parse(resultString)
+                        intent.data = content_url
+                        startActivity(Intent.createChooser(intent, "请选择浏览器"))
+                    })
+                    setNegativeButton("取消", { _, _ -> })
+                    setOnDismissListener{
+                        this@SaoyisaoActivity.finish()
+                    }
+                    show()
+                }
+
+
+            } else {
+                var dirlayout = View.inflate(this, R.layout.dialog_saoyisao_result, null)
+                var rv = dirlayout.find<TextView>(I.dialog_result)
+                rv.text = resultString
+                rv.autoLinkMask = Linkify.WEB_URLS
+                rv.movementMethod = LinkMovementMethod.getInstance()
+
+
+                AlertDialog.Builder(this).run {
+                    setTitle("扫码结果：")
+                    setView(dirlayout)
+                    setOnDismissListener {
+                        this@SaoyisaoActivity.finish()
+                    }
+
+                    show()
+
+                }
+            }
+
         }
 
     }

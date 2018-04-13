@@ -48,10 +48,10 @@ class CollectionFragment : BaseFragment(),View.OnClickListener {
 
         }
 
-        var data = arrayListOf(1,2,3,4,5,6,7,8,9,0)
+       // var data = arrayListOf(1,2,3,4,5,6,7,8,9,0)
 
 
-        rvadapter!!.addAll(data)
+        //rvadapter!!.addAll(data)
 
 
         RxBus.get().toFlowable(String::class.java).subscribe{

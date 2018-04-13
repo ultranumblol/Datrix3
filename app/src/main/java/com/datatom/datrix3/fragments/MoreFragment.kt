@@ -1,11 +1,13 @@
 package com.datatom.datrix3.fragments
 
 import android.content.Intent
+import android.net.Uri
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.datatom.datrix3.Activities.FileCollectWebViewActivity
 import com.datatom.datrix3.Activities.LoginActivity
 import com.datatom.datrix3.Activities.SaoyisaoActivity
 import com.datatom.datrix3.Activities.TrashActivity
@@ -127,8 +129,11 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
                         activity!!.startActivity(Intent(activity,TrashActivity::class.java))
                     }
                     "扫一扫" ->{
+                        Someutil.checkPermissionCAMERA(activity!!)
+                        //activity!!.startActivity(Intent(activity,SaoyisaoActivity::class.java))
+                        //activity!!.startActivity(Intent(activity,FileCollectWebViewActivity::class.java))
 
-                        activity!!.startActivity(Intent(activity,SaoyisaoActivity::class.java))
+
                     }
 
                 }
