@@ -6,7 +6,7 @@ import android.os.IBinder
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.DownLoadUtil
 import com.datatom.datrix3.Util.Someutil
-import com.datatom.datrix3.Util.UploadFileUtil
+
 import com.datatom.datrix3.Util.UploadFileUtil2
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase

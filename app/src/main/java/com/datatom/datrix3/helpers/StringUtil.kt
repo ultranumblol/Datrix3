@@ -1,5 +1,6 @@
 package com.datatom.datrix3.helpers
 
+import android.content.ClipData
 import android.provider.SyncStateContract.Helpers.update
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -10,6 +11,11 @@ import java.util.regex.Pattern
 
 import javax.crypto.Cipher
 import javax.crypto.spec.SecretKeySpec
+import android.content.ClipData.newPlainText
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Context.CLIPBOARD_SERVICE
+import com.datatom.datrix3.app
 
 
 /**
@@ -82,6 +88,16 @@ fun String.AES() : String {
 fun String.LogD(str : String = ""){
 
     android.util.Log.d("wgz",str + this)
+
+}
+
+fun String.copy(){
+    //获取剪贴板管理器：
+    val cm = app.Companion.mapp.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+// 创建普通字符型ClipData
+    val mClipData = ClipData.newPlainText("Label", this)
+// 将ClipData内容放到系统剪贴板里。
+    cm.setPrimaryClip(mClipData)
 
 }
 

@@ -7,10 +7,7 @@ import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import com.bumptech.glide.Glide
-import com.datatom.datrix3.Activities.FileCollectWebViewActivity
-import com.datatom.datrix3.Activities.LoginActivity
-import com.datatom.datrix3.Activities.SaoyisaoActivity
-import com.datatom.datrix3.Activities.TrashActivity
+import com.datatom.datrix3.Activities.*
 import com.datatom.datrix3.Adapter.MoreFragmentadapter
 import com.datatom.datrix3.Base.GlideApp
 import com.datatom.datrix3.base.BaseFragment
@@ -18,6 +15,7 @@ import com.datatom.datrix3.Bean.MoreItems
 import com.datatom.datrix3.R
 import com.datatom.datrix3.Util.*
 import com.datatom.datrix3.app
+import com.datatom.datrix3.base.AppConstant
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.I
 import com.datatom.datrix3.helpers.LogD
@@ -43,7 +41,7 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
             logoutbutton -> {
                 startActivity(Intent(activity, LoginActivity::class.java))
 
-                SPUtils.clear(app.mapp)
+                SPUtils.remove(app.mapp,AppConstant.AUTO_LOGIN)
                 GlideApp.get(activity!!).clearMemory()
                 activity!!.finish()
                 Runnable {
@@ -129,9 +127,13 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
                         activity!!.startActivity(Intent(activity,TrashActivity::class.java))
                     }
                     "扫一扫" ->{
-                        Someutil.checkPermissionCAMERA(activity!!)
-                        //activity!!.startActivity(Intent(activity,SaoyisaoActivity::class.java))
+                        if(Someutil.checkPermissionCAMERA(activity!!))
+                        activity!!.startActivity(Intent(activity,SaomaActivity::class.java))
                         //activity!!.startActivity(Intent(activity,FileCollectWebViewActivity::class.java))
+
+
+                    }
+                    "地图" ->{
 
 
                     }

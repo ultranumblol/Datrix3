@@ -69,6 +69,15 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         private var currentdir = ""
         private var currentParentObjid = ""
 
+        fun getcurrentParentObjid(): String {
+            return currentParentObjid
+
+        }
+
+        fun getcurrentdir(): String {
+            return currentdir
+        }
+
 
     }
 
@@ -243,8 +252,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             when (it) {
 
 
-                "cancel" ->{
-                    rvadapter!!.apply{
+                "cancel" -> {
+                    rvadapter!!.apply {
                         setCheckBoxNoneSelect()
                         notifyDataSetChanged()
                     }
@@ -271,6 +280,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                 }
                 "updatespacecheckbox" -> {
+
+
                     if (rvadapter!!.getcheckboxArrary().size() > 0) {
                         RxBus.get().post("hidemainbar")
                         editll!!.Show()
@@ -598,6 +609,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
     }
 
+
     //搜索目录下的文件
     private fun searchFiles(str: String) {
         //SearchViewUtils.handleToolBar(context!!, mCardViewSearch!!, mEtSearch!!)
@@ -627,8 +639,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //重命名
             I.edit_rv_rename -> {
                 var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
-                editview2.find<TextView>(I.dialog_edittext).text = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].filename
-
+                editview2.find<EditText>(I.dialog_edittext).apply {
+                    setText(rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)].filename)
+                    setSelection(length())
+                }
                 if (rvadapter!!.getcheckboxArrary().size() == 1)
                     context.let {
 
@@ -790,29 +804,54 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                             RxBus.get().post("refresh_share")
                                         }, 1000)
 
+                                        var qrimage = View.inflate(context, R.layout.dialog_qr_image, null)
+                                        var image = qrimage.find<ImageView>(I.dialog_image)
+
+                                        var url = HttpUtil.BASEAPI_URL + "share.html#!" + it.result.shareurl
+                                        image.createQRImage(url)
+
                                         var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
-                                        editview2.find<TextView>(I.dialog_edittext).text = it.result.shareurl
+                                        editview2.find<TextView>(I.dialog_edittext).text = url
                                         if (needpwd.isChecked) {
                                             AlertDialog.Builder(activity!!)
                                                     .run {
                                                         setTitle("分享成功！ 提取码：${it.result.sharepwd}")
-                                                        setView(editview2)
-                                                                .show()
+                                                        setView(qrimage)
+                                                        setPositiveButton("复制链接", { _, _ ->
+                                                            url.copy()
+                                                            activity!!.toast("已复制链接")
+                                                        })
+                                                        show()
                                                     }
+                                                    .apply {
+                                                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+
+                                                    }
+
 
                                         } else {
                                             AlertDialog.Builder(activity!!)
                                                     .run {
                                                         setTitle("分享成功！")
-                                                        setView(editview2)
-                                                                .show()
-                                                    }
+                                                        setView(qrimage)
+                                                        setPositiveButton("复制链接", { _, _ ->
+                                                            url.copy()
+                                                            activity!!.toast("已复制链接")
+                                                        })
+                                                        //setMessage(url)
+                                                        show()
+                                                    }.apply {
+                                                // getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.red))
+                                                getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+
+
+                                            }
                                         }
                                         //  activity!!.toast("分享成功！")
 
                                     }
                                 }, {
-                                    "error".LogD()
+                                    it.toString().LogD("error : ")
                                 })
 
                     }
@@ -972,9 +1011,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             .compose(RxSchedulers.compose())
                             .subscribe {
                                 diradapter.notifyDataSetChanged()
-                                goback.visibility =  View.GONE
+                                goback.visibility = View.GONE
                                 diradapter!!.clear()
-                                diradapter!!. addAll(it.reuslt.result2)
+                                diradapter!!.addAll(it.reuslt.result2)
 
 
                             }
@@ -1008,27 +1047,26 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                         .setTitle("选择要移动的目录")
                                         .setView(dirlayout)
                                         .setPositiveButton("确认", { _, _ ->
-                                           //todo  diradapter.getcheckboxArrary()
+                                            //todo  diradapter.getcheckboxArrary()
                                             var datafile = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]
-                                                HttpUtil.instance.apiService().filecopy(Someutil.getToken()
-                                                        , datafile.createuid, datafile.objid, datafile.fileid
-                                                ,diradapter.allData[diradapter.getcheckboxArrary().keyAt(0)].fileid
-                                                ,true,Someutil.getUserID())
-                                                        .compose(RxSchedulers.compose())
-                                                        .subscribe({
+                                            HttpUtil.instance.apiService().filecopy(Someutil.getToken()
+                                                    , datafile.createuid, datafile.objid, datafile.fileid
+                                                    , diradapter.allData[diradapter.getcheckboxArrary().keyAt(0)].fileid
+                                                    , true, Someutil.getUserID())
+                                                    .compose(RxSchedulers.compose())
+                                                    .subscribe({
 
 
-                                                            if (it.contains("200")){
-                                                                activity!!.toast("复制完成！")
-                                                            }
-                                                            else{
-                                                                activity!!.toast("复制失败！")
-                                                            }
-
-                                                        },{
-                                                            it.toString().LogD("error : ")
+                                                        if (it.contains("200")) {
+                                                            activity!!.toast("复制完成！")
+                                                        } else {
                                                             activity!!.toast("复制失败！")
-                                                        })
+                                                        }
+
+                                                    }, {
+                                                        it.toString().LogD("error : ")
+                                                        activity!!.toast("复制失败！")
+                                                    })
 
 
 
@@ -1055,9 +1093,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             .compose(RxSchedulers.compose())
                             .subscribe {
                                 diradapter.notifyDataSetChanged()
-                                goback.visibility =  View.GONE
+                                goback.visibility = View.GONE
                                 diradapter!!.clear()
-                                diradapter!!. addAll(it.reuslt.result2)
+                                diradapter!!.addAll(it.reuslt.result2)
 
 
                             }
@@ -1094,25 +1132,24 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                             //todo  diradapter.getcheckboxArrary()
                                             var datafile = rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]
                                             HttpUtil.instance.apiService().filemove(Someutil.getToken()
-                                                    , datafile.fileid, datafile.filename,datafile.createuid,
+                                                    , datafile.fileid, datafile.filename, datafile.createuid,
                                                     datafile.objid,
                                                     diradapter.allData[diradapter.getcheckboxArrary().keyAt(0)].fileid
-                                                    ,3)
+                                                    , 3)
                                                     .compose(RxSchedulers.compose())
                                                     .subscribe({
 
 
-                                                        if (it.contains("200")){
+                                                        if (it.contains("200")) {
                                                             activity!!.toast("文件移动完成！")
                                                             Handler().postDelayed({
                                                                 refreshData()
                                                             }, 300)
-                                                        }
-                                                        else{
+                                                        } else {
                                                             activity!!.toast("文件移动失败！")
                                                         }
 
-                                                    },{
+                                                    }, {
                                                         it.toString().LogD("error : ")
                                                         activity!!.toast("文件移动失败！")
                                                     })
@@ -1134,9 +1171,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 if (rvadapter!!.getcheckboxArrary().size() == 1) {
                     context!!.startActivity(Intent(activity, FileDetilActivity::class.java).putExtra("file", rvadapter!!.allData[rvadapter!!.getcheckboxArrary().keyAt(0)]))
 
-                    Handler().postDelayed({
-                        refreshData()
-                    }, 300)
+//                    Handler().postDelayed({
+//                        refreshData()
+//                    }, 300)
                 }
             }
 
@@ -1187,6 +1224,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         //点击搜索框
             I.search_layout -> {
                 SearchViewUtils.handleToolBar(context!!, mCardViewSearch!!, mEtSearch!!)
+                mEtSearch!!.requestFocus()
                 //Log.d("wgz", "his : " + database.SearchHisDao().querySearchHis().toString())
                 searchadapter!!.apply {
                     clear()
@@ -1260,8 +1298,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             }
         //上传文件 选择文件
             I.space_upload -> {
-
-                openchose()
+                context!!.startActivity(Intent(activity!!, TaskListActivity::class.java))
+                // openchose()
 
             }
             I.space_pailie -> {

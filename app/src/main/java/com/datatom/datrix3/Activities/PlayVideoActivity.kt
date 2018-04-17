@@ -12,6 +12,7 @@ import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
 import com.datatom.datrix3.Bean.PersonalFilelistData
 import com.datatom.datrix3.Bean.ShareList
+import com.datatom.datrix3.Bean.SwitchVideoModel
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
@@ -23,6 +24,7 @@ import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_play_video.*
+import java.util.ArrayList
 
 
 class PlayVideoActivity : BaseActivity() {
@@ -83,22 +85,28 @@ class PlayVideoActivity : BaseActivity() {
                                     "&code="+code+"&key=" +key +
                                     "&token=" + Someutil.getToken() + "&quality=a"
 
+//                            var model = SwitchVideoModel( data.filename,url2)
+//                            val list = ArrayList<SwitchVideoModel>()
+//                            list.add(model)
+//                            list.add(model)
 //                    var url3 =   "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"
 //
 //
 //                    var url4 = "http://192.168.50.230/viewer/read.php?type=preview&fileid=2b20bad96983cf2bef7255d80ea632d4.wmv&objectid=20180227/16/2b20bad96983cf2bef7255d80ea632d4.wmv&createuid=test&code=4c429dd6d92cdfe19feb2ba9f3c12edc,3,1,3&key=8277e0910d750195b448797616e091ad&token="+Someutil.getToken()
 //                    url2.LogD(" url :  ")
-
+                            orientationUtils = OrientationUtils(this, video_player)
                             video_player.apply {
                                 setUp(url2, false, data.filename)
                                 backButton.visibility = View.VISIBLE
                                 backButton.setOnClickListener { onBackPressed() }
                                 setIsTouchWiget(true)
+
                                 fullscreenButton.setOnClickListener {
                                     orientationUtils!!.resolveByClick()
                                 }
+
                             }
-                            orientationUtils = OrientationUtils(this, video_player)
+
 
                             initTransition()
                         }, {
@@ -113,17 +121,18 @@ class PlayVideoActivity : BaseActivity() {
                 if (data.filePath.isEmpty())return
 
                 data.filePath.LogD("filepath :")
+                orientationUtils = OrientationUtils(this, video_player)
 
                 video_player.apply {
                     setUp(data.filePath, false, data.filename)
                     backButton.visibility = View.VISIBLE
                     backButton.setOnClickListener { onBackPressed() }
+
                     setIsTouchWiget(true)
                     fullscreenButton.setOnClickListener {
                         orientationUtils!!.resolveByClick()
                     }
                 }
-                orientationUtils = OrientationUtils(this, video_player)
 
                 initTransition()
 
@@ -155,7 +164,7 @@ class PlayVideoActivity : BaseActivity() {
 //
 //                    var url4 = "http://192.168.50.230/viewer/read.php?type=preview&fileid=2b20bad96983cf2bef7255d80ea632d4.wmv&objectid=20180227/16/2b20bad96983cf2bef7255d80ea632d4.wmv&createuid=test&code=4c429dd6d92cdfe19feb2ba9f3c12edc,3,1,3&key=8277e0910d750195b448797616e091ad&token="+Someutil.getToken()
 //                    url2.LogD(" url :  ")
-
+                            orientationUtils = OrientationUtils(this, video_player)
                             video_player.apply {
                                 setUp(url2, false, data.filename)
                                 backButton.visibility = View.VISIBLE
@@ -165,7 +174,7 @@ class PlayVideoActivity : BaseActivity() {
                                     orientationUtils!!.resolveByClick()
                                 }
                             }
-                            orientationUtils = OrientationUtils(this, video_player)
+
 
                             initTransition()
                         }, {

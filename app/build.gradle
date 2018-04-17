@@ -77,6 +77,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation project(':zoomlibrary')
-    implementation files('libs/zxing.jar')
     implementation project(':charles')
+    implementation project(':zxing-android-embedded')
 }

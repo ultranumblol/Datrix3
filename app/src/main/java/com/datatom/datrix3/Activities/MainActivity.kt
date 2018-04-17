@@ -1,7 +1,9 @@
 package com.datatom.datrix3.Activities
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
@@ -13,16 +15,21 @@ import android.view.View
 import com.datatom.datrix3.Adapter.MyFragmentPagerAdapter
 import com.datatom.datrix3.Bean.SpacePageList
 import com.datatom.datrix3.Bean.SpaceType
+import com.datatom.datrix3.Bean.TaskFile
 
 import com.datatom.datrix3.R
 import com.datatom.datrix3.Service.TaskService
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.app
+import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.fragments.CollectionFragment
 import com.datatom.datrix3.fragments.MoreFragment
 import com.datatom.datrix3.fragments.ShareFragment
 import com.datatom.datrix3.fragments.SpaceFragment
 import com.datatom.datrix3.helpers.*
 import com.githang.statusbar.StatusBarCompat
+import io.github.tonnyl.charles.Charles
+import io.github.tonnyl.charles.engine.impl.GlideEngine
 import io.github.tonnyl.whatsnew.item.item
 import io.github.tonnyl.whatsnew.item.whatsNew
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,6 +44,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     var titlename: String = ""
 
     private var currentspacetype = 1
+    private var showselectall = false
 
 
     companion object {
@@ -95,8 +103,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         }
         if (id == R.id.action_paixu) {
 
-            this.startActivity(Intent(this, TaskListActivity::class.java))
-
+            //this.startActivity(Intent(this, TaskListActivity::class.java))
+            openchose()
 
         }
 
@@ -109,8 +117,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         when (main_vp.currentItem) {
             0 -> {
                 menu!!.apply {
-                    findItem(R.id.action_allselect).isVisible = true
-                    findItem(I.action_paixu).isVisible = true
+                    when(showselectall){
+                        true ->{
+                            findItem(R.id.action_allselect).isVisible = true
+                            findItem(I.action_paixu).isVisible = true
+                        }
+                        false ->{
+                            findItem(R.id.action_allselect).isVisible = false
+                            findItem(I.action_paixu).isVisible = true
+                        }
+                    }
+
                 }
             }
             1 -> {
@@ -235,11 +252,17 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     main_bar.hide()
                     main_bar_line.hide()
                     toolbar_qiehuan.text = "取消"
+                    showselectall = true
+                    invalidateOptionsMenu()
+
+
                 }
                 "showmainbar" -> {
                     main_bar.Show()
                     main_bar_line.Show()
                     toolbar_qiehuan.text = "切换"
+                    showselectall = false
+                    invalidateOptionsMenu()
                 }
                 "hidezhezhao" -> {
                     zhezhao.hide()
@@ -247,6 +270,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 "showzhezhao" -> {
                     zhezhao.Show()
+                }
+                "updatemenu" ->{
+                    invalidateOptionsMenu()
                 }
 
             }
@@ -288,6 +314,57 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
 
     }
+    //打开文件选择器
+    fun openchose() {
+
+        if (Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)) {
+            Charles.from(this)
+                    .choose()
+                    .maxSelectable(9)
+                    .progressRate(true)
+                    .theme(R.style.Charles)
+                    .imageEngine(GlideEngine())
+                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                    .forResult(101)
+
+        }
+
+
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 101 && resultCode == Activity.RESULT_OK) {
+            // val uris = Charles.obtainResult(data)
+            val paths = Charles.obtainPathResult(data)
+
+            paths!!.forEach {
+                //var taskfile = TaskFile(filePath ="/storage/emulated/0/DCIM/Camera/testtxt.txt")
+
+
+                var taskfile = TaskFile(filePath = it)
+                taskfile!!.apply {
+
+                    mCompeleteSize = 0L
+                    offset = 0
+                    filetype = TaskService.UPLOAD
+                    taskstate = TaskService.NEWFILE
+                    parentobj =SpaceFragment.getcurrentParentObjid()
+                    dirid = SpaceFragment.getcurrentdir()
+                    userid = Someutil.getUserID()
+                    id = System.currentTimeMillis().toString()
+
+                }
+                AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+
+            }
+
+            paths.toString().LogD(" paths : ")
+
+
+        }
+    }
+
 
     override fun onClick(v: View?) {
 

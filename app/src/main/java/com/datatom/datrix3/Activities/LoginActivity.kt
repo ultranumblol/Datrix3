@@ -24,6 +24,7 @@ import com.datatom.datrix3.helpers.*
 
 import com.githang.statusbar.StatusBarCompat
 import com.jakewharton.rxbinding2.view.RxView
+
 import io.reactivex.schedulers.Schedulers
 
 
@@ -56,7 +57,9 @@ class LoginActivity : AppCompatActivity() {
 
         tv_saoyisao.setOnClickListener {
             Someutil.checkPermissionCAMERA(this)
-            this.startActivity(Intent(this,SaoyisaoActivity::class.java))
+            this.startActivityForResult(Intent(this, SaomaActivity::class.java),12306)
+
+
 
         }
         //addUsernameAutoComplete()

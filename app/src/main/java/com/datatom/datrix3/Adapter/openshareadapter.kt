@@ -77,7 +77,10 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
             }
 
             img_download!!.apply {
-                setOnClickListener { }
+                setOnClickListener {
+
+
+                }
 
             }
             img_delete!!.apply {
@@ -119,7 +122,7 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
 
                     var qrimage = View.inflate(context, R.layout.dialog_qr_image, null)
                     var image = qrimage.find<ImageView>(I.dialog_image)
-                    image.createQRImage(data!!._source.shareurl)
+                    image.createQRImage(HttpUtil.BASEAPI_URL +"share.html#!"+data!!._source.shareurl)
 
                     android.support.v7.app.AlertDialog.Builder(context).apply {
                         setView(qrimage)

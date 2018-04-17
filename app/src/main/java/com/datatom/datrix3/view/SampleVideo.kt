@@ -2,6 +2,7 @@ package com.datatom.datrix3.view
 
 import android.content.Context
 import android.graphics.Matrix
+import android.graphics.SurfaceTexture
 import android.os.Handler
 import android.util.AttributeSet
 import android.view.Surface
@@ -9,14 +10,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-
-
 import com.datatom.datrix3.Bean.SwitchVideoModel
 import com.datatom.datrix3.R
-import com.shuyu.gsyvideoplayer.utils.GSYVideoType
-import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
-import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
+
+
 import com.shuyu.gsyvideoplayer.video.base.GSYVideoPlayer
+import com.shuyu.gsyvideoplayer.utils.GSYVideoType
+import com.shuyu.gsyvideoplayer.video.base.GSYBaseVideoPlayer
+import com.shuyu.gsyvideoplayer.video.StandardGSYVideoPlayer
+import org.jetbrains.anko.find
 
 import java.io.File
 import java.util.ArrayList
@@ -38,7 +40,7 @@ class SampleVideo : StandardGSYVideoPlayer {
 
     private var mChangeTransform: TextView? = null
 
-    private var mUrlList: List<SwitchVideoModel> = ArrayList()
+    private var mUrlList: List<SwitchVideoModel> = ArrayList<SwitchVideoModel>()
 
     //记住切换数据源类型
     private var mType = 0
@@ -65,10 +67,10 @@ class SampleVideo : StandardGSYVideoPlayer {
     }
 
     private fun initView() {
-        mMoreScale = findViewById(R.id.moreScale)
-        mSwitchSize = findViewById(R.id.switchSize)
-        mChangeRotate = findViewById(R.id.change_rotate)
-        mChangeTransform = findViewById(R.id.change_transform)
+        mMoreScale = find<TextView>(R.id.moreScale)
+        mSwitchSize = find<TextView>(R.id.switchSize) as TextView
+        mChangeRotate = find<TextView>(R.id.change_rotate) as TextView
+        mChangeTransform = find<TextView>(R.id.change_transform) as TextView
 
         //切换清晰度
         mMoreScale!!.setOnClickListener(OnClickListener {
@@ -89,13 +91,8 @@ class SampleVideo : StandardGSYVideoPlayer {
             resolveTypeUI()
         })
 
-        //        //切换视频清晰度
-        //        mSwitchSize.setOnClickListener(new OnClickListener() {
-        //            @Override
-        //            public void onClick(View v) {
-        //                showSwitchDialog();
-        //            }
-        //        });
+//        //切换视频清晰度
+//        mSwitchSize!!.setOnClickListener { showSwitchDialog() }
 
         //旋转播放角度
         mChangeRotate!!.setOnClickListener(OnClickListener {
@@ -291,49 +288,43 @@ class SampleVideo : StandardGSYVideoPlayer {
         mSwitchSize!!.text = mTypeText
     }
 
-    //    /**
-    //     * 弹出切换清晰度
-    //     */
-    //    private void showSwitchDialog() {
-    //        if (!mHadPlay) {
-    //            return;
-    //        }
-    //        SwitchVideoTypeDialog switchVideoTypeDialog = new SwitchVideoTypeDialog(getContext());
-    //        switchVideoTypeDialog.initList(mUrlList, new SwitchVideoTypeDialog.OnListItemClickListener() {
-    //            @Override
-    //            public void onItemClick(int position) {
-    //                final String name = mUrlList.get(position).getName();
-    //                if (mSourcePosition != position) {
-    //                    if ((mCurrentState == GSYVideoPlayer.CURRENT_STATE_PLAYING
-    //                            || mCurrentState == GSYVideoPlayer.CURRENT_STATE_PAUSE)
-    //                            && getGSYVideoManager().getMediaPlayer() != null) {
-    //                        final String url = mUrlList.get(position).getUrl();
-    //                        onVideoPause();
-    //                        final long currentPosition = mCurrentPosition;
-    //                        getGSYVideoManager().releaseMediaPlayer();
-    //                        cancelProgressTimer();
-    //                        hideAllWidget();
-    //                        new Handler().postDelayed(new Runnable() {
-    //                            @Override
-    //                            public void run() {
-    //                                setUp(url, mCache, mCachePath, mTitle);
-    //                                setSeekOnStart(currentPosition);
-    //                                startPlayLogic();
-    //                                cancelProgressTimer();
-    //                                hideAllWidget();
-    //                            }
-    //                        }, 500);
-    //                        mTypeText = name;
-    //                        mSwitchSize.setText(name);
-    //                        mSourcePosition = position;
-    //                    }
-    //                } else {
-    //                    Toast.makeText(getContext(), "已经是 " + name, Toast.LENGTH_LONG).show();
-    //                }
-    //            }
-    //        });
-    //        switchVideoTypeDialog.show();
-    //    }
+    /**
+     * 弹出切换清晰度
+     */
+//    private fun showSwitchDialog() {
+//        if (!mHadPlay) {
+//            return
+//        }
+//        val switchVideoTypeDialog = SwitchVideoTypeDialog(context)
+//        switchVideoTypeDialog.initList(mUrlList, object : SwitchVideoTypeDialog.OnListItemClickListener() {
+//            fun onItemClick(position: Int) {
+//                val name = mUrlList[position].getName()
+//                if (mSourcePosition != position) {
+//                    if ((mCurrentState == GSYVideoPlayer.CURRENT_STATE_PLAYING || mCurrentState == GSYVideoPlayer.CURRENT_STATE_PAUSE) && gsyVideoManager.mediaPlayer != null) {
+//                        val url = mUrlList[position].getUrl()
+//                        onVideoPause()
+//                        val currentPosition = mCurrentPosition
+//                        gsyVideoManager.releaseMediaPlayer()
+//                        cancelProgressTimer()
+//                        hideAllWidget()
+//                        Handler().postDelayed({
+//                            setUp(url, mCache, mCachePath, mTitle)
+//                            seekOnStart = currentPosition
+//                            startPlayLogic()
+//                            cancelProgressTimer()
+//                            hideAllWidget()
+//                        }, 500)
+//                        mTypeText = name
+//                        mSwitchSize!!.setText(name)
+//                        mSourcePosition = position
+//                    }
+//                } else {
+//                    Toast.makeText(context, "已经是 " + name, Toast.LENGTH_LONG).show()
+//                }
+//            }
+//        })
+//        switchVideoTypeDialog.show()
+//    }
 
 
 }

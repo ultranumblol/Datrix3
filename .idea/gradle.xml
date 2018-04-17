@@ -11,6 +11,7 @@
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/charles" />
             <option value="$PROJECT_DIR$/zoomlibrary" />
+            <option value="$PROJECT_DIR$/zxing-android-embedded" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
