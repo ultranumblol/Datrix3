@@ -19,6 +19,7 @@ import com.datatom.datrix3.Bean.TaskFile
 
 import com.datatom.datrix3.R
 import com.datatom.datrix3.Service.TaskService
+import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
@@ -317,17 +318,28 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     //打开文件选择器
     fun openchose() {
 
-        if (Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)) {
-            Charles.from(this)
-                    .choose()
-                    .maxSelectable(9)
-                    .progressRate(true)
-                    .theme(R.style.Charles)
-                    .imageEngine(GlideEngine())
-                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
-                    .forResult(101)
+        HttpUtil.instance.apiService().checkuploadbyfileid(Someutil.getToken(),SpaceFragment.getcurrentdir(),SpaceFragment.getcurrentParentID(),Someutil.getUserID())
+                .compose(RxSchedulers.compose())
+                .subscribe {
+                    if (it.reuslt.hasacl.isNotEmpty()){
+                        if (Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)) {
+                            Charles.from(this)
+                                    .choose()
+                                    .maxSelectable(9)
+                                    .progressRate(true)
+                                    .theme(R.style.Charles)
+                                    .imageEngine(GlideEngine())
+                                    .restrictOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED)
+                                    .forResult(101)
 
-        }
+                        }
+                    }
+                    else{
+                        this.toast("没有上传权限！")
+                    }
+                }
+
+
 
 
     }

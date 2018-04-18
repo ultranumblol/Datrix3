@@ -167,13 +167,16 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
                 .compose(RxSchedulers.compose())
                 .subscribe({
                    // quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)} ${((it.res.used.toLong()/it.res.quota.toLong())*100)}%）"
+                if (it.res.used != null &&it.res.quota != null )
                     quota!!.text = "容量（${SizeUtils.getSize(it.res.used)}/${SizeUtils.getSize(it.res.quota)}）"
+                    else
+                    quota!!.text = "容量（-/-）"
 
                 }, {
                     it.toString().LogD("quota error : ")
                     quota!!.text = "容量（-/-）"
                     Thread.sleep(2000)
-                    initData()
+                   // initData()
                 })
 
 

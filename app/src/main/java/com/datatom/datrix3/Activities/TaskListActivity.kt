@@ -24,6 +24,9 @@ class TaskListActivity : BaseActivity() {
         return R.layout.activity_task_list
     }
 
+
+
+
     override fun initView() {
         setToolbartitle("任务列表")
 

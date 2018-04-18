@@ -84,7 +84,7 @@ class SearchResultActivity : BaseActivity(), View.OnClickListener {
         pagelist = arrayListOf()
         currentdirid = intent.getStringExtra("dirid")
         keyword = intent.getStringExtra("keyword")
-        pagelist.add(SpacePageList(currentdirid, "", 1, true, ""))
+        pagelist.add(SpacePageList(currentdirid, "", 1, true, "",""))
 
 
         rvadapter!!.apply {
@@ -115,7 +115,7 @@ class SearchResultActivity : BaseActivity(), View.OnClickListener {
                         "0" -> {
                             rvadapter!!.allData[it].fileid
 
-                            var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid)
+                            var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid,rvadapter!!.allData[it].parentid)
                             cpge = 1
                             pagelist.add(sp)
                             pagelist.toString().LogD("after add pagelist : ")

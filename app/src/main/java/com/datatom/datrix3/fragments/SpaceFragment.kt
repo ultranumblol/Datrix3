@@ -68,6 +68,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         private var currentID = ""
         private var currentdir = ""
         private var currentParentObjid = ""
+        private var currentParentID = ""
 
         fun getcurrentParentObjid(): String {
             return currentParentObjid
@@ -78,6 +79,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             return currentdir
         }
 
+        fun getcurrentParentID(): String {
+            return currentParentID
+        }
 
     }
 
@@ -237,7 +241,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         }
 
         pagelist = arrayListOf()
-        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, ""))
+        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "",PERSONAL_SPACE_ID))
         currentID = PERSONAL_SPACE_ID
         currentdir = PERSONAL_SPACE_ID
         initData(currentdir)
@@ -330,7 +334,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             //pagelist.size.toString().LogD(" after remove list  : ")
                             currentdir = pagelist[pagelist.size - 1].fileid
                             currentParentObjid = pagelist[pagelist.size - 1].objid
-
+                            currentParentID = pagelist[pagelist.size - 1].parentid
                             rvadapter!!.clear()
                             initData(currentdir)
                             RxBus.get().post(pagelist[pagelist.size - 1])
@@ -344,6 +348,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             rvadapter!!.clear()
                             currentdir = pagelist[pagelist.size - 1].fileid
                             currentParentObjid = pagelist[pagelist.size - 1].objid
+                            currentParentID = pagelist[pagelist.size - 1].parentid
 
                             initpublicData(currentdir)
                             RxBus.get().post(pagelist[pagelist.size - 1])
@@ -411,13 +416,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             when (currentID) {
                                 PERSONAL_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid,rvadapter!!.allData[it].parentid)
                                     cpge = 1
                                     pagelist.add(sp)
                                     pagelist.toString().LogD("after add pagelist : ")
 
                                     currentdir = rvadapter!!.allData[it].fileid
                                     currentParentObjid = rvadapter!!.allData[it].objid
+                                    currentParentID = rvadapter!!.allData[it].parentid
                                     rvadapter!!.clear()
                                     initData(currentdir)
                                     RxBus.get().post(sp)
@@ -426,11 +432,12 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                 }
                                 PUBLIC_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false, rvadapter!!.allData[it].objid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false, rvadapter!!.allData[it].objid,rvadapter!!.allData[it].parentid)
                                     pagelist.add(sp)
                                     cpge = 1
                                     currentdir = rvadapter!!.allData[it].fileid
                                     currentParentObjid = rvadapter!!.allData[it].objid
+                                    currentParentID = rvadapter!!.allData[it].parentid
                                     rvadapter!!.clear()
                                     initpublicData(currentdir)
                                     RxBus.get().post(sp)
@@ -458,8 +465,20 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                     "video"
                                     -> {
                                         // rvadapter!!.allData[it].toString().LogD("click : ")
-                                        context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
-                                                .putExtra("file", rvadapter!!.allData[it]))
+                                        NetWorkUtils.getAPNType(activity!!).toString().LogD(" net type : ")
+                                       if ( NetWorkUtils.getAPNType(activity!!)!= 1){
+                                           AlertDialog.Builder(activity!!)
+                                                   .setTitle("没有连接到wifi，是否打开？")
+                                                   .setMessage("")
+                                                   .setPositiveButton("确定",{_,_ ->
+                                                       context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                               .putExtra("file", rvadapter!!.allData[it]))
+                                                   })
+                                                   .setNeutralButton("取消",{_,_ ->})
+                                                   .show()
+
+                                       }
+
                                     }
 
                                 // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
@@ -489,7 +508,24 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                 .putExtra("file", rvadapter!!.allData[it]))
                                     }
                                     else -> {
+                                        when(allData[it].ext){
+                                            "3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4" ->{
+                                                NetWorkUtils.getAPNType(activity!!).toString().LogD(" net type : ")
+                                                if ( NetWorkUtils.getAPNType(activity!!)!= 1){
+                                                    AlertDialog.Builder(activity!!)
+                                                            .setTitle("没有连接到wifi，是否打开？")
+                                                            .setMessage("")
+                                                            .setPositiveButton("确定",{_,_ ->
+                                                                context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                                        .putExtra("file", rvadapter!!.allData[it]))
+                                                            })
+                                                            .setNeutralButton("取消",{_,_ ->})
+                                                            .show()
 
+                                                }
+                                            }
+
+                                        }
                                     }
                                 }
                         }
@@ -629,6 +665,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         when (v!!.id) {
 
+
         //遮罩层隐藏
             I.space_zhezhao -> {
                 hideCradview()
@@ -717,32 +754,78 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
             }
             I.edit_rv_xiazai -> {
+                when (currentdir) {
+                    PUBLIC_SPACE_ID -> {
+                        rvadapter!!.getcheckboxArrary().forEach { i, _ ->
 
-                rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+                            HttpUtil.instance.apiService().checkdownload(Someutil.getToken(), rvadapter!!.allData[i].fileid, Someutil.getUserID())
+                                    .compose(RxSchedulers.compose())
+                                    .subscribe({
+                                        it.LogD(" result : ")
+                                        if (it.contains("2222")) {
+                                            var taskfile = TaskFile()
+                                            taskfile!!.apply {
 
-                    var taskfile = TaskFile()
-                    taskfile!!.apply {
+                                                filename = rvadapter!!.allData[i].filename
+                                                fileid = rvadapter!!.allData[i].fileid
+                                                mCompeleteSize = 0L
+                                                offset = 0
+                                                if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
+                                                    mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+                                                exe = rvadapter!!.allData[i].ext
+                                                filetype = DOWNLOAD
+                                                filesubtype = NORMALDOWNLOAD
+                                                taskstate = NEWFILE
+                                                total = rvadapter!!.allData[i].filesize.toLong()
+                                                userid = Someutil.getUserID()
+                                                id = System.currentTimeMillis().toString()
 
-                        filename = rvadapter!!.allData[i].filename
-                        fileid = rvadapter!!.allData[i].fileid
-                        mCompeleteSize = 0L
-                        offset = 0
-                        if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
-                            mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
-                        exe = rvadapter!!.allData[i].ext
-                        filetype = DOWNLOAD
-                        filesubtype = NORMALDOWNLOAD
-                        taskstate = NEWFILE
-                        total = rvadapter!!.allData[i].filesize.toLong()
-                        userid = Someutil.getUserID()
-                        id = System.currentTimeMillis().toString()
+                                            }
+                                            AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+                                            context!!.toast("开始后台下载")
+
+                                        } else {
+                                            context!!.toast("文件${rvadapter!!.allData[i].fileid}没有下载权限")
+                                        }
+                                    }, {
+                                        context!!.toast("请求失败！")
+
+                                    })
+
+
+                        }
+                        rvadapter!!.setCheckBoxNoneSelect()
+                        RxBus.get().post("updatespacecheckbox")
+                        // context!!.toast("开始后台下载")
+
 
                     }
-                    AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+                    PERSONAL_SPACE_ID -> {
+                        rvadapter!!.getcheckboxArrary().forEach { i, _ ->
 
-                }
+                            var taskfile = TaskFile()
+                            taskfile!!.apply {
 
-                //todo 添加网络类型判断
+                                filename = rvadapter!!.allData[i].filename
+                                fileid = rvadapter!!.allData[i].fileid
+                                mCompeleteSize = 0L
+                                offset = 0
+                                if (rvadapter!!.allData[i].cayman_pretreat_mimetype != null)
+                                    mimetype = rvadapter!!.allData[i].cayman_pretreat_mimetype
+                                exe = rvadapter!!.allData[i].ext
+                                filetype = DOWNLOAD
+                                filesubtype = NORMALDOWNLOAD
+                                taskstate = NEWFILE
+                                total = rvadapter!!.allData[i].filesize.toLong()
+                                userid = Someutil.getUserID()
+                                id = System.currentTimeMillis().toString()
+
+                            }
+                            AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+
+                        }
+
+                        //todo 添加网络类型判断
 //                context.let {
 //                    AlertDialog.Builder(it!!)
 //                            .run {
@@ -762,11 +845,13 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 //                    }
 //
 //                }
-                rvadapter!!.setCheckBoxNoneSelect()
-                RxBus.get().post("updatespacecheckbox")
-                context!!.toast("开始后台下载")
-
-
+                        rvadapter!!.setCheckBoxNoneSelect()
+                        RxBus.get().post("updatespacecheckbox")
+                        context!!.toast("开始后台下载")
+                    }
+                    else -> {
+                    }
+                }
             }
         //文件链接分享
             I.edit_rv_share -> {
@@ -849,6 +934,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                         }
                                         //  activity!!.toast("分享成功！")
 
+                                    } else {
+
+
                                     }
                                 }, {
                                     it.toString().LogD("error : ")
@@ -876,30 +964,78 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             }
             I.edit_rv_delete -> {
 
+
                 AlertDialog.Builder(activity!!).run {
                     setMessage("30天内可在回收站内找回删除文件")
                     setPositiveButton("确认删除") { _, _ ->
                         rvadapter!!.apply {
                             getcheckboxArrary().forEach { i, _ ->
-                                HttpUtil.instance.apiService().trushDo(Someutil.getToken(), allData[i].fileid
-                                        , allData[i].objid, allData[i].createuid)
-                                        .compose(RxSchedulers.compose())
-                                        .subscribe({
 
-                                            if (it.contains("200")) {
-                                                activity!!.toast("删除成功！")
-                                                rvadapter!!.setCheckBoxNoneSelect()
-                                                RxBus.get().post("updatespacecheckbox")
-                                                Handler().postDelayed({
-                                                    refreshData()
-                                                }, 500)
-                                            } else {
-                                                activity!!.toast("删除失败！")
-                                            }
-                                            it.toString().LogD("delete file reuslt : ")
-                                        }, {
-                                            activity!!.toast("删除失败！")
-                                        })
+                                when (currentdir) {
+                                    PUBLIC_SPACE_ID -> {
+                                        HttpUtil.instance.apiService().checkdelete(Someutil.getToken(), allData[i].fileid, Someutil.getUserID())
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
+                                                    it.toString().LogD(" reuslt : ")
+                                                    if (it.reuslt.hasacl.isNotEmpty()) {
+                                                        HttpUtil.instance.apiService().trushDo(Someutil.getToken(), allData[i].fileid
+                                                                , allData[i].objid, allData[i].createuid)
+                                                                .compose(RxSchedulers.compose())
+                                                                .subscribe({
+
+                                                                    if (it.contains("200")) {
+                                                                        activity!!.toast("删除成功！")
+                                                                        rvadapter!!.setCheckBoxNoneSelect()
+                                                                        RxBus.get().post("updatespacecheckbox")
+                                                                        Handler().postDelayed({
+                                                                            refreshData()
+                                                                        }, 500)
+                                                                    } else {
+                                                                        activity!!.toast("删除失败！")
+                                                                    }
+                                                                    it.toString().LogD("delete file reuslt : ")
+                                                                }, {
+                                                                    activity!!.toast("删除失败！")
+                                                                })
+
+                                                    } else {
+                                                        activity!!.toast("没有权限！")
+                                                    }
+                                                }, {
+                                                    activity!!.toast("请求失败！")
+                                                })
+
+                                    }
+                                    PERSONAL_SPACE_ID -> {
+                                        HttpUtil.instance.apiService().trushDo(Someutil.getToken(), allData[i].fileid
+                                                , allData[i].objid, allData[i].createuid)
+                                                .compose(RxSchedulers.compose())
+                                                .subscribe({
+
+                                                    if (it.contains("200")) {
+                                                        activity!!.toast("删除成功！")
+                                                        rvadapter!!.setCheckBoxNoneSelect()
+                                                        RxBus.get().post("updatespacecheckbox")
+                                                        Handler().postDelayed({
+                                                            refreshData()
+                                                        }, 500)
+                                                    } else {
+                                                        activity!!.toast("删除失败！")
+                                                    }
+                                                    it.toString().LogD("delete file reuslt : ")
+                                                }, {
+                                                    activity!!.toast("删除失败！")
+                                                })
+
+                                    }
+
+                                    else -> {
+
+                                    }
+
+                                }
+
+
                             }
                         }
                     }
@@ -925,26 +1061,32 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             }
             I.edit_rv_dabaoxiazai -> {
 
-                var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
-                editview2.find<TextView>(I.dialog_edittext).hint = "请输入打包文件名"
+                when (currentdir) {
+                    PUBLIC_SPACE_ID -> {
 
-                context.let {
-                    AlertDialog.Builder(it!!).run {
-                        setView(editview2)
-                        setTitle("打包下载")
-                        setNegativeButton("取消") { _, _ ->
+                    }
+                    PERSONAL_SPACE_ID ->{
+                        var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
 
-                        }
-                        setPositiveButton("确认") { _, _ ->
+                        editview2.find<TextView>(I.dialog_edittext).hint = "请输入打包文件名"
 
-                            var fileidstr = StringBuilder()
-                            var filetotla = 0L
+                        context.let {
+                            AlertDialog.Builder(it!!).run {
+                                setView(editview2)
+                                setTitle("打包下载")
+                                setNegativeButton("取消") { _, _ ->
 
-                            rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+                                }
+                                setPositiveButton("确认") { _, _ ->
 
-                                fileidstr.append(rvadapter!!.allData[i].fileid)
-                                fileidstr.append(",")
-                                filetotla += rvadapter!!.allData[i].filesize.toLong()
+                                    var fileidstr = StringBuilder()
+                                    var filetotla = 0L
+
+                                    rvadapter!!.getcheckboxArrary().forEach { i, _ ->
+
+                                        fileidstr.append(rvadapter!!.allData[i].fileid)
+                                        fileidstr.append(",")
+                                        filetotla += rvadapter!!.allData[i].filesize.toLong()
 
 //                                var taskfile = TaskFile()
 //                                taskfile!!.apply {
@@ -965,38 +1107,45 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 //                                }
 //                                AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
 
+                                    }
+                                    fileidstr.deleteCharAt(fileidstr.length - 1)
+                                    var url = HttpUtil.BASEAPI_URL + "viewer/dcomp.php?fileidstr=" + fileidstr + "&iswindows=0&optuser=${Someutil.getUserID()}"
+
+                                    var taskfile = TaskFile()
+                                    taskfile!!.apply {
+                                        filename = editview2.find<TextView>(I.dialog_edittext).text.toString() + ".tar"
+                                        fileid = System.currentTimeMillis().toString()
+                                        id = System.currentTimeMillis().toString()
+                                        taskstate = NEWFILE
+                                        filesubtype = BEGDOWNLOAD
+                                        mCompeleteSize = 0L
+                                        offset = 0
+                                        downloadurl = url
+                                        exe = "tar"
+                                        filetype = DOWNLOAD
+                                        userid = Someutil.getUserID()
+                                        total = filetotla
+                                    }
+                                    AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
+                                    rvadapter!!.setCheckBoxNoneSelect()
+                                    RxBus.get().post("updatespacecheckbox")
+                                    context!!.toast("开始后台下载")
+
+
+                                }
+                                show()
+                            }.apply {
+                                getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
+                                getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
                             }
-                            fileidstr.deleteCharAt(fileidstr.length - 1)
-                            var url = HttpUtil.BASEAPI_URL + "viewer/dcomp.php?fileidstr=" + fileidstr + "&iswindows=0&optuser=${Someutil.getUserID()}"
-
-                            var taskfile = TaskFile()
-                            taskfile!!.apply {
-                                filename = editview2.find<TextView>(I.dialog_edittext).text.toString() + ".tar"
-                                fileid = System.currentTimeMillis().toString()
-                                id = System.currentTimeMillis().toString()
-                                taskstate = NEWFILE
-                                filesubtype = BEGDOWNLOAD
-                                mCompeleteSize = 0L
-                                offset = 0
-                                downloadurl = url
-                                exe = "tar"
-                                filetype = DOWNLOAD
-                                userid = Someutil.getUserID()
-                                total = filetotla
-                            }
-                            AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
-                            rvadapter!!.setCheckBoxNoneSelect()
-                            RxBus.get().post("updatespacecheckbox")
-                            context!!.toast("开始后台下载")
-
-
                         }
-                        show()
-                    }.apply {
-                        getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(resources.getColor(C.colorPrimary))
-                        getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(resources.getColor(C.colorPrimary))
+                    }
+                    else ->{
+
                     }
                 }
+
+
 
             }
             I.edit_rv_copy -> {
@@ -1185,9 +1334,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentID = PERSONAL_SPACE_ID
                 currentdir = PERSONAL_SPACE_ID
                 currentParentObjid = ""
+                currentParentID = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, ""))
+                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "",""))
                 rvadapter!!.clear()
                 initData(currentdir)
 
@@ -1201,9 +1351,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentID = PUBLIC_SPACE_ID
                 currentdir = PUBLIC_SPACE_ID
                 currentParentObjid = ""
+                currentParentID = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true, ""))
+                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true, "",""))
                 rvadapter!!.clear()
                 initpublicData(currentdir)
 
@@ -1310,6 +1461,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
 
     }
+
 
     private fun showDirs(dirid: String): Observable<PersonalFilelistData> {
         return HttpUtil.instance.apiService().persondir_listdirfiles(Someutil.getToken(), dirid, Someutil.getUserID(),

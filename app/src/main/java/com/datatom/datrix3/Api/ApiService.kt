@@ -498,6 +498,46 @@ interface ApiService {
             @Field("shareid") shareid: String
 
     ): Observable<String>
+
+    /**
+     * 通过fileid检测用户是否可以编辑该对象（文件夹就是创建文件或者文件夹的操作，文件则是上传）
+     */
+    @FormUrlEncoded
+    @POST("auth/checkuploadbyfileid")
+    fun checkuploadbyfileid(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileidstr") fileidstr: String,
+            @Field("parentid") parentid: String,
+            @Field("userid") userid: String
+
+    ): Observable<CheckDelete>
+
+
+    /**
+     * 检测用户是否可以删除（多个）对象
+     */
+    @FormUrlEncoded
+    @POST("auth/checkdelete")
+    fun checkdelete(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileidstr") fileidstr: String,
+            @Field("userid") userid: String
+
+    ): Observable<CheckDelete>
+
+    /**
+     * 检测用户是否可以下载（多个）对象
+     */
+    @FormUrlEncoded
+    @POST("auth/checkdownload")
+    fun checkdownload(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileidstr") fileidstr: String,
+            @Field("userid") userid: String
+
+    ): Observable<String>
+
+
     /**
      * 展示指定给该用户或用户组的分享链接列表
      */
