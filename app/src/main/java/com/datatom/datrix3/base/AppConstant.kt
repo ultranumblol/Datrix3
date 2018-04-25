@@ -29,7 +29,7 @@ class AppConstant private constructor() {
 
         val TOKEN_LASTTIME = 1000*60*120   //俩小时
 
-
+        val DOWNLOADDIRS = "downloaddirs"
 
     }
 

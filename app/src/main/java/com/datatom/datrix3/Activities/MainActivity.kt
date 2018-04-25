@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Looper
 import android.support.v4.app.Fragment
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AlertDialog
@@ -13,6 +14,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.datatom.datrix3.Adapter.MyFragmentPagerAdapter
+import com.datatom.datrix3.Base.GlideApp
 import com.datatom.datrix3.Bean.SpacePageList
 import com.datatom.datrix3.Bean.SpaceType
 import com.datatom.datrix3.Bean.TaskFile
@@ -33,9 +35,13 @@ import io.github.tonnyl.charles.Charles
 import io.github.tonnyl.charles.engine.impl.GlideEngine
 import io.github.tonnyl.whatsnew.item.item
 import io.github.tonnyl.whatsnew.item.whatsNew
+import io.reactivex.Observable
+import io.reactivex.ObservableOnSubscribe
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.toast
 import java.util.ArrayList
+import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
@@ -50,6 +56,8 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
     companion object {
         val titles = arrayListOf("空间", "分享", "收藏", "更多")
+
+
 
     }
 
@@ -275,6 +283,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 "updatemenu" ->{
                     invalidateOptionsMenu()
                 }
+                "clearcachefinish" ->{
+                    this.toast("清理完成!")
+                }
+
 
             }
 

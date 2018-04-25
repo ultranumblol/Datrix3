@@ -68,9 +68,9 @@ class SampleVideo : StandardGSYVideoPlayer {
 
     private fun initView() {
         mMoreScale = find<TextView>(R.id.moreScale)
-        mSwitchSize = find<TextView>(R.id.switchSize) as TextView
-        mChangeRotate = find<TextView>(R.id.change_rotate) as TextView
-        mChangeTransform = find<TextView>(R.id.change_transform) as TextView
+        mSwitchSize = find<TextView>(R.id.switchSize)
+        mChangeRotate = find<TextView>(R.id.change_rotate)
+        mChangeTransform = find<TextView>(R.id.change_transform)
 
         //切换清晰度
         mMoreScale!!.setOnClickListener(OnClickListener {

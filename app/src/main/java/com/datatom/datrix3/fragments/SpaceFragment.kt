@@ -14,6 +14,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Gravity
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
@@ -46,9 +47,14 @@ import org.jetbrains.anko.toast
 import com.bigkoo.pickerview.listener.OnTimeSelectListener
 import com.bigkoo.pickerview.builder.TimePickerBuilder
 import com.datatom.datrix3.Adapter.DialogDirAdapter
+import com.datatom.datrix3.Service.TaskService
 import com.datatom.datrix3.Util.Someutil.gettime
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.activity_task_list.*
+import q.rorbin.badgeview.QBadgeView
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -65,6 +71,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         val PUBLIC_SPACE_ID = "1E07037D38FA20BB"
         val TEAM_SPACE_ID = "5C59EBB7F9BDF00F"
 
+        var useGPRS = false
         private var currentID = ""
         private var currentdir = ""
         private var currentParentObjid = ""
@@ -84,6 +91,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         }
 
     }
+
+    private var msubscription: CompositeDisposable? = null
 
     private var rv: EasyRecyclerView? = null
 
@@ -105,6 +114,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
     private var newfile: ImageView? = null
     private var uploadfile: ImageView? = null
     private var pailie: ImageView? = null
+    private var progress: ProgressBar? = null
 
 
     private var cardview: CardView? = null
@@ -170,6 +180,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         personspace = view.find(I.change_space_person)
         publicspace = view.find(I.change_space_public)
         teamspace = view.find(I.change_space_team)
+        progress = view.find(I.space_loadprogress)
 
         pailie!!.setOnClickListener(this)
         uploadfile!!.setOnClickListener(this)
@@ -192,7 +203,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         clear_his!!.setOnClickListener(this)
 
         database = AppDatabase.getInstance(activity!!)
-
+        msubscription = CompositeDisposable()
 
 
         mEtSearch!!.setOnEditorActionListener { _, i, _ ->
@@ -232,6 +243,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         cardview!!.hide()
 
+
         rv!!.apply {
             setLayoutManager(LinearLayoutManager(activity))
             adapter = rvadapter
@@ -240,8 +252,17 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         }
 
+        var badeg = QBadgeView(activity!!).bindTarget(uploadfile)
+                .setBadgeGravity(Gravity.END or Gravity.TOP)
+                .setBadgeTextSize(10f, true)
+                .setGravityOffset(0f, 8f, true)
+                .setBadgePadding(2f, true)
+
+
+
+
         pagelist = arrayListOf()
-        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "",PERSONAL_SPACE_ID))
+        pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "", PERSONAL_SPACE_ID))
         currentID = PERSONAL_SPACE_ID
         currentdir = PERSONAL_SPACE_ID
         initData(currentdir)
@@ -254,8 +275,6 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
         RxBus.get().toFlowable(String::class.java).subscribe {
 
             when (it) {
-
-
                 "cancel" -> {
                     rvadapter!!.apply {
                         setCheckBoxNoneSelect()
@@ -322,6 +341,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                     hideCradview()
 
                 }
+                "refreshSpacelist" -> {
+                    refreshData()
+                }
 
                 "pback" -> {
                     cpge = 1
@@ -363,6 +385,11 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
             }
 
+        }
+        RxBus.get().toFlowable(BadgeNum::class.java).subscribe {
+            if (it.num > 0) {
+                badeg.badgeNumber = it.num
+            } else badeg.hide(true)
         }
 
         //适配器适配数据
@@ -416,11 +443,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             when (currentID) {
                                 PERSONAL_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid,rvadapter!!.allData[it].parentid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 1, false, rvadapter!!.allData[it].objid, rvadapter!!.allData[it].parentid)
                                     cpge = 1
                                     pagelist.add(sp)
                                     pagelist.toString().LogD("after add pagelist : ")
-
                                     currentdir = rvadapter!!.allData[it].fileid
                                     currentParentObjid = rvadapter!!.allData[it].objid
                                     currentParentID = rvadapter!!.allData[it].parentid
@@ -432,7 +458,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                 }
                                 PUBLIC_SPACE_ID -> {
 
-                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false, rvadapter!!.allData[it].objid,rvadapter!!.allData[it].parentid)
+                                    var sp = SpacePageList(rvadapter!!.allData[it].fileid, rvadapter!!.allData[it].filename, 2, false, rvadapter!!.allData[it].objid, rvadapter!!.allData[it].parentid)
                                     pagelist.add(sp)
                                     cpge = 1
                                     currentdir = rvadapter!!.allData[it].fileid
@@ -466,18 +492,22 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                     -> {
                                         // rvadapter!!.allData[it].toString().LogD("click : ")
                                         NetWorkUtils.getAPNType(activity!!).toString().LogD(" net type : ")
-                                       if ( NetWorkUtils.getAPNType(activity!!)!= 1){
-                                           AlertDialog.Builder(activity!!)
-                                                   .setTitle("没有连接到wifi，是否打开？")
-                                                   .setMessage("")
-                                                   .setPositiveButton("确定",{_,_ ->
-                                                       context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
-                                                               .putExtra("file", rvadapter!!.allData[it]))
-                                                   })
-                                                   .setNeutralButton("取消",{_,_ ->})
-                                                   .show()
+                                        if (NetWorkUtils.getAPNType(activity!!) != 1 && !useGPRS) {
 
-                                       }
+                                            AlertDialog.Builder(activity!!).apply {
+                                                setMessage("没有连接到wifi，是否打开？")
+                                                setPositiveButton("确定", { _, _ ->
+                                                    useGPRS = true
+                                                    context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                            .putExtra("file", rvadapter!!.allData[it]))
+                                                })
+                                                setNegativeButton("取消", { _, _ -> })
+                                                show()
+                                            }
+                                        } else {
+                                            context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                    .putExtra("file", rvadapter!!.allData[it]))
+                                        }
 
                                     }
 
@@ -508,26 +538,32 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                 .putExtra("file", rvadapter!!.allData[it]))
                                     }
                                     else -> {
-                                        when(allData[it].ext){
-                                            "3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4" ->{
-                                                NetWorkUtils.getAPNType(activity!!).toString().LogD(" net type : ")
-                                                if ( NetWorkUtils.getAPNType(activity!!)!= 1){
-                                                    AlertDialog.Builder(activity!!)
-                                                            .setTitle("没有连接到wifi，是否打开？")
-                                                            .setMessage("")
-                                                            .setPositiveButton("确定",{_,_ ->
-                                                                context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
-                                                                        .putExtra("file", rvadapter!!.allData[it]))
-                                                            })
-                                                            .setNeutralButton("取消",{_,_ ->})
-                                                            .show()
-
-                                                }
-                                            }
-
-                                        }
                                     }
                                 }
+                            //cayman_pretreat_mimetype 为空 用后缀判断
+                            else {
+                                when (allData[it].ext) {
+                                    "3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4" -> {
+                                        NetWorkUtils.getAPNType(activity!!).toString().LogD(" net type : ")
+                                        if (NetWorkUtils.getAPNType(activity!!) != 1 && !useGPRS) {
+                                            AlertDialog.Builder(activity!!)
+                                                    .setMessage("没有连接到wifi，是否打开？")
+                                                    .setPositiveButton("确定", { _, _ ->
+                                                        useGPRS = true
+                                                        context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                                .putExtra("file", rvadapter!!.allData[it]))
+                                                    })
+                                                    .setNegativeButton("取消", { _, _ -> })
+                                                    .show()
+
+                                        } else {
+                                            context!!.startActivity(Intent(context, PlayVideoActivity::class.java)
+                                                    .putExtra("file", rvadapter!!.allData[it]))
+                                        }
+                                    }
+
+                                }
+                            }
                         }
                     }
                 }
@@ -561,7 +597,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             rvadapter!!.clear()
 
                         }
-
+                        progress!!.hide()
                         datalist = it.reuslt.result2
                         if (datalist.size < 40) {
                             rvadapter!!.stopMore()
@@ -575,6 +611,9 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
                 }, {
                     it.toString().LogD("error : ")
+
+                    progress!!.hide()
+                    activity!!.toast("网络错误")
                     rvadapter!!.apply {
                         clear()
                         notifyDataSetChanged()
@@ -613,7 +652,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             rvadapter!!.stopMore()
 
                         }
-
+                        progress!!.hide()
                         rvadapter!!.addAll(datalist)
                         rvadapter!!.notifyDataSetChanged()
 
@@ -622,7 +661,8 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
 
                 }, {
-
+                    progress!!.hide()
+                    activity!!.toast("网络错误")
                     rvadapter!!.apply {
                         clear()
                         notifyDataSetChanged()
@@ -1065,7 +1105,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                     PUBLIC_SPACE_ID -> {
 
                     }
-                    PERSONAL_SPACE_ID ->{
+                    PERSONAL_SPACE_ID -> {
                         var editview2 = View.inflate(activity, R.layout.dialog_edittext_dabaoxiazai, null)
 
                         editview2.find<TextView>(I.dialog_edittext).hint = "请输入打包文件名"
@@ -1140,11 +1180,10 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                             }
                         }
                     }
-                    else ->{
+                    else -> {
 
                     }
                 }
-
 
 
             }
@@ -1328,7 +1367,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         //切换到个人空间
             I.change_space_person -> {
-
+                progress!!.Show()
                 hideCradview()
                 RxBus.get().post(SpaceType("个人空间"))
                 currentID = PERSONAL_SPACE_ID
@@ -1337,7 +1376,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentParentID = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "",""))
+                pagelist.add(SpacePageList(PERSONAL_SPACE_ID, "个人空间", 1, true, "", ""))
                 rvadapter!!.clear()
                 initData(currentdir)
 
@@ -1345,7 +1384,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             }
         //切换到公共空间
             I.change_space_public -> {
-
+                progress!!.Show()
                 hideCradview()
                 RxBus.get().post(SpaceType("公共空间"))
                 currentID = PUBLIC_SPACE_ID
@@ -1354,13 +1393,14 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                 currentParentID = ""
                 cpge = 1
                 pagelist = arrayListOf()
-                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true, "",""))
+                pagelist.add(SpacePageList(PUBLIC_SPACE_ID, "公共空间", 2, true, "", ""))
                 rvadapter!!.clear()
                 initpublicData(currentdir)
 
             }
         //切换到讨论组
             I.change_space_team -> {
+                progress!!.Show()
                 cpge = 1
                 hideCradview()
                 currentID = TEAM_SPACE_ID
@@ -1591,6 +1631,16 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
             refreshData()
         }, 1000)
 
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        if (this.msubscription != null) {
+            this.msubscription!!.dispose()
+            "取消订阅".LogD()
+        }
 
     }
 

@@ -137,6 +137,19 @@
             android:drawableRight="@drawable/ic_keyboard_arrow_right_grey_600_36dp"
             android:textSize="18dp"
             />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="24dp"
+            android:text="清除缓存"
+            android:id="@+id/more_clearcache"
+            android:layout_marginTop="1sp"
+            android:textColor="#2C2C2C"
+            android:background="@drawable/ripple_item_white_bg"
+            android:drawableRight="@drawable/ic_keyboard_arrow_right_grey_600_36dp"
+            android:textSize="18dp"
+            />
         <!--<TextView-->
             <!--android:layout_width="match_parent"-->
             <!--android:layout_height="1sp"-->

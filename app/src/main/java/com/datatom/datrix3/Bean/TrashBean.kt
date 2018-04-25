@@ -78,10 +78,16 @@ data class TrashBean(
             @SerializedName("idpath")
             @Expose
             val idpath: String,
+            @SerializedName("cayman_pretreat_mimetype")
+            @Expose
+            val cayman_pretreat_mimetype: String,
 
             @SerializedName("uploadok")
             @Expose
             val uploadok: String,
+            @SerializedName("filesize")
+            @Expose
+            val filesize: String,
             @SerializedName("applysub")
             @Expose
             val applysub: String,

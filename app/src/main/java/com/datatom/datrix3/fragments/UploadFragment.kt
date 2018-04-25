@@ -18,6 +18,7 @@ import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.C
 import com.datatom.datrix3.helpers.I
 import com.datatom.datrix3.helpers.LogD
+import com.datatom.datrix3.helpers.RxBus
 import com.jude.easyrecyclerview.EasyRecyclerView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -54,6 +55,32 @@ class UploadFragment : BaseFragment() {
         msubscription = CompositeDisposable()
         initdata()
         update()
+        RxBus.get().toFlowable(String::class.java)
+                .subscribe {
+                    when(it){
+                        "clearuploadlist" ->{
+                            clearlist()
+
+                        }
+                    }
+
+                }
+
+    }
+
+    private fun clearlist() {
+        "删除上传列表".LogD()
+//        uploadadapter!!.allData.forEach {
+//            AppDatabase.getInstance(app.mapp).TaskFileDao().deletefile(it)
+//        }
+
+        uploadadapter!!.allData.forEach {
+            AppDatabase.getInstance(app.mapp).TaskFileDao().deletefile(it)
+            uploadadapter!!.remove(it)
+            data = uploadadapter!!.allData
+            uploadadapter!!.notifyDataSetChanged()
+        }
+
     }
 
     private fun initdata() {

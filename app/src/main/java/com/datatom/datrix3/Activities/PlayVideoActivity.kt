@@ -10,12 +10,10 @@ import android.view.View
 import android.view.WindowManager
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.ShareList
-import com.datatom.datrix3.Bean.SwitchVideoModel
-import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.app
 import com.datatom.datrix3.helpers.LogD
 import com.datatom.datrix3.helpers.MD5
 import com.datatom.datrix3.helpers.hide
@@ -24,7 +22,10 @@ import com.shuyu.gsyvideoplayer.GSYVideoManager
 import com.shuyu.gsyvideoplayer.utils.OrientationUtils
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.activity_play_video.*
+import java.io.File
 import java.util.ArrayList
+import com.danikula.videocache.HttpProxyCacheServer
+import com.shuyu.gsyvideoplayer.GSYVideoManager.getProxy
 
 
 class PlayVideoActivity : BaseActivity() {
@@ -84,11 +85,18 @@ class PlayVideoActivity : BaseActivity() {
                                     "&objectid=" + data.objid + "&createuid=" + data.createuid +
                                     "&code="+code+"&key=" +key +
                                     "&token=" + Someutil.getToken() + "&quality=a"
+                            url2  .LogD(" url ")
 
-//                            var model = SwitchVideoModel( data.filename,url2)
-//                            val list = ArrayList<SwitchVideoModel>()
-//                            list.add(model)
-//                            list.add(model)
+//                            val proxy = app.mapp.getProxy(this)
+                         //   val proxyUrl = proxy.getProxyUrl(VIDEO_URL)
+                            var model = SwitchVideoModel( url2,data.filename)
+
+                            var model2 = SwitchVideoModel( url2,data.filename+"2")
+
+                            val list = ArrayList<SwitchVideoModel>()
+                            list.add(model)
+                            list.add(model2)
+
 //                    var url3 =   "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"
 //
 //
@@ -96,7 +104,7 @@ class PlayVideoActivity : BaseActivity() {
 //                    url2.LogD(" url :  ")
                             orientationUtils = OrientationUtils(this, video_player)
                             video_player.apply {
-                                setUp(url2, false, data.filename)
+                                setUp(list, false, data.filename)
                                 backButton.visibility = View.VISIBLE
                                 backButton.setOnClickListener { onBackPressed() }
                                 setIsTouchWiget(true)
@@ -185,6 +193,57 @@ class PlayVideoActivity : BaseActivity() {
 
             }
 
+            is  SearchResultData.res ->{
+                HttpUtil.instance.apiService().getVerifyCode(Someutil.getToken(), data.fileid)
+                        .compose(RxSchedulers.compose())
+                        .subscribe({
+
+                            var code =  it.reuslt
+
+                            var strs = it.reuslt.split(",")
+
+                            var index = strs[1].toInt() + strs[3].toInt()
+                            var length = strs[2].toInt()
+
+
+                            var key = it.reuslt.substring(index , (index + length)).MD5()
+
+
+                            var url2 = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=preview&fileid=" + data.fileid +
+                                    "&objectid=" + data.objid + "&createuid=" + data.createuid +
+                                    "&code="+code+"&key=" +key +
+                                    "&token=" + Someutil.getToken() + "&quality=a"
+
+//                            var model = SwitchVideoModel( data.filename,url2)
+//                            val list = ArrayList<SwitchVideoModel>()
+//                            list.add(model)
+//                            list.add(model)
+//                    var url3 =   "http://9890.vod.myqcloud.com/9890_4e292f9a3dd011e6b4078980237cc3d3.f30.mp4"
+//
+//
+//                    var url4 = "http://192.168.50.230/viewer/read.php?type=preview&fileid=2b20bad96983cf2bef7255d80ea632d4.wmv&objectid=20180227/16/2b20bad96983cf2bef7255d80ea632d4.wmv&createuid=test&code=4c429dd6d92cdfe19feb2ba9f3c12edc,3,1,3&key=8277e0910d750195b448797616e091ad&token="+Someutil.getToken()
+//                    url2.LogD(" url :  ")
+                            orientationUtils = OrientationUtils(this, video_player)
+                            video_player.apply {
+                                setUp(url2, false, data.filename)
+                                backButton.visibility = View.VISIBLE
+                                backButton.setOnClickListener { onBackPressed() }
+                                setIsTouchWiget(true)
+
+                                fullscreenButton.setOnClickListener {
+                                    orientationUtils!!.resolveByClick()
+                                }
+
+                            }
+
+
+                            initTransition()
+                        }, {
+
+                            it.toString().LogD("error : ")
+
+                        })
+            }
         }
 
 

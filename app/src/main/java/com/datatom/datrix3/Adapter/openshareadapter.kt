@@ -10,11 +10,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.datatom.datrix3.Activities.SharedFilesActivity
 import com.datatom.datrix3.Bean.ShareList
+import com.datatom.datrix3.Bean.TaskFile
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Service.TaskService
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
+import com.datatom.datrix3.app
+import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.I
 import com.datatom.datrix3.helpers.LogD
 import com.datatom.datrix3.helpers.RxBus
@@ -78,8 +82,31 @@ class openshareadapter(context: Context) : RecyclerArrayAdapter<ShareList.Hits>(
 
             img_download!!.apply {
                 setOnClickListener {
+                data._source.files.forEach {
+
+                    var taskfile = TaskFile()
+                    taskfile!!.apply {
+
+                        filename = it.filename
+                        fileid = it.fileid
+                        mCompeleteSize = 0L
+                        offset = 0
+                        if (it.mimetype != null)
+                            mimetype = it.mimetype
+                        exe = it.ext
+                        filetype = TaskService.DOWNLOAD
+                        filesubtype = TaskService.NORMALDOWNLOAD
+                        taskstate = TaskService.NEWFILE
+                        total = it.filesize.toLong()
+                        userid = Someutil.getUserID()
+                        id = System.currentTimeMillis().toString()
+
+                    }
+                    AppDatabase.getInstance(app.mapp).TaskFileDao().insert(taskfile)
 
 
+                }
+                    context!!.toast("开始后台下载")
                 }
 
             }

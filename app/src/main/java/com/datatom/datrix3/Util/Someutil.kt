@@ -11,6 +11,7 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.ResponseBody
 import java.io.*
 import android.app.Activity
+import android.app.Application
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
@@ -81,14 +82,80 @@ object Someutil {
 
     }
 
+    fun getDownloaddirs() : String{
+
+        return SPUtils.get(app.mapp.applicationContext, AppConstant.DOWNLOADDIRS, Environment.getExternalStorageDirectory().toString() + File.separator + "datrixdownload") as String;
+
+    }
+
     fun getlastLogintime() : Long{
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.LOGIN_TIME, 0L)  as Long
 
     }
 
+    /**
+     * 获取Glide造成的缓存大小
+     *
+     * @return CacheSize
+     */
+    fun getCacheSize(): String {
+        try {
+            return SizeUtils.getSize(getFolderSize(File("${app.mapp.cacheDir}/IMG_CACHE")))
+        } catch (e: Exception) {
+            e.printStackTrace()
+            e.toString().LogD("cache error : ")
+        }
 
+        return ""
+    }
 
+    @JvmStatic
+    fun dirSize(dir: File?): Long {
+        dir?.let {
+            var result = 0L
+            if (dir.exists()) {
+                val fileArray = dir.listFiles()
+                for (file in fileArray) {
+                    result += if (file.isDirectory) {
+                        dirSize(file)
+                    } else {
+                        file.length()
+                    }
+                }
+                return result / 1024 / 1024
+            }
+            return 0
+        } ?: run {
+            return 0L
+        }
+    }
+
+    /**
+     * 获取指定文件夹内所有文件大小的和
+     *
+     * @param file file
+     * @return size
+     * @throws Exception
+     */
+    @Throws(Exception::class)
+    fun getFolderSize(file: File): Long {
+        var size: Long = 0
+        try {
+            val fileList = file.listFiles()
+            for (aFileList in fileList) {
+                if (aFileList.isDirectory) {
+                    size += getFolderSize(aFileList)
+                } else {
+                    size += aFileList.length()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        return size
+    }
 
     fun updateToken(){
 
@@ -435,6 +502,7 @@ fun gettime(date : Date): String? {
         }
         return flag
     }
+
 
 
 }

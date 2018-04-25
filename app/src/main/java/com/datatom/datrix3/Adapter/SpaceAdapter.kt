@@ -1,14 +1,26 @@
 package com.datatom.datrix3.Adapter;
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
 import com.datatom.datrix3.R
 import android.util.SparseBooleanArray
+import android.view.View
 import android.widget.*
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.Target
+import com.datatom.datrix3.Base.GlideApp
 import com.datatom.datrix3.Bean.PersonalFilelistData
+import com.datatom.datrix3.Util.GildeLoader
+import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.SizeUtils
+import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.*
 
 
@@ -111,12 +123,30 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
             // data!!.cayman_pretreat_mimetype.LogD(" type : ")
 
+            var url = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=thumb&fileid=" + data!!.fileid +
+                    "&objectid=" + data.objid + "&createuid=" + data.createuid
 
             when (data!!.type) {
                 "0" -> {
                     img!!.setImageResource(R.drawable.ic_file_wenjianjia)
 
-                    // data.filename.LogD(" filename : ")
+//                    GlideApp.with(context).load(url)
+//                            .transition(DrawableTransitionOptions().crossFade(200))
+//                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                            .apply({ placeholder(D.ic_file_wenjianjia) })
+//                            .listener(object : RequestListener<Drawable> {
+//                                override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+//                                    return false
+//                                }
+//                                override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+//                                    e.toString().LogD(" loadfailed  error : ")
+//                                    //  img!!.setImageResource(D.ic_file_img)
+//                                    return false
+//
+//                                }
+//                            }
+//                            )
+//                            .into(img!!)
 
                     filecreatetime!!.text = data?.createtime
                 }
@@ -125,50 +155,52 @@ class SpaceAdapter(context: Context) : RecyclerArrayAdapter<PersonalFilelistData
 
                     filecreatetime!!.text = SizeUtils.getSize(data?.filesize) + "  " + data?.createtime
 
+
                     if (data!!.cayman_pretreat_mimetype != null)
                         when (data!!.cayman_pretreat_mimetype) {
 
                         //"png", "bmp", "gif", "jpeg",
                             "image" -> {
-                                img!!.setImageResource(D.ic_file_img)
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_img)
 
                             }
 
                         //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
                             "video"
                             -> {
-                                img!!.setImageResource(D.ic_file_video)
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_video)
 
                             }
 
                         // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
                             "audio"
                             -> {
-                                img!!.setImageResource(D.ic_file_mic)
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_mic)
                             }
 
                             "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
                             -> {
-                                img!!.setImageResource(D.ic_file_doc)
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_doc)
 
                             }
                             "zip", "7z", "rar", "tar" -> {
-                                img!!.setImageResource(D.ic_file_zip)
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_zip)
 
                             }
                             else -> {
+                                GildeLoader.loadNormal(img!!,url,D.ic_file_doc)
 
-                                img!!.setImageResource(D.ic_file_doc)
                             }
-
 
                         }
                     else {
-                        img!!.setImageResource(D.ic_file_doc)
+                        GildeLoader.loadNormal(img!!,url,D.ic_file_doc)
                     }
                 }
 
             }
+
+           // notifyDataSetChanged()
 
             filename!!.text = data?.filename
 

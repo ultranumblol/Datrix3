@@ -8,7 +8,10 @@ import android.widget.TextView
 import com.datatom.datrix3.Bean.PersonalFilelistData
 import com.datatom.datrix3.Bean.SearchResultData
 import com.datatom.datrix3.R
+import com.datatom.datrix3.Util.GildeLoader
+import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.SizeUtils
+import com.datatom.datrix3.helpers.D
 import com.datatom.datrix3.helpers.RxBus
 import com.jude.easyrecyclerview.adapter.BaseViewHolder
 import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter
@@ -114,6 +117,9 @@ class SearchAdapter(context: Context) : RecyclerArrayAdapter<SearchResultData.re
 
 
            // data!!.cayman_pretreat_mimetype.LogD(" type : ")
+            var url = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=thumb&fileid=" + data!!.fileid +
+                    "&objectid=" + data.objid + "&createuid=" + data.createuid
+
 
 
             when (data!!.type ) {
@@ -134,37 +140,36 @@ class SearchAdapter(context: Context) : RecyclerArrayAdapter<SearchResultData.re
 
                     //"png", "bmp", "gif", "jpeg",
                         "image" -> {
-                            img!!.setImageResource(R.drawable.ic_file_img)
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_img)
 
                         }
 
                     //"3gp", "asf", "avi", "m4u", "m4v", "mov", "mp4", "mpe", "mpeg", "mpg", "mpg4",
                         "video"
                         -> {
-                            img!!.setImageResource(R.drawable.ic_file_video)
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_video)
 
                         }
 
                     // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
                         "audio"
                         -> {
-                            img!!.setImageResource(R.drawable.ic_file_mic)
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_mic)
                         }
 
                         "conf", "cpp", "htm", "html", "log", "sh", "txt", "xml", "pdf"
                         -> {
-                            img!!.setImageResource(R.drawable.ic_file_doc)
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_doc)
 
                         }
-                        "zip" ,"7z","rar","tar"-> {
-                            img!!.setImageResource(R.drawable.ic_file_zip)
+                        "zip", "7z", "rar", "tar" -> {
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_zip)
 
                         }
-                        else ->{
+                        else -> {
+                            GildeLoader.loadNormal(img!!,url,D.ic_file_doc)
 
-                            img!!.setImageResource(R.drawable.ic_file_doc)
                         }
-
 
                     }
                     else{

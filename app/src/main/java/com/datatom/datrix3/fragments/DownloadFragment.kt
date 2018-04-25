@@ -23,6 +23,7 @@ import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.C
 import com.datatom.datrix3.helpers.I
 import com.datatom.datrix3.helpers.LogD
+import com.datatom.datrix3.helpers.RxBus
 import com.jude.easyrecyclerview.EasyRecyclerView
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -63,6 +64,36 @@ class DownloadFragment : BaseFragment() {
         database = AppDatabase.getInstance(app.mapp)
         initdata()
         update()
+        RxBus.get().toFlowable(String::class.java)
+                .subscribe {
+                    when (it) {
+
+                        "cleardownloadlist" -> {
+
+                            clearlist()
+                        }
+
+                    }
+
+                }
+
+    }
+
+
+    private fun clearlist() {
+        "删除下载列表".LogD()
+        downloadadapter!!.allData.forEach {
+            AppDatabase.getInstance(app.mapp).TaskFileDao().deletefile(it)
+            downloadadapter!!.remove(it)
+            data = downloadadapter!!.allData
+            downloadadapter!!.notifyDataSetChanged()
+        }
+
+//        downloadadapter!!.apply {
+//            clear()
+//            data = null
+//            notifyDataSetChanged()
+//        }
 
     }
 
@@ -108,9 +139,9 @@ class DownloadFragment : BaseFragment() {
             setOnItemClickListener {
 
 
-                when(allData[it].taskstate){
-                    DONE ->{
-                        when(allData[it].mimetype){
+                when (allData[it].taskstate) {
+                    DONE -> {
+                        when (allData[it].mimetype) {
                             "image" -> {
 
                                 val imglist = arrayListOf<String>(allData[it].fileid)
@@ -151,7 +182,7 @@ class DownloadFragment : BaseFragment() {
                             -> {
 
                             }
-                            "txt" ->{
+                            "txt" -> {
                                 context!!.startActivity(Intent(context, PreviewTXTFileActivity::class.java)
                                         .putExtra("file", allData[it]))
 
@@ -185,7 +216,7 @@ class DownloadFragment : BaseFragment() {
                     }
 
                     DOWNLOADING -> {
-                        var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                        var task = AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
                         task.taskstate = PAUSE
                         AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
                         TaskService.DisposedTask(allData[it].id)
@@ -194,13 +225,13 @@ class DownloadFragment : BaseFragment() {
                     }
 
                     PAUSE -> {
-                        var task =  AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
+                        var task = AppDatabase.getInstance(app.mapp).TaskFileDao().queryTaskFile(allData[it].id)
                         task.taskstate = NEWFILE
                         AppDatabase.getInstance(app.mapp).TaskFileDao().updatefiles(task)
                         notifyDataSetChanged()
 
                     }
-                    else ->{
+                    else -> {
 
                     }
                 }
@@ -244,6 +275,7 @@ class DownloadFragment : BaseFragment() {
 
         return R.layout.fragment_downloadlist;
     }
+
     override fun onStop() {
         super.onStop()
 

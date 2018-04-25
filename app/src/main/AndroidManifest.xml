@@ -51,9 +51,10 @@
         <activity android:name=".Activities.SearchResultActivity" />
         <activity android:name=".Activities.TrashActivity" />
         <activity android:name=".Activities.SharedFilesActivity" />
-
         <activity android:name=".Activities.FileCollectWebViewActivity" />
-        <activity android:name=".Activities.SaomaActivity"></activity>
+        <activity android:name=".Activities.SaomaActivity" />
+        <activity android:name=".Activities.SettingsActivity" />
+        <activity android:name=".Activities.ChoseDownloadDirActivity"></activity>
     </application>
 
 </manifest>

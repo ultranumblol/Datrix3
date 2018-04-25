@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.View
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
-import com.datatom.datrix3.Bean.OfficeFile
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.ShareList
-import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.IntentUtil
 import com.datatom.datrix3.Util.Someutil
@@ -72,6 +69,9 @@ class OfficeFileShowActivity : BaseActivity() {
 
             is ShareList.Files ->{
 
+
+            }
+            is SearchResultData.res ->{
 
             }
         }

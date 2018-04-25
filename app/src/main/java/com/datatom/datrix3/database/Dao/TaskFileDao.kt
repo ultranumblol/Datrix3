@@ -21,6 +21,13 @@ interface TaskFileDao {
     @Query("SELECT * FROM taskfile  WHERE id = :id")
     fun queryTaskFile(id : String):  TaskFile
 
+    @Query("SELECT * FROM taskfile  WHERE taskstate = :taskstate")
+    fun queryAllUnDoneFile(taskstate : Int):  List<TaskFile>
+
+
+    @Query("SELECT * FROM taskfile  ")
+    fun queryAllFile():  List<TaskFile>
+
     @Delete()
     fun deletefile(taskfile: TaskFile)
 

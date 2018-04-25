@@ -46,6 +46,28 @@ object GildeLoader{
                     .into(imageView)
         }
     }
+
+    fun loadNormal(imageView: ImageView, url: String,holder :Int) {
+        if (url.endsWith(".gif")) {
+            GlideApp.with(imageView.context)
+                    .asGif()
+                    .load(url)
+                    .placeholder(holder)
+                    .centerCrop()
+
+                    .into(imageView)
+        } else {
+            GlideApp.with(imageView.context)
+                    .asBitmap()
+                    .load(url)
+                    .placeholder(holder)
+                    .centerCrop()
+
+                    .into(imageView)
+        }
+    }
+
+
     fun loadHighQualityWithPalette(imageView: ImageView, url: String, callback: OnPaletteProcessingCallback) {
         if (url.endsWith(".gif")) {
             GlideApp.with(imageView.context)

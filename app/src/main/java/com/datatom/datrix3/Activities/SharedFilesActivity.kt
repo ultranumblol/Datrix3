@@ -184,7 +184,7 @@ class SharedFilesActivity : BaseActivity() {
 
 
                     } else {
-                        RxBus.get().post("showmainbar")
+                       // RxBus.get().post("showmainbar")
 
                         bottom_bar!!.hide()
                         rvadapter!!.notifyDataSetChanged()

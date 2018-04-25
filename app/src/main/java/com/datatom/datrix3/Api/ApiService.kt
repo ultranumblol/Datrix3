@@ -279,18 +279,7 @@ interface ApiService {
 
     ): Observable<Quota>
 
-    /**
-     * 删除文件 放入回收站
-     */
-    @FormUrlEncoded
-    @POST("trash/do")
-    fun trushDo(
-            @Header("ACCESS-TOKEN") token: String,
-            @Field("fileid") fileid: String,
-            @Field("objectid") objectid: String,
-            @Field("createuid") createuid: String
 
-    ): Observable<String>
 
     /**
      * 文件重命名
@@ -563,7 +552,52 @@ interface ApiService {
     ): Observable<TrashBean>
 
 
+    /**
+     * 回收站中恢复目录或者文件
+     */
+    @FormUrlEncoded
+    @POST("trash/multiundo")
+    fun trashundo(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileidarr[]") fileidarr: List<String>,
+            @Field("createuidarr[]") createuidarr: List<String>,
+            @Field("objidarr[]") objidarr: List<String>,
+            @Field("parentidarr[]") parentidarr: List<String>
+    ) : Observable<String>
+
+    /**
+     * 清空回收站
+     */
+    @FormUrlEncoded
+    @POST("trash/clean")
+    fun trashclean(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("createuid") createuid: String
+    ): Observable<String>
 
 
+    /**
+     * 回收站中彻底删除
+     */
+    @FormUrlEncoded
+    @POST("trash/multidel")
+    fun trashdelete(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileidarr[]") fileidarr: List<String>,
+            @Field("createuidarr[]") createuidarr: List<String>,
+            @Field("objidarr[]") objidarr: List<String>
+    ): Observable<String>
 
+    /**
+     * 删除文件 放入回收站
+     */
+    @FormUrlEncoded
+    @POST("trash/do")
+    fun trushDo(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileid") fileid: String,
+            @Field("objectid") objectid: String,
+            @Field("createuid") createuid: String
+
+    ): Observable<String>
 }

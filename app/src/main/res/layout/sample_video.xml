@@ -24,7 +24,16 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:background="#000000"
-        android:scaleType="fitCenter" />
+        android:scaleType="fitCenter" >
+
+        <moe.codeest.enviews.ENPlayView
+            android:id="@+id/start"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_gravity="center_vertical" />
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/layout_bottom"
@@ -111,14 +120,6 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:visibility="invisible" />
-
-    <moe.codeest.enviews.ENPlayView
-        android:id="@+id/start"
-        android:layout_width="44dp"
-        android:layout_height="44dp"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:layout_gravity="center_vertical" />
 
 
     <ImageView

@@ -3,6 +3,7 @@ package com.datatom.datrix3.Service
 import android.app.Service
 import android.content.Intent
 import android.os.IBinder
+import com.datatom.datrix3.Bean.BadgeNum
 import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.Util.DownLoadUtil
 import com.datatom.datrix3.Util.Someutil
@@ -11,6 +12,7 @@ import com.datatom.datrix3.Util.UploadFileUtil2
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.helpers.LogD
+import com.datatom.datrix3.helpers.RxBus
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
@@ -122,7 +124,7 @@ class TaskService : Service() {
 //
 
                                 }
-                                else ->{
+                                else -> {
 
                                 }
 
@@ -131,6 +133,25 @@ class TaskService : Service() {
                         }
                     }
                 }
+
+
+        Observable.interval(1, TimeUnit.SECONDS).
+                compose(RxSchedulers.compose())
+                .subscribe({
+                    var num = (AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllFile().size - AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllUnDoneFile(TaskService.DONE).size)
+
+//                    AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllFile().size.toString().LogD(" allnum : ")
+//                    AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllUnDoneFile(TaskService.DONE).size.toString().LogD(" Donenum : ")
+//
+                    num.toString().LogD("num : ")
+//                    if (num > 0) {
+//                        badeg.badgeNumber = num
+//                    } else badeg.hide(true)
+                    RxBus.get().post(BadgeNum(num))
+                }, {
+                    it.toString().LogD("num error : ")
+                })
+
     }
 
     fun getdatalist(): List<TaskFile>? {

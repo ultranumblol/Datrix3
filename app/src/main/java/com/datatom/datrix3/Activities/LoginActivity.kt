@@ -4,6 +4,7 @@ package com.datatom.datrix3.Activities
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
@@ -32,6 +33,7 @@ import kotlinx.android.synthetic.main.activity_login.*
 
 import org.jetbrains.anko.find
 import org.jetbrains.anko.toast
+import java.io.File
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
@@ -211,6 +213,7 @@ class LoginActivity : AppCompatActivity() {
             SPBuild(applicationContext)
                     .addData(AppConstant.AUTO_LOGIN,cb_auto_login.isChecked)
                     .addData(AppConstant.REMEMBER_NAME_CODE,cb_rem_user.isChecked)
+                    .addData(AppConstant.DOWNLOADDIRS, Environment.getExternalStorageDirectory().toString() + File.separator + "datrixdownload")
                     .build()
 
             if (cb_rem_user.isChecked) {
