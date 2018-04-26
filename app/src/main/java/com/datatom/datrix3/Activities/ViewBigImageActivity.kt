@@ -22,11 +22,8 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.datatom.datrix3.Base.GlideApp
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.SearchResultData
-import com.datatom.datrix3.Bean.ShareList
+import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Bean.ShareList.Files
-import com.datatom.datrix3.Bean.TaskFile
 import com.datatom.datrix3.R
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
@@ -448,6 +445,59 @@ class ViewBigImageActivity : FragmentActivity(), OnPageChangeListener, PhotoView
 
                           }, {})
 
+                }
+                is CollectFiles.result.hits.hits2 ->{
+
+                    HttpUtil.instance.apiService().getVerifyCode(Someutil.getToken(), data._source.fileid)
+                            .compose(RxSchedulers.compose())
+                            .subscribe({
+                                var code = it.reuslt
+
+
+                                var strs = it.reuslt.split(",")
+
+
+                                var index = strs[1].toInt() + strs[3].toInt()
+                                var length = strs[2].toInt()
+
+
+                                var key = it.reuslt.substring(index, (index + length)).MD5()
+                                var url2 = HttpUtil.BASEAPI_URL + "datrix3/viewer/read.php?type=preview&fileid=" + data._source.fileid +
+                                        "&objectid=" + data._source.objid + "&createuid=" + data._source.createuid + "&code=" + code + "&key=" + key + "&token=" +
+                                        Someutil.getToken() + "&quality=a"
+
+                                url2.LogD("url 2 :: ")
+
+                                GlideApp.with(this@ViewBigImageActivity).load(url2)
+                                        .transition(DrawableTransitionOptions().crossFade(700))
+                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                        .listener(object : RequestListener<Drawable> {
+                                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+
+                                                e.toString().LogD(" loadfailed  error : ")
+                                                return false
+
+                                            }
+
+                                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                                                spinner.visibility = View.GONE
+
+                                                val height = zoom_image_view.height
+
+                                                val wHeight = windowManager.defaultDisplay.height
+                                                if (height > wHeight) {
+                                                    zoom_image_view.scaleType = ImageView.ScaleType.CENTER_CROP
+                                                } else {
+                                                    zoom_image_view.scaleType = ImageView.ScaleType.FIT_CENTER
+                                                }
+                                                return false
+
+                                            }
+                                        }
+                                        )
+                                        .into(zoom_image_view)
+
+                            }, {})
                 }
 
             }

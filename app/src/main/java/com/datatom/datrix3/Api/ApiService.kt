@@ -600,4 +600,29 @@ interface ApiService {
             @Field("createuid") createuid: String
 
     ): Observable<String>
+
+
+    /**
+     * 文件或目录添加收藏统计
+     */
+    @FormUrlEncoded
+    @POST("collect/listmynopage")
+    fun collect_listmy(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("userid") userid: String,
+            @Field("mimetype") mimetype: String,
+            @Field("tags") tags: String
+    ): Observable<CollectFiles>
+
+
+    /**
+     * 通过fileid和收藏人取消收藏
+     */
+    @FormUrlEncoded
+    @POST("collect/removeby")
+    fun collect_removeby(
+            @Header("ACCESS-TOKEN") token: String,
+            @Field("fileid") fileid: String,
+            @Field("userid") userid: String
+    ) : Observable<String>
 }

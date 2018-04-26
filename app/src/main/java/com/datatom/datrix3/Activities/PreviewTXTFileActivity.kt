@@ -2,10 +2,7 @@ package com.datatom.datrix3.Activities
 
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.SearchResultData
-import com.datatom.datrix3.Bean.ShareList
-import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.LogD
@@ -88,6 +85,26 @@ class PreviewTXTFileActivity : BaseActivity() {
                 var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + data.fileid + "&iswindows=0&optuser=admin"
 
                 setToolbartitle(data.filename)
+                HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.newThread())
+                        .subscribe({
+
+                            var txtstr = Someutil.getTXTFileString(it.byteStream())
+                            runOnUiThread {
+                                pro_loading.hide()
+                                tv_txtpreview.text =txtstr
+                            }
+                        }, {
+                            it.toString().LogD("download error : ")
+                        })
+            }
+
+            is CollectFiles.result.hits.hits2 ->{
+
+                var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + data._source.fileid + "&iswindows=0&optuser=admin"
+
+                setToolbartitle(data._source.filename)
                 HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
                         .subscribeOn(Schedulers.io())
                         .observeOn(Schedulers.newThread())

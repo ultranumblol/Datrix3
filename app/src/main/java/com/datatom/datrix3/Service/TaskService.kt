@@ -143,7 +143,7 @@ class TaskService : Service() {
 //                    AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllFile().size.toString().LogD(" allnum : ")
 //                    AppDatabase.getInstance(app.mapp).TaskFileDao().queryAllUnDoneFile(TaskService.DONE).size.toString().LogD(" Donenum : ")
 //
-                    num.toString().LogD("num : ")
+                    //num.toString().LogD("num : ")
 //                    if (num > 0) {
 //                        badeg.badgeNumber = num
 //                    } else badeg.hide(true)

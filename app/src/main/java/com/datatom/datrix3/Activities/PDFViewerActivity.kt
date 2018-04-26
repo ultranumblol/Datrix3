@@ -3,10 +3,7 @@ package com.datatom.datrix3.Activities
 import android.graphics.Color
 import com.datatom.datrix3.R
 import com.datatom.datrix3.BaseActivity
-import com.datatom.datrix3.Bean.PersonalFilelistData
-import com.datatom.datrix3.Bean.SearchResultData
-import com.datatom.datrix3.Bean.ShareList
-import com.datatom.datrix3.Bean.TaskFile
+import com.datatom.datrix3.Bean.*
 import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.helpers.LogD
@@ -187,6 +184,46 @@ class PDFViewerActivity : BaseActivity(), OnPageChangeListener, OnLoadCompleteLi
 
                 addsub(downpdf)
             }
+
+            is CollectFiles.result.hits.hits2 ->{
+                pdfFileName = data._source.filename
+                setToolbartitle(pdfFileName)
+                var url = HttpUtil.BASEAPI_URL + "/datrix3/viewer/dcomp.php?fileidstr=" + data._source.fileid + "&iswindows=0&optuser=admin"
+                var downpdf = HttpUtil.instance.downLoadApi().downloadFileWithFixedUrl(url)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(Schedulers.newThread())
+                        .subscribe({
+
+                            var result = Someutil.writeResponseBodyToDisk2(it, data._source.filename)
+                            var file = result.second
+
+                            if (result.first) {
+                                "下载成功".LogD()
+
+                                runOnUiThread {
+                                    pdf_progressbar.hide()
+                                    pdfView.fromFile(file)
+                                            .defaultPage(pageNumber)
+                                            .onPageChange(this)
+                                            .enableAnnotationRendering(true)
+                                            .onLoad(this)
+                                            .scrollHandle(DefaultScrollHandle(this))
+                                            .spacing(10) // in dp
+                                            .onPageError(this)
+                                            .load()
+                                }
+
+                            } else {
+                                "下载失败".LogD()
+
+                            }
+                        }, {
+                            it.toString().LogD("download error : ")
+                        })
+
+                addsub(downpdf)
+
+        }
         }
 
 

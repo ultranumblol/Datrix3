@@ -201,11 +201,15 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
                         toolbar_qiehuan.text = "切换"
-                        toolbar_qiehuan.Show()
-                        img_page_back.hide()
+                        if (main_title.text == "个人空间" ||main_title.text == "公共空间"||main_title.text == "讨论组" ){
 
+                            toolbar_qiehuan.Show()
+                            img_page_back.hide()
 
-
+                        }else{
+                            img_page_back.Show()
+                            toolbar_qiehuan.hide()
+                        }
 
                     }
                     1 -> {

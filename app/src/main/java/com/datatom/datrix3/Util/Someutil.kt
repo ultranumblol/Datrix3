@@ -444,14 +444,12 @@ fun gettime(date : Date): String? {
         alertBuilder.setCancelable(true)
         alertBuilder.setTitle("Permission necessary")
         alertBuilder.setMessage(msg + " permission is necessary")
-        alertBuilder.setPositiveButton(android.R.string.yes,
-                object : DialogInterface.OnClickListener {
-                   override fun onClick(dialog: DialogInterface, which: Int) {
-                        ActivityCompat.requestPermissions(context as Activity,
-                                arrayOf(permission),
-                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
-                    }
-                })
+        alertBuilder.setPositiveButton(android.R.string.yes
+        ) { _, _ ->
+            ActivityCompat.requestPermissions(context as Activity,
+                    arrayOf(permission),
+                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE)
+        }
         val alert = alertBuilder.create()
         alert.show()
     }
