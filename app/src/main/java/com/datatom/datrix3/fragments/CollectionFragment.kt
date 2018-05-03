@@ -200,7 +200,7 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
 
         HttpUtil.instance.apiService().collect_listmy(Someutil.getToken(), Someutil.getUserID(), mimetype, "")
                 .compose(RxSchedulers.compose())
-                .subscribe {
+                .subscribe({
                     if (it.msg != null && it.msg.contains("获取token信息失败")) {
 
                         Someutil.updateToken()
@@ -213,7 +213,9 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
                     }
 
 
-                }
+                },{
+                    it.toString().LogD("error : ")
+                })
     }
 
     override fun onClick(v: View?) {
