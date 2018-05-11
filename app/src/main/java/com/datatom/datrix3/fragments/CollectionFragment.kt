@@ -43,6 +43,11 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
     private var collect_other :RelativeLayout? = null
     private var mimetype  = ""
 
+    companion object {
+        var lefttitle = ""
+    }
+
+
 
 
     override fun initview(view: View) {
@@ -57,10 +62,15 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
         collect_video = view.find(I.collect_chose_video)
         collect_music = view.find(I.collect_chose_mic)
         collect_other = view.find(I.collect_chose_other)
-
+        collect_all!!.setOnClickListener(this)
+        collect_pic!!.setOnClickListener(this)
+        collect_doc!!.setOnClickListener(this)
+        collect_video!!.setOnClickListener(this)
+        collect_music!!.setOnClickListener(this)
+        collect_other!!.setOnClickListener(this)
 
         zhezhao!!.setOnClickListener(this)
-
+        lefttitle = "全部"
         rvadapter = mycollectadapter(activity!!)
 
         rv!!.apply {
@@ -100,7 +110,6 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
 
                                     val bundle = Bundle()
                                     bundle.apply {
-
                                         putInt("selet", 1)// 2 大图显示当前页数; 1,头像，不显示页数
                                         putInt("code", 1)//第几张
                                         putStringArrayList("imageuri", imglist)
@@ -227,27 +236,45 @@ class CollectionFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLay
             }
             collect_all->{
                 mimetype = ""
+                lefttitle ="全部"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
             collect_pic->{
                 mimetype = "image"
+                lefttitle = "图片"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
             collect_music->{
                 mimetype = "audio"
+                lefttitle = "音乐"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
             collect_doc->{
                 mimetype = "doc"
+                lefttitle = "文档"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
             collect_video->{
                 mimetype = "video"
+                lefttitle = "视频"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
             collect_other->{
                 mimetype = "unknow"
+                lefttitle = "其他"
+                RxBus.get().post("collection_changetype")
                 initdata()
+                hideCradview()
             }
 
 

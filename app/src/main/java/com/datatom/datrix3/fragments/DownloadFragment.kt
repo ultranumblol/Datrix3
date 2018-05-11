@@ -281,7 +281,7 @@ class DownloadFragment : BaseFragment() {
 
         if (this.msubscription != null) {
             this.msubscription!!.dispose()
-            "download取消订阅".LogD()
+           // "download取消订阅".LogD()
         }
 
     }

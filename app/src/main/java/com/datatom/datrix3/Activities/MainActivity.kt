@@ -26,6 +26,7 @@ import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.app
 import com.datatom.datrix3.database.AppDatabase
 import com.datatom.datrix3.fragments.CollectionFragment
+import com.datatom.datrix3.fragments.CollectionFragment.Companion.lefttitle
 import com.datatom.datrix3.fragments.MoreFragment
 import com.datatom.datrix3.fragments.ShareFragment
 import com.datatom.datrix3.fragments.SpaceFragment
@@ -45,8 +46,6 @@ import kotlin.concurrent.thread
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
 
-
-    var collection_choseStr: String = "全部"
 
     var titlename: String = ""
 
@@ -223,7 +222,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         main_title.text = "我的收藏"
                         app_bar.Show()
                         StatusBarCompat.setStatusBarColor(this@MainActivity, resources.getColor(R.color.colorPrimary))
-                        toolbar_qiehuan.text = collection_choseStr
+                        toolbar_qiehuan.text = lefttitle
                         toolbar_qiehuan.Show()
                         img_page_back.hide()
 
@@ -290,6 +289,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 "clearcachefinish" ->{
                     this.toast("清理完成!")
                 }
+                "collection_changetype" ->{
+                    toolbar_qiehuan.text = lefttitle
+                }
 
 
             }
@@ -337,6 +339,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         HttpUtil.instance.apiService().checkuploadbyfileid(Someutil.getToken(),SpaceFragment.getcurrentdir(),SpaceFragment.getcurrentParentID(),Someutil.getUserID())
                 .compose(RxSchedulers.compose())
                 .subscribe {
+
                     if (it.reuslt.hasacl.isNotEmpty()){
                         if (Someutil.checkPermissionREAD_EXTERNAL_STORAGE(this)) {
                             Charles.from(this)

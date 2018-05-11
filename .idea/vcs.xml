@@ -4,6 +4,7 @@
     <mapping directory="" vcs="svn" />
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/charles" vcs="svn" />
+    <mapping directory="$PROJECT_DIR$/waveview" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/zoomlibrary" vcs="svn" />
     <mapping directory="$PROJECT_DIR$/zxing-android-embedded" vcs="svn" />
   </component>

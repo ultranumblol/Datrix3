@@ -105,9 +105,9 @@ class HttpUtil {
 
 
         okBuilder.apply {
-            readTimeout(8, TimeUnit.SECONDS)
-            connectTimeout(8, TimeUnit.SECONDS)
-            writeTimeout(8, TimeUnit.SECONDS)
+            readTimeout(20, TimeUnit.SECONDS)
+            connectTimeout(20, TimeUnit.SECONDS)
+            writeTimeout(20, TimeUnit.SECONDS)
             retryOnConnectionFailure(true)
             addNetworkInterceptor {
                 val orginalResponse = it.proceed(it.request())

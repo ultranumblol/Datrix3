@@ -324,6 +324,7 @@ class UploadFileUtil2(file: TaskFile) {
                         tfile!!.taskstate = DONE
                         database.TaskFileDao().updatefiles(tfile!!)
                         ("file 上传完毕！").LogD()
+
                         RxBus.get().post("refresh")
                         Someutil.delFolder("/sdcard/tmp")
                     } else {

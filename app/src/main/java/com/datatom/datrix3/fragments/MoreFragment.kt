@@ -2,6 +2,7 @@ package com.datatom.datrix3.fragments
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.os.Environment
 import android.os.Looper
 import android.support.v7.widget.GridLayoutManager
 import android.view.View
@@ -183,6 +184,9 @@ class MoreFragment : BaseFragment(), View.OnClickListener {
                                     subscribe({
                                         Looper.prepare()
                                         GlideApp.get(app.mapp).clearDiskCache()
+                                        //getFolderSize(File("${app.mapp.cacheDir}/IMG_CACHE")) + getFolderSize(File("${Environment.getExternalStorageDirectory()}/officetemp"))+getFolderSize(File("${Environment.getExternalStorageDirectory()}/datrixdownloadTemp"))
+                                        Someutil.delFolder("${Environment.getExternalStorageDirectory()}/officetemp")
+                                        Someutil.delFolder("${Environment.getExternalStorageDirectory()}/datrixdownloadTemp")
                                     }, {
                                         it.toString().LogD("clear cache error :")
                                     }, {

@@ -2,6 +2,7 @@ package com.datatom.datrix3.Activities
 
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
@@ -37,6 +38,18 @@ import java.io.File
 
 import java.util.ArrayList
 import java.util.concurrent.TimeUnit
+import android.view.WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+import android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
+import android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+import android.os.Build.VERSION_CODES.LOLLIPOP
+import android.view.View
+import android.view.WindowManager
+import android.widget.RelativeLayout
+import com.tencent.smtt.sdk.TbsReaderView
+import kotlinx.android.synthetic.main.activity_office_file_show.*
 
 
 /**
@@ -46,18 +59,33 @@ class LoginActivity : AppCompatActivity() {
 
     var mbutton: Button? = null
     private var ifupdate  = false
+    //private var mTbsReaderView: TbsReaderView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_login)
+       // mTbsReaderView = TbsReaderView(this, null)
+       // login_rootview.addView(mTbsReaderView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT))
+
 
         StatusBarCompat.setStatusBarColor(this, resources.getColor(R.color.login_bg))
 
         mbutton = find(R.id.button_get_started)
-
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            val window = window
+//            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+//            window.decorView.systemUiVisibility = (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+//                    or View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_LAYOUT_STABLE)
+//            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+//
+//            window.navigationBarColor =  resources.getColor(R.color.login_bg)
+//        }
 
         tv_saoyisao.setOnClickListener {
+
+
+
             Someutil.checkPermissionCAMERA(this)
             this.startActivityForResult(Intent(this, SaomaActivity::class.java),12306)
 
@@ -71,6 +99,9 @@ class LoginActivity : AppCompatActivity() {
                 }
 
         initData()
+
+//        openFile("${Environment.getExternalStorageDirectory().toString() + File.separator
+//                + "datrixdownload"}/test.docx")
     }
 
     private fun initData() {
@@ -122,6 +153,43 @@ class LoginActivity : AppCompatActivity() {
         actv_ip.setAdapter(adapter)
 
     }
+//    private fun openFile(path: String) :Boolean {
+//        val tempPath = File("${Environment.getExternalStorageDirectory()}/officetemp")
+//        if (!tempPath.exists())
+//            tempPath.mkdirs()
+//        //通过bundle把文件传给x5,打开的事情交由x5处理
+//        val bundle = Bundle()
+//        //传递文件路径
+//        bundle.putString("filePath", File(path).toString())
+//        //加载插件保存的路径
+//        bundle.putString("tempPath",  "${Environment.getExternalStorageDirectory()}/officetemp")
+//        if (this.mTbsReaderView == null)
+//            this.mTbsReaderView = TbsReaderView(this, null)
+//        //加载文件前的初始化工作,加载支持不同格式的插件
+//        val b = mTbsReaderView!!.preOpen(getFileType(File(path).toString()), false)
+//        if (b) {
+//            mTbsReaderView!!.openFile(bundle)
+//        }
+//
+//        return b
+//
+//
+//    }
+
+    private fun getFileType(path: String): String {
+        var str = ""
+
+        if (TextUtils.isEmpty(path)) {
+            return str
+        }
+        val i = path.lastIndexOf('.')
+        if (i <= -1) {
+            return str
+        }
+        str = path.substring(i + 1)
+        return str
+    }
+
 
     private fun dologin() {
 
@@ -178,7 +246,7 @@ class LoginActivity : AppCompatActivity() {
                         200 -> {
                             Saveinfo(it)
                             login_wait.hide()
-                            login_rootview.ShowSnackbarshort("登录成功！")
+                            llroot.ShowSnackbarshort("登录成功！")
                                     .addCallback(object : Snackbar.Callback() {
                                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                                             this@LoginActivity.startActivity(Intent(this@LoginActivity, MainActivity::class.java))
@@ -187,9 +255,14 @@ class LoginActivity : AppCompatActivity() {
                                     })
 
                         }
+
+                        202 ->{
+                            login_wait.hide()
+                            llroot.ShowSnackbarshort("登录失败 :${it.msg.toString()}")
+                        }
                         else -> {
                             login_wait.hide()
-                            login_rootview.ShowSnackbarshort("登录失败，请重试")
+                            llroot.ShowSnackbarshort("登录失败，请重试")
 
                         }
                     }
@@ -198,7 +271,7 @@ class LoginActivity : AppCompatActivity() {
                 }, {
                     ("error : " + it.toString()).LogD()
                     login_wait.hide()
-                    login_rootview.ShowSnackbarshort("登录失败，请重试")
+                    llroot.ShowSnackbarshort("登录失败，请重试")
 
 
                 })

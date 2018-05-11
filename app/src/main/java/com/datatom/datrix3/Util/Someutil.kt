@@ -35,73 +35,79 @@ import java.util.regex.Pattern
 
 object Someutil {
 
-    fun getUserID() : String{
+    fun getUserID(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_ID, "000") as String;
 
     }
 
-    fun getUserNickname() : String{
+    fun getUserNickname(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_NICKNAME, "000") as String;
 
     }
 
 
-    fun getToken() : String{
+    fun getToken(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_TOKEN, "X7yABwjE20sUJLefATUFqU0iUs8mJPqEJo6iRnV63mI=") as String;
 
     }
 
-    fun getAutologin() : Boolean{
+    fun getAutologin(): Boolean {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.AUTO_LOGIN, false) as Boolean;
 
     }
 
-    fun getrememberuser() : Boolean{
+    fun getrememberuser(): Boolean {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.REMEMBER_NAME_CODE, false) as Boolean;
 
     }
 
-    fun getloginIP() : String{
+    fun getloginIP(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINIP, "192.168.3.217") as String;
 
     }
-    fun getloginname() : String{
+
+    fun getloginname(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINNAME, "000") as String;
 
     }
-    fun getloginpwd() : String{
+
+    fun getloginpwd(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.USER_LOGINPASSWORD, "000") as String;
 
     }
 
-    fun getDownloaddirs() : String{
+    fun getDownloaddirs(): String {
 
         return SPUtils.get(app.mapp.applicationContext, AppConstant.DOWNLOADDIRS, Environment.getExternalStorageDirectory().toString() + File.separator + "datrixdownload") as String;
 
     }
 
-    fun getlastLogintime() : Long{
+    fun getlastLogintime(): Long {
 
-        return SPUtils.get(app.mapp.applicationContext, AppConstant.LOGIN_TIME, 0L)  as Long
+        return SPUtils.get(app.mapp.applicationContext, AppConstant.LOGIN_TIME, 0L) as Long
 
     }
 
     /**
-     * 获取Glide造成的缓存大小
+     * 获取Glide造成的缓存大小 datrixdownloadTemp
      *
      * @return CacheSize
      */
     fun getCacheSize(): String {
         try {
-            return SizeUtils.getSize(getFolderSize(File("${app.mapp.cacheDir}/IMG_CACHE")))
+            getFolderSize(File("${app.mapp.cacheDir}/IMG_CACHE")).toString().LogD("img : ")
+            getFolderSize(File("${Environment.getExternalStorageDirectory()}/officetemp")).toString().LogD("officetmp : ")
+            getFolderSize(File("${Environment.getExternalStorageDirectory()}/datrixdownloadTemp")).toString().LogD("download : ")
+
+            return SizeUtils.getSize(getFolderSize(File("${app.mapp.cacheDir}/IMG_CACHE")) + getFolderSize(File("${Environment.getExternalStorageDirectory()}/officetemp"))+getFolderSize(File("${Environment.getExternalStorageDirectory()}/datrixdownloadTemp")))
         } catch (e: Exception) {
             e.printStackTrace()
             e.toString().LogD("cache error : ")
@@ -157,21 +163,21 @@ object Someutil {
         return size
     }
 
-    fun updateToken(){
+    fun updateToken() {
 
         HttpUtil.instance.apiService().login(Someutil.getloginname(), if (Someutil.getloginname().contains("\\")) Someutil.getloginpwd().AES() else Someutil.getloginpwd().MD5(), "uname", "android")
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(Schedulers.io())
                 .subscribe({
                     SPBuild(app.mapp.applicationContext)
-                            .addData(AppConstant.USER_TOKEN,it.reuslt.token)
+                            .addData(AppConstant.USER_TOKEN, it.reuslt.token)
                             .build()
 
 
-                },{
+                }, {
                     it.toString().LogD("updatetoken error : ")
                     //Thread.sleep(2000)
-                   // updateToken()
+                    // updateToken()
 
 
                 })
@@ -179,7 +185,7 @@ object Someutil {
 
     }
 
-    fun doOpenWord(filetype : String, context: Context,file : File) : String {
+    fun doOpenWord(filetype: String, context: Context, file: File): String {
 
         var intent = Intent()
 
@@ -187,27 +193,28 @@ object Someutil {
 
         intent.addCategory("android.intent.category.DEFAULT")
 
-        var fileMimeType ="application/msword"
+        var fileMimeType = "application/msword"
 
-        intent.setDataAndType(Uri.fromFile(file),fileMimeType)
+        intent.setDataAndType(Uri.fromFile(file), fileMimeType)
 
-        try{
+        try {
             context.startActivity(intent)
 
             return ""
 
-        }catch(e : ActivityNotFoundException) {
+        } catch (e: ActivityNotFoundException) {
 
             return "未找到可查看软件"
 
         }
 
     }
-fun gettime(date : Date): String? {
 
-    val format = SimpleDateFormat("yyyy-MM-dd")
-    return format.format(date)
-}
+    fun gettime(date: Date): String? {
+
+        val format = SimpleDateFormat("yyyy-MM-dd")
+        return format.format(date)
+    }
 
 
     fun writeResponseBodyToDisk2(body: ResponseBody, filename: String): Pair<Boolean, File> {
@@ -269,7 +276,65 @@ fun gettime(date : Date): String? {
         }
 
     }
+    fun writeResponseBodyToTempDisk2(body: ResponseBody, filename: String): Pair<Boolean, File> {
+        try {
+            // todo change the file location/name according to your needs
+            //File futureStudioIconFile = new File(getExternalFilesDir(null) + File.separator + filename);
 
+            val futureStudioIconFile = File(Environment.getExternalStorageDirectory().toString() + File.separator
+                    + "datrixdownloadTemp")
+            if (!futureStudioIconFile.exists())
+                futureStudioIconFile.mkdirs()
+            val file = File(futureStudioIconFile, filename)
+            ("filepath : " + file.absolutePath).LogD()
+            var inputStream: InputStream? = null
+            var outputStream: OutputStream? = null
+
+            try {
+                val fileReader = ByteArray(4096)
+
+                val fileSize = body.contentLength()
+                var fileSizeDownloaded: Long = 0
+
+                inputStream = body.byteStream()
+                outputStream = FileOutputStream(file)
+
+                while (true) {
+                    val read = inputStream!!.read(fileReader)
+
+                    if (read == -1) {
+                        break
+                    }
+
+                    outputStream!!.write(fileReader, 0, read)
+
+                    fileSizeDownloaded += read.toLong()
+
+                    // Log.d(TAG, "file download: " + fileSizeDownloaded + " of " + fileSize);
+                }
+
+                outputStream!!.flush()
+
+                return Pair(true, file)
+            } catch (e: IOException) {
+                e.toString().LogD("error1 : ")
+
+                return Pair(false, file)
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close()
+                }
+
+                if (outputStream != null) {
+                    outputStream.close()
+                }
+            }
+        } catch (e: IOException) {
+            e.toString().LogD("error2 : ")
+            return Pair(false, File("null"))
+        }
+
+    }
 
     fun writeResponseBodyToDisk(body: ResponseBody, filename: String): Boolean {
         try {
@@ -352,7 +417,7 @@ fun gettime(date : Date): String? {
 //            }
 
 
-            while(true){
+            while (true) {
                 val line = reader.readLine() ?: break
                 sb.append(line)
                 sb.append("\n")
@@ -399,7 +464,6 @@ fun gettime(date : Date): String? {
             }
 
 
-
         } else {
             return true
         }
@@ -429,7 +493,6 @@ fun gettime(date : Date): String? {
             } else {
                 return true
             }
-
 
 
         } else {
@@ -472,6 +535,7 @@ fun gettime(date : Date): String? {
         val metrics = Resources.getSystem().displayMetrics
         return dp * metrics.density
     }
+
     fun delAllFile(path: String): Boolean {
         var flag = false
         val file = File(path)
@@ -502,6 +566,38 @@ fun gettime(date : Date): String? {
     }
 
 
+    fun secToTime(time: Int): String {
+        var timeStr: String? = null
+        var hour = 0
+        var minute = 0
+        var second = 0
+        if (time <= 0)
+            return "00:00"
+        else {
+            minute = time / 60
+            if (minute < 60) {
+                second = time % 60
+                timeStr = unitFormat(minute) + ":" + unitFormat(second)
+            } else {
+                hour = minute / 60
+                if (hour > 99)
+                    return "99:59:59"
+                minute = minute % 60
+                second = time - hour * 3600 - minute * 60
+                timeStr = unitFormat(hour) + ":" + unitFormat(minute) + ":" + unitFormat(second)
+            }
+        }
+        return timeStr
+    }
+
+    fun unitFormat(i: Int): String {
+        var retStr: String? = null
+        if (i >= 0 && i < 10)
+            retStr = "0" + Integer.toString(i)
+        else
+            retStr = "" + i
+        return retStr
+    }
 
 }
 

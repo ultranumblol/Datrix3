@@ -11,9 +11,6 @@ import com.datatom.datrix3.Util.HttpUtil
 import com.datatom.datrix3.Util.IntentUtil
 import com.datatom.datrix3.Util.Someutil
 import com.datatom.datrix3.database.AppDatabase
-import com.datatom.datrix3.helpers.LogD
-import com.datatom.datrix3.helpers.RxBus
-import com.datatom.datrix3.helpers.hide
 import io.reactivex.Observable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_office_file_show.*
@@ -21,23 +18,26 @@ import org.jetbrains.anko.toast
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
-import java.io.File.separator
-import android.os.Environment.getExternalStorageDirectory
 import android.text.TextUtils
+import android.view.ViewGroup
 import android.widget.RelativeLayout
+
+import com.datatom.datrix3.helpers.*
 import com.tencent.smtt.sdk.TbsReaderView
+
 import java.io.File
 
 
 /**
  * office文件下载预览
  */
-class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
+class OfficeFileShowActivity : BaseActivity(), TbsReaderView.ReaderCallback {
+
+    private var tbsview : TbsReaderView? = null
     override fun onCallBackAction(p0: Int?, p1: Any?, p2: Any?) {
 
     }
 
-    private var mTbsReaderView: TbsReaderView? = null
     private lateinit var database: AppDatabase
 
     override fun ActivityLayout(): Int {
@@ -46,13 +46,15 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
     }
 
     override fun initView() {
-        mTbsReaderView = TbsReaderView(this, this)
+
+
+        tbsview = TbsReaderView(this,this)
+        rl_file.addView(tbsview,  RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
         var data = intent.getSerializableExtra("file")
         database = AppDatabase.getInstance(this)
-        rl_file.addView(mTbsReaderView, RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT))
-
-        when(data){
-            is PersonalFilelistData.result2 ->{
+        tbsview!!.hide()
+        when (data) {
+            is PersonalFilelistData.result2 -> {
                 file_downloadProgress.progress = 0
                 setToolbartitle(data.filename)
                 //data.size.toInt().toString().LogD(" size :: ")
@@ -72,28 +74,26 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                 addsub(updatesub)
             }
 
-            is TaskFile ->{
+            is TaskFile -> {
                 file_downloadProgress.visibility = View.INVISIBLE
                 openfile(data)
 
             }
 
-            is ShareList.Files ->{
+            is ShareList.Files -> {
 
 
             }
-            is SearchResultData.res ->{
+            is SearchResultData.res -> {
 
             }
         }
 
 
-
-
-
     }
 
-    private fun openFile(path: String) :Boolean {
+    private fun openFile(path: String): Boolean {
+
         val tempPath = File("${Environment.getExternalStorageDirectory()}/officetemp")
         if (!tempPath.exists())
             tempPath.mkdirs()
@@ -102,20 +102,22 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
         //传递文件路径
         bundle.putString("filePath", File(path).toString())
         //加载插件保存的路径
-        bundle.putString("tempPath",  "${Environment.getExternalStorageDirectory()}/officetemp")
-        if (this.mTbsReaderView == null)
-            this.mTbsReaderView = TbsReaderView(this, this)
+        bundle.putString("tempPath", "${Environment.getExternalStorageDirectory()}/officetemp")
+        if (this.tbsview == null)
+            this.tbsview = TbsReaderView(this, this)
         //加载文件前的初始化工作,加载支持不同格式的插件
-        val b = mTbsReaderView!!.preOpen(getFileType(File(path).toString()), false)
-        if (b) {
-            mTbsReaderView!!.openFile(bundle)
+        val b = tbsview!!.preOpen(getFileType(File(path).toString()), false)
+        runOnUiThread {
+
+            if (b) {
+                tbsview!!.Show()
+                tbsview!!.openFile(bundle)
+            }
+            b.toString().LogD("ifopen : ")
+
         }
-
         return b
-
-
     }
-
 
 
     private fun getFileType(path: String): String {
@@ -132,6 +134,10 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
         return str
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        tbsview!!.onStop()
+    }
 
     private fun openfile(data: TaskFile) {
 
@@ -164,7 +170,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                 else -> "未找到类型"
 
             }
-        } catch (e :Exception){
+        } catch (e: Exception) {
             this.toast("未找到文件！")
 
         }
@@ -181,89 +187,101 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
 
         url.LogD(" 下载URL ： ")
         val futureStudioIconFile = File(Environment.getExternalStorageDirectory().toString() + File.separator
-                + "datrixdownload")
+                + "datrixdownloadTemp")
         if (!futureStudioIconFile.exists())
             futureStudioIconFile.mkdirs()
-        val file = File(futureStudioIconFile,  data.filename)
-        if (file.exists()){
-            when (data.ext) {
+        val file = File(futureStudioIconFile, data.filename)
+        if (file.exists()) {
+            file_downloadProgress.visibility = View.INVISIBLE
 
-                "docx" -> {
-                    //
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
-                        runOnUiThread {
-                                downfile_name.text = "没有可打开的应用！"
+            try {
+                when (data.ext) {
+
+                    "docx" -> {
+                        //
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
+                            runOnUiThread {
+                               // downfile_name.text = "没有可打开的应用！"
                                 file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "doc" -> {
-                    //
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "doc" -> {
+                        //
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "xls" -> {
-                    // this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "xls" -> {
+                        // this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "xlsx" -> {
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "xlsx" -> {
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "ppt" -> {
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.textopen(file.absolutePath, "ppt"))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "ppt" -> {
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.textopen(file.absolutePath, "ppt"))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "pptx" -> {
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getPptFileIntent(file.absolutePath))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "pptx" -> {
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getPptFileIntent(file.absolutePath))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                "txt" -> {
-                    if (!openFile(file.absolutePath)){
-                        this!!.startActivity(IntentUtil.getTextFileIntent(file.absolutePath, false))
-                        runOnUiThread {
-                            downfile_name.text = "没有可打开的应用！"
-                            file_downloadProgress.visibility = View.INVISIBLE
+                    "txt" -> {
+                        if (!openFile(file.absolutePath)) {
+                            this!!.startActivity(IntentUtil.getTextFileIntent(file.absolutePath, false))
+                            runOnUiThread {
+                                //downfile_name.text = "没有可打开的应用！"
+                                file_downloadProgress.visibility = View.INVISIBLE
+                            }
                         }
                     }
-                }
-                else -> "未找到类型"
+                    else -> "未找到类型"
 
+                }
+            } catch (e: Exception) {
+                e.toString().LogD("error : ")
+                if (e.toString().contains("No Activity found")) {
+                    downfile_name.text = "没有找到打开此文件的应用！"
+                    file_downloadProgress.visibility = View.INVISIBLE
+
+                }
             }
-        }else{
-            val download  = HttpUtil.instance.downLoadApi(officeFile).downloadFileWithFixedUrl(url)
+
+        } else {
+            val download = HttpUtil.instance.downLoadApi(officeFile).downloadFileWithFixedUrl(url)
                     .subscribeOn(Schedulers.io())
                     .observeOn(Schedulers.newThread())
                     .subscribe({
 
-                        var result = Someutil.writeResponseBodyToDisk2(it, data.filename)
+                        var result = Someutil.writeResponseBodyToTempDisk2(it, data.filename)
                         var file = result.second
 
                         if (result.first) {
@@ -272,7 +290,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
 
                                 "docx" -> {
                                     //
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -282,7 +300,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                 }
                                 "doc" -> {
                                     //
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -292,7 +310,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                 }
                                 "xls" -> {
                                     // this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getWordFileIntent(file.absolutePath))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -301,7 +319,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                     }
                                 }
                                 "xlsx" -> {
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getExcelFileIntent(file.absolutePath))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -310,7 +328,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                     }
                                 }
                                 "ppt" -> {
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.textopen(file.absolutePath, "ppt"))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -319,7 +337,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                     }
                                 }
                                 "pptx" -> {
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getPptFileIntent(file.absolutePath))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -328,7 +346,7 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
                                     }
                                 }
                                 "txt" -> {
-                                    if (!openFile(file.absolutePath)){
+                                    if (!openFile(file.absolutePath)) {
                                         this!!.startActivity(IntentUtil.getTextFileIntent(file.absolutePath, false))
                                         runOnUiThread {
                                             downfile_name.text = "没有可打开的应用！"
@@ -359,7 +377,6 @@ class OfficeFileShowActivity : BaseActivity() ,TbsReaderView.ReaderCallback{
 
             addsub(download)
         }
-
 
 
     }

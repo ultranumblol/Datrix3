@@ -54,7 +54,8 @@
         <activity android:name=".Activities.FileCollectWebViewActivity" />
         <activity android:name=".Activities.SaomaActivity" />
         <activity android:name=".Activities.SettingsActivity" />
-        <activity android:name=".Activities.ChoseDownloadDirActivity"></activity>
+        <activity android:name=".Activities.ChoseDownloadDirActivity" />
+        <activity android:name=".Activities.AudioPlayActivity"></activity>
     </application>
 
 </manifest>

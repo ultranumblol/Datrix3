@@ -207,7 +207,7 @@ class UploadFragment : BaseFragment() {
 
         if (this.msubscription != null) {
             this.msubscription!!.dispose()
-            "取消订阅".LogD()
+            //"取消订阅".LogD()
         }
 
     }

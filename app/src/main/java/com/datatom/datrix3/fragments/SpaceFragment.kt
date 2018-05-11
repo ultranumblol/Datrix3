@@ -514,11 +514,12 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                 // "m3u", "m4a", "m4b", "m4p", "mp2", "mp3", "mpga", "ogg", "rmvb", "wav", "wmv",
                                     "audio"
                                     -> {
+                                        context!!.startActivity(Intent(context, AudioPlayActivity::class.java)
+                                                .putExtra("file", rvadapter!!.allData[it]))
+
                                     }
 
-                                    "conf", "cpp", "htm", "html", "log", "sh", "xml"
-                                    -> {
-
+                                    "conf", "cpp", "htm", "html", "log", "sh", "xml" -> {
                                     }
                                     "txt" -> {
                                         context!!.startActivity(Intent(context, PreviewTXTFileActivity::class.java)
@@ -794,7 +795,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
             }
             I.edit_rv_xiazai -> {
-                when (currentdir) {
+                when (currentID) {
                     PUBLIC_SPACE_ID -> {
                         rvadapter!!.getcheckboxArrary().forEach { i, _ ->
 
@@ -1011,7 +1012,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                         rvadapter!!.apply {
                             getcheckboxArrary().forEach { i, _ ->
 
-                                when (currentdir) {
+                                when (currentID) {
                                     PUBLIC_SPACE_ID -> {
                                         HttpUtil.instance.apiService().checkdelete(Someutil.getToken(), allData[i].fileid, Someutil.getUserID())
                                                 .compose(RxSchedulers.compose())
@@ -1027,6 +1028,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                                         activity!!.toast("删除成功！")
                                                                         rvadapter!!.setCheckBoxNoneSelect()
                                                                         RxBus.get().post("updatespacecheckbox")
+                                                                        rvadapter!!.remove(i)
                                                                         Handler().postDelayed({
                                                                             refreshData()
                                                                         }, 500)
@@ -1042,6 +1044,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                         activity!!.toast("没有权限！")
                                                     }
                                                 }, {
+                                                    it.toString().LogD("error : ")
                                                     activity!!.toast("请求失败！")
                                                 })
 
@@ -1051,19 +1054,22 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
                                                 , allData[i].objid, allData[i].createuid)
                                                 .compose(RxSchedulers.compose())
                                                 .subscribe({
-
+                                                    it.toString().LogD("result : ")
                                                     if (it.contains("200")) {
                                                         activity!!.toast("删除成功！")
                                                         rvadapter!!.setCheckBoxNoneSelect()
                                                         RxBus.get().post("updatespacecheckbox")
+                                                        rvadapter!!.remove(i)
                                                         Handler().postDelayed({
                                                             refreshData()
                                                         }, 500)
                                                     } else {
+
                                                         activity!!.toast("删除失败！")
                                                     }
                                                     it.toString().LogD("delete file reuslt : ")
                                                 }, {
+                                                    it.toString().LogD("error : ")
                                                     activity!!.toast("删除失败！")
                                                 })
 
@@ -1639,7 +1645,7 @@ class SpaceFragment : BaseFragment(), View.OnClickListener, SwipeRefreshLayout.O
 
         if (this.msubscription != null) {
             this.msubscription!!.dispose()
-            "取消订阅".LogD()
+            //"取消订阅".LogD()
         }
 
     }
